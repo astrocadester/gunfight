@@ -27,3 +27,13 @@ jobs:
             git commit -m "Generate verified 8080 DASM, maps, and rebuilt ROM artifacts [skip ci]"
             git push
           fi
+  windows-verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rebuild native ROMs with bundled Windows zmac
+        shell: cmd
+        run: call build.bat
