@@ -4,11 +4,11 @@
 
 Gun Fight (1975) is an Intel 8080 Midway/Dave Nutting Associates arcade game. This repository preserves the original ROM set, reconstructs native executable instructions, and documents an indexed-bytecode interpreter present in its program ROM.
 
-## Interpreter and DNA history
+## Interpreter and DNA 8080 history
 
-The native dispatcher at `$3A7` obtains game commands via the script pointer in RAM `$2000`, selects native handlers using the table at `$9AE`, and transfers control through an indirect jump. The table has **30 entries**. The first known program stream starts at `$821`.
+The native dispatcher at `$03A7` fetches indexed 8080 game commands through script pointer `$2000` and vector table `$09AE`; the initial script begins at `$0821`. Second-pass word decoding establishes **21 defensible native handler entries ($00–$14); the earlier 30-entry extrapolation included likely data**. Gun Fight predates Tornado Baseball's indexed game-command runtime.
 
-See [recovered command vectors](docs/interpreter.md) and [machine-readable trace](docs/recovery.json). This is earlier than the 26-command Tornado Baseball interpreter and establishes an interpreter-based DNA arcade architecture in 1975. Do not confuse command-vector counts with a count of fully semantically decoded game words.
+See [per-word native effects and operand formats](docs/8080-WORD-SEMANTICS.md), [original recovered vectors](docs/interpreter.md), and [machine-readable trace](docs/recovery.json). Working names in the semantic catalog describe recovered machine behavior; they are not claimed as the original DNA source-language spellings.
 
 ## Project layout
 
