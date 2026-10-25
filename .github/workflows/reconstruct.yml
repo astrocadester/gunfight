@@ -1,0 +1,29 @@
+name: ROM-exact Intel 8080 reconstruction
+on:
+  push:
+    branches: [codex/early-8080-re-baseline]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  reconstruct:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assemble and compare every original ROM byte
+        run: bash build.sh
+      - name: Stage generated source, memory map and ROM evidence
+        run: |
+          git add src docs roms/build
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate verified 8080 DASM, maps, and rebuilt ROM artifacts [skip ci]"
+            git push
+          fi
