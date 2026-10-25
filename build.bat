@@ -6,6 +6,6 @@ if not exist "src\gunfight.asm" (
   exit /b 2
 )
 if not exist build mkdir build
-tools\zmac.exe --zmac -o "build\gunfight.bin" "src\gunfight.asm"
+tools\zmac.exe -o "build\gunfight.bin" "src\gunfight.asm"
 if errorlevel 1 exit /b 1
 echo Assembled build\gunfight.bin; chip-by-chip ROM identity is not yet verified.
