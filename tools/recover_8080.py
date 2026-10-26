@@ -116,6 +116,25 @@ def main():
     for index,address in enumerate(vectors):
         if game=="desertgun" and index==0:continue # zero goes directly to scheduler
         word_aliases.setdefault(address,[]).append(index)
+    typed_rom_vectors={}
+    for i in range(24):
+        address=0x97E+2*i
+        target=int.from_bytes(mem[address:address+2],"little")
+        assert target<len(mem), ("bad native/script pointer",address,target)
+        assert address not in typed_rom_vectors, ("overlapping vector",address)
+        typed_rom_vectors[address]=("NATIVE_EVENT_ACTION",i,target)
+    for i in range(21):
+        address=0x9AE+2*i
+        target=int.from_bytes(mem[address:address+2],"little")
+        assert target<len(mem), ("bad native/script pointer",address,target)
+        assert address not in typed_rom_vectors, ("overlapping vector",address)
+        typed_rom_vectors[address]=("GAME_WORD",i,target)
+    for i in range(9):
+        address=0x9D8+2*i
+        target=int.from_bytes(mem[address:address+2],"little")
+        assert target<len(mem), ("bad native/script pointer",address,target)
+        assert address not in typed_rom_vectors, ("overlapping vector",address)
+        typed_rom_vectors[address]=("EVENT_SCRIPT",i,target)
     packet_begins={int(x["pc"],16):x for x in word_scan["unique_packets"]}
     packet_owner={}
     for start,p in packet_begins.items():
@@ -139,6 +158,13 @@ def main():
         asm.extend(["",f"        ORG ${lo:04X}",f"; Device {name}, SHA1 {hashlib.sha1(parts[part]).hexdigest()}"])
         pc=lo
         while pc<hi:
+            if pc in typed_rom_vectors:
+                kind,index,target=typed_rom_vectors[pc]
+                assert pc not in code and pc not in packet_owner, ("vector overlaps executable or script",pc)
+                asm.append(f"ROM_{kind}_{index:02X}:")
+                asm.append("        DW $"+format(target,"04X")+f" ; {kind} pointer from ROM $"+format(pc,"04X"))
+                pc+=2
+                continue
             if pc in packet_begins:
                 packet=packet_begins[pc]
                 op=int(packet["opcode"],16)
