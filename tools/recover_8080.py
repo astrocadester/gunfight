@@ -69,6 +69,31 @@ def recover(mem,roots):
             pc+=size
     return code,owned,entries,edges
 
+
+WORD_NAMES={
+    0: "WAIT_REPEAT",
+    1: "DRAW_FORMATTED",
+    2: "SET_SCORE_STATE",
+    3: "SET_DELAY",
+    4: "CLEAR_VIDEO",
+    5: "COPY15_TO_RAM",
+    6: "COPY9_TO_RAM",
+    7: "CLEAR_OBJECT_BITS",
+    8: "TOGGLE_OBJECT_BITS",
+    9: "SCRIPT_JUMP",
+    10: "DRAW_GAME_STATUS",
+    11: "SETUP_OBJECT",
+    12: "BCD_INCREMENT_SETUP",
+    13: "SET_OUTPUT_MODE",
+    14: "FILL_VIDEO_RECT",
+    15: "EXPAND_GLYPHS",
+    16: "BRANCH_IF_STATE",
+    17: "DRAW_STATUS_A",
+    18: "DRAW_STATUS_B",
+    19: "FORMAT_SCORE",
+    20: "READ_INPUT_EVENTS"
+}
+
 def main():
     args=argparse.ArgumentParser()
     args.add_argument("game",choices=CFG.keys())
@@ -107,7 +132,43 @@ def main():
         while pc<hi:
             if pc in packet_begins:
                 packet=packet_begins[pc]
-                asm.append(f"WORD_{pc:04X}: ; opcode {packet['opcode']}, {packet['length']-1} bytes inline")
+                op=int(packet["opcode"],16)
+                opname=WORD_NAMES[op]
+                raw=mem[pc:pc+packet["length"]]
+                asm.append(f"CMD_{pc:04X}_{opname}:")
+                asm.append(f"        DB $"+format(op,"02X")+f" ; word {opname} ($"+format(op,"02X")+")")
+                argument=raw[1:]
+                fields=[]
+                if game=="gunfight":
+                    if op==1:fields=[("byte",1,"format"),("word",2,"source"),("word",2,"destination")]
+                    elif op in (5,6):fields=[("word",2,"destination"),("blob",len(argument)-2,"inline RAM data")]
+                    elif op==11:fields=[("word",2,"descriptor address"),("byte",1,"flags"),("word",2,"link pointer")]
+                    elif op==12:fields=[("word",2,"BCD counter"),("word",2,"descriptor address"),("byte",1,"flags"),("word",2,"link pointer")]
+                    elif op in (7,8,9,14):fields=[("word",2,"RAM address / target / packed dimension")]
+                    elif op in (2,3):fields=[("byte",1,"state")]
+                    elif op==13:fields=[("byte",1,"output"),("byte",1,"state")]
+                else:
+                    if op in (1,2,9):fields=[("byte",1,"mode / value")] if len(argument) else []
+                    elif op==3:fields=[("byte",1,"mode"),("word",2,"pointer")]
+                    elif op==4:fields=[("word",2,"script destination")]
+                    elif op==5:fields=[("byte",1,"value"),("word",2,"RAM destination")]
+                    elif op==8:fields=[("word",2,"descriptor"),("word",2,"render pointer")]
+                    elif op==10:fields=[("word",2,"RAM address")]
+                    elif op==12:fields=[("byte",1,"mode"),("word",2,"source"),("word",2,"destination")]
+                if sum(x[1] for x in fields)!=len(argument):
+                    fields=[("blob",len(argument),"unresolved inline data")]
+                offset=0
+                for typ,width,comment in fields:
+                    value=argument[offset:offset+width]
+                    if typ=="word":
+                        asm.append(f"        DW $"+format(int.from_bytes(value,"little"),"04X")+f" ; {comment}")
+                    elif typ=="byte":
+                        asm.append(f"        DB $"+format(value[0],"02X")+f" ; {comment}")
+                    elif value:
+                        asm.append("        DB "+",".join("$"+format(c,"02X") for c in value)+f" ; {comment}")
+                    offset+=width
+                pc+=len(raw)
+                continue
             if pc in entries and pc in code:asm.append(f"NATIVE_{pc:04X}:")
             if pc in code and pc+code[pc][1]<=hi:
                 inst,n,_,_=code[pc]
