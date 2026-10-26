@@ -60,7 +60,7 @@ if __name__=="__main__":
  for p in result["unique_packets"]:
   md.append("| "+p["pc"]+" | "+p["opcode"]+" | "+p["operand"]+" | "+str(p["length"])+" |")
  md+=["","## Root traversal","","| Root | Packets | Stop |","|---|---:|---|"]
- for root in result["streams"]:md.append("| "+root["root"]+" | "+str(len(root["packets"]))+" | "+root["stop_reason"]+" at "+root["stop_pc"]+" |")
+ for stream in result["streams"]:md.append("| "+stream["root"]+" | "+str(len(stream["packets"]))+" | "+stream["stop_reason"]+" at "+stream["stop_pc"]+" |")
  md+=["","## Distinct ROM word use","","| Word | Sites |","|---|---:|"]
  for op,count in result["opcode_frequency"].items():md.append("| "+op+" | "+str(count)+" |")
  if result["event_vectors"]:
