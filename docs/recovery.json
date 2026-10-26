@@ -29,8 +29,8 @@
       "sha1": "de3f2e6841122bbe6e2fda5b87d37842c072289a"
     }
   ],
-  "native_instruction_count": 1069,
-  "native_byte_count": 1704,
+  "native_instruction_count": 1264,
+  "native_byte_count": 2064,
   "edges": [
     {
       "source": 5,
@@ -268,6 +268,101 @@
       "type": "branch"
     },
     {
+      "source": 1123,
+      "target": 1128,
+      "type": "branch"
+    },
+    {
+      "source": 1141,
+      "target": 1123,
+      "type": "jump"
+    },
+    {
+      "source": 1146,
+      "target": 1151,
+      "type": "branch"
+    },
+    {
+      "source": 1161,
+      "target": 1146,
+      "type": "jump"
+    },
+    {
+      "source": 1083,
+      "target": 1103,
+      "type": "jump"
+    },
+    {
+      "source": 1207,
+      "target": 1217,
+      "type": "branch"
+    },
+    {
+      "source": 1231,
+      "target": 1274,
+      "type": "call"
+    },
+    {
+      "source": 1250,
+      "target": 892,
+      "type": "call"
+    },
+    {
+      "source": 1166,
+      "target": 1171,
+      "type": "branch"
+    },
+    {
+      "source": 1174,
+      "target": 1131,
+      "type": "jump"
+    },
+    {
+      "source": 1179,
+      "target": 1166,
+      "type": "jump"
+    },
+    {
+      "source": 1184,
+      "target": 1189,
+      "type": "branch"
+    },
+    {
+      "source": 1192,
+      "target": 1154,
+      "type": "jump"
+    },
+    {
+      "source": 1197,
+      "target": 1184,
+      "type": "jump"
+    },
+    {
+      "source": 1310,
+      "target": 1320,
+      "type": "branch"
+    },
+    {
+      "source": 1334,
+      "target": 1274,
+      "type": "call"
+    },
+    {
+      "source": 1350,
+      "target": 1247,
+      "type": "jump"
+    },
+    {
+      "source": 1410,
+      "target": 1424,
+      "type": "branch"
+    },
+    {
+      "source": 1421,
+      "target": 1413,
+      "type": "branch"
+    },
+    {
       "source": 922,
       "target": 919,
       "type": "branch"
@@ -436,6 +531,21 @@
       "source": 1033,
       "target": 1447,
       "type": "call"
+    },
+    {
+      "source": 1279,
+      "target": 1297,
+      "type": "branch"
+    },
+    {
+      "source": 1291,
+      "target": 1296,
+      "type": "branch"
+    },
+    {
+      "source": 1300,
+      "target": 1531,
+      "type": "jump"
     },
     {
       "source": 548,
@@ -662,7 +772,7 @@
   "script_pointer_ram": 8192,
   "dispatcher": 935,
   "vector_table": 2478,
-  "vector_count": 30,
+  "vector_count": 21,
   "vectors": [
     2067,
     1513,
@@ -684,16 +794,34 @@
     2025,
     2031,
     1443,
-    969,
-    2331,
-    2358,
-    2364,
-    2370,
-    2376,
-    2382,
-    2388,
-    2394,
-    2403
+    969
   ],
-  "initial_script": 2081
+  "initial_script": 2081,
+  "decoded_script_sites": 82,
+  "native_event_actions": [
+    1121,
+    1139,
+    1144,
+    1159,
+    1066,
+    1066,
+    1066,
+    1200,
+    1164,
+    1177,
+    1182,
+    1195,
+    1086,
+    1086,
+    1086,
+    1303,
+    1924,
+    1924,
+    1924,
+    1924,
+    1924,
+    1924,
+    1353,
+    1388
+  ]
 }

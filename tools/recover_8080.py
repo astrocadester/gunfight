@@ -4,6 +4,7 @@ All native instruction starts are reached from reset/IRQ vectors. Unclassified
 bytes remain DB, never silently converted into unverified instructions.
 """
 import argparse,hashlib,json,re,zipfile
+from audit_words import audit
 from pathlib import Path
 from collections import deque,Counter
 
@@ -68,6 +69,31 @@ def recover(mem,roots):
             pc+=size
     return code,owned,entries,edges
 
+
+WORD_NAMES={
+    0: "WAIT_REPEAT",
+    1: "DRAW_FORMATTED",
+    2: "SET_SCORE_STATE",
+    3: "SET_DELAY",
+    4: "CLEAR_VIDEO",
+    5: "COPY15_TO_RAM",
+    6: "COPY9_TO_RAM",
+    7: "CLEAR_OBJECT_BITS",
+    8: "TOGGLE_OBJECT_BITS",
+    9: "SCRIPT_JUMP",
+    10: "DRAW_GAME_STATUS",
+    11: "SETUP_OBJECT",
+    12: "BCD_INCREMENT_SETUP",
+    13: "SET_OUTPUT_MODE",
+    14: "FILL_VIDEO_RECT",
+    15: "EXPAND_GLYPHS",
+    16: "BRANCH_IF_STATE",
+    17: "DRAW_STATUS_A",
+    18: "DRAW_STATUS_B",
+    19: "FORMAT_SCORE",
+    20: "READ_INPUT_EVENTS"
+}
+
 def main():
     args=argparse.ArgumentParser()
     args.add_argument("game",choices=CFG.keys())
@@ -77,9 +103,46 @@ def main():
         parts=[z.read(n) for n in names]
     assert all(len(p)==size for p in parts)
     mem=b"".join(parts);digest=hashlib.sha256(mem).hexdigest()
-    vectors=[mem[2478+2*i]|mem[2478+2*i+1]<<8 for i in range(30)]
+    vectors=[mem[2478+2*i]|mem[2478+2*i+1]<<8 for i in range(21)]
     assert all(v<len(mem) for v in vectors),vectors
-    code,owned,entries,edges=recover(mem,(0,8,16,935,*vectors))
+    # Dynamic native event actions selected via table $097E-$09AD.
+    # These are *code entry addresses*, not bytecode words.
+    event_actions=[int.from_bytes(mem[p:p+2],"little") for p in range(0x097E,0x09AE,2)]
+    assert len(event_actions)==24 and event_actions[4]==0x042A and event_actions[-1]==0x056C
+    code,owned,entries,edges=recover(mem,(0,8,16,935,*vectors,*event_actions))
+    word_scan=audit(ROOT,game)
+    word_names=["WAIT_REPEAT","DRAW_FORMATTED_DATA","SET_RAM_2003","SET_RAM_2015","CLEAR_DISPLAY","COPY_INLINE_15","COPY_INLINE_9","CLEAR_OBJECT_FLAGS","TOGGLE_OBJECT_FLAGS","BRANCH_SCRIPT","GAME_DISPLAY","INIT_OBJECT","BCD_INCREMENT_INIT","SET_OUTPUT_AND_RAM","FILL_RECTANGLE","EXPAND_GRAPHICS","BRANCH_IF_STATE","DRAW_STATUS_A","DRAW_STATUS_B","UPDATE_SCORE_TEXT","INPUT_EVENT_DISPATCH"]
+    word_aliases={}
+    for index,address in enumerate(vectors):
+        if game=="desertgun" and index==0:continue # zero goes directly to scheduler
+        word_aliases.setdefault(address,[]).append(index)
+    typed_rom_vectors={}
+    for i in range(24):
+        address=0x97E+2*i
+        target=int.from_bytes(mem[address:address+2],"little")
+        assert target<len(mem), ("bad native/script pointer",address,target)
+        assert address not in typed_rom_vectors, ("overlapping vector",address)
+        typed_rom_vectors[address]=("NATIVE_EVENT_ACTION",i,target)
+    for i in range(21):
+        address=0x9AE+2*i
+        target=int.from_bytes(mem[address:address+2],"little")
+        assert target<len(mem), ("bad native/script pointer",address,target)
+        assert address not in typed_rom_vectors, ("overlapping vector",address)
+        typed_rom_vectors[address]=("GAME_WORD",i,target)
+    for i in range(9):
+        address=0x9D8+2*i
+        target=int.from_bytes(mem[address:address+2],"little")
+        assert target<len(mem), ("bad native/script pointer",address,target)
+        assert address not in typed_rom_vectors, ("overlapping vector",address)
+        typed_rom_vectors[address]=("EVENT_SCRIPT",i,target)
+    packet_begins={int(x["pc"],16):x for x in word_scan["unique_packets"]}
+    packet_owner={}
+    for start,p in packet_begins.items():
+        for pos in range(start,start+p["length"]):
+            assert pos not in packet_owner, ("overlapping packet",pos)
+            packet_owner[pos]=start
+    overlapping=sorted(set(packet_owner)&set(owned))
+    assert not overlapping, ("Native code overlaps decoded bytecode",overlapping[:20])
     signatures=[]
     dispatch_tail=bytes.fromhex("07 4F 06 00 09 7E 23 66 6F E9")
     for i in range(len(mem)-len(dispatch_tail)):
@@ -95,7 +158,58 @@ def main():
         asm.extend(["",f"        ORG ${lo:04X}",f"; Device {name}, SHA1 {hashlib.sha1(parts[part]).hexdigest()}"])
         pc=lo
         while pc<hi:
-            if pc in entries and pc in code:asm.append(f"NATIVE_{pc:04X}:")
+            if pc in typed_rom_vectors:
+                kind,index,target=typed_rom_vectors[pc]
+                assert pc not in code and pc not in packet_owner, ("vector overlaps executable or script",pc)
+                asm.append(f"ROM_{kind}_{index:02X}:")
+                asm.append("        DW $"+format(target,"04X")+f" ; {kind} pointer from ROM $"+format(pc,"04X"))
+                pc+=2
+                continue
+            if pc in packet_begins:
+                packet=packet_begins[pc]
+                op=int(packet["opcode"],16)
+                opname=WORD_NAMES[op]
+                raw=mem[pc:pc+packet["length"]]
+                asm.append(f"CMD_{pc:04X}_{opname}:")
+                asm.append(f"        DB $"+format(op,"02X")+f" ; word {opname} ($"+format(op,"02X")+")")
+                argument=raw[1:]
+                fields=[]
+                if game=="gunfight":
+                    if op==1:fields=[("byte",1,"format"),("word",2,"source"),("word",2,"destination")]
+                    elif op in (5,6):fields=[("word",2,"destination"),("blob",len(argument)-2,"inline RAM data")]
+                    elif op==11:fields=[("word",2,"descriptor address"),("byte",1,"flags"),("word",2,"link pointer")]
+                    elif op==12:fields=[("word",2,"BCD counter"),("word",2,"descriptor address"),("byte",1,"flags"),("word",2,"link pointer")]
+                    elif op in (7,8,9,14):fields=[("word",2,"RAM address / target / packed dimension")]
+                    elif op in (2,3):fields=[("byte",1,"state")]
+                    elif op==13:fields=[("byte",1,"output"),("byte",1,"state")]
+                else:
+                    if op in (1,2,9):fields=[("byte",1,"mode / value")] if len(argument) else []
+                    elif op==3:fields=[("byte",1,"mode"),("word",2,"pointer")]
+                    elif op==4:fields=[("word",2,"script destination")]
+                    elif op==5:fields=[("byte",1,"value"),("word",2,"RAM destination")]
+                    elif op==8:fields=[("word",2,"descriptor"),("word",2,"render pointer")]
+                    elif op==10:fields=[("word",2,"RAM address")]
+                    elif op==12:fields=[("byte",1,"mode"),("word",2,"source"),("word",2,"destination")]
+                if sum(x[1] for x in fields)!=len(argument):
+                    fields=[("blob",len(argument),"unresolved inline data")]
+                offset=0
+                for typ,width,comment in fields:
+                    value=argument[offset:offset+width]
+                    if typ=="word":
+                        asm.append(f"        DW $"+format(int.from_bytes(value,"little"),"04X")+f" ; {comment}")
+                    elif typ=="byte":
+                        asm.append(f"        DB $"+format(value[0],"02X")+f" ; {comment}")
+                    elif value:
+                        asm.append("        DB "+",".join("$"+format(c,"02X") for c in value)+f" ; {comment}")
+                    offset+=width
+                pc+=len(raw)
+                continue
+            if pc in entries and pc in code:
+                for index in word_aliases.get(pc,[]):
+                    asm.append(f"NATIVE_WORD_{index:02X}_{word_names[index]}:")
+                if game=="desertgun" and pc==0x11EA:
+                    asm.append("WORD_ZERO_FRAME_SCHEDULER:")
+                asm.append(f"NATIVE_{pc:04X}:")
             if pc in code and pc+code[pc][1]<=hi:
                 inst,n,_,_=code[pc]
                 raw=mem[pc:pc+n].hex(" ").upper()
@@ -105,9 +219,13 @@ def main():
                 # Preserve all unclassified bytes, never misidentify as native code.
                 stop=min(hi,pc+12)
                 for p in range(pc+1,stop):
-                    if p in code or p in entries:stop=p;break
+                    if p in code or p in entries or p in packet_begins or (packet_owner.get(p)!=packet_owner.get(pc)):stop=p;break
                 raw=mem[pc:stop]
-                asm.append("        DB "+",".join(f"${b:02X}" for b in raw)+f" ; ROM ${pc:04X} unclassified")
+                category=("bytecode word "+packet_begins[packet_owner[pc]]["opcode"] if pc in packet_owner else
+                          "native command/event vectors" if game=="gunfight" and 0x09AE<=pc<0x09EA else
+                          "native command vectors" if game=="desertgun" and 0x0F61<=pc<0x0F7B else
+                          "unclassified")
+                asm.append("        DB "+",".join(f"${b:02X}" for b in raw)+f" ; ROM ${pc:04X} {category}")
                 pc=stop
     (ROOT/"src"/(game+".asm")).write_text("\n".join(asm)+"\n")
     report={"game":game,"cpu":"Intel 8080","rom_size":len(mem),"sha256":digest,
@@ -115,7 +233,7 @@ def main():
                        for i,(n,p) in enumerate(zip(names,parts))],
             "native_instruction_count":len(code),"native_byte_count":len(owned),
             "edges":edges,"indexed_dispatch_signatures":signatures}
-    report.update({"script_pointer_ram":0x2000,"dispatcher":935,"vector_table":2478,"vector_count":30,"vectors":vectors,"initial_script":2081})
+    report.update({"script_pointer_ram":0x2000,"dispatcher":935,"vector_table":2478,"vector_count":21,"vectors":vectors,"initial_script":2081,"decoded_script_sites":word_scan["distinct_packet_count"],"native_event_actions":event_actions})
     (ROOT/"docs"/"recovery.json").write_text(json.dumps(report,indent=2)+"\n")
     print(game,"native 8080 instructions",len(code),"code bytes",len(owned),
           "indexed dispatches",signatures)

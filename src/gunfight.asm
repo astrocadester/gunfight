@@ -620,8 +620,26 @@ NATIVE_0373:
         DEC C  ; ROM $0377: 0D
         JP NZ,$0373  ; ROM $0378: C2 73 03
         RET  ; ROM $037B: C9
-        DB $D5,$5F,$16,$00,$19,$78,$46,$23,$56,$E1,$86,$5F ; ROM $037C unclassified
-        DB $23,$23,$23,$23,$7E,$82,$57,$C9 ; ROM $0388 unclassified
+NATIVE_037C:
+        PUSH DE  ; ROM $037C: D5
+        LD E,A  ; ROM $037D: 5F
+        LD D,$00  ; ROM $037E: 16 00
+        ADD HL,DE  ; ROM $0380: 19
+        LD A,B  ; ROM $0381: 78
+        LD B,(HL)  ; ROM $0382: 46
+        INC HL  ; ROM $0383: 23
+        LD D,(HL)  ; ROM $0384: 56
+        POP HL  ; ROM $0385: E1
+        ADD A,(HL)  ; ROM $0386: 86
+        LD E,A  ; ROM $0387: 5F
+        INC HL  ; ROM $0388: 23
+        INC HL  ; ROM $0389: 23
+        INC HL  ; ROM $038A: 23
+        INC HL  ; ROM $038B: 23
+        LD A,(HL)  ; ROM $038C: 7E
+        ADD A,D  ; ROM $038D: 82
+        LD D,A  ; ROM $038E: 57
+        RET  ; ROM $038F: C9
 NATIVE_0390:
         LD A,$08  ; ROM $0390: 3E 08
         LD HL,$2002  ; ROM $0392: 21 02 20
@@ -657,6 +675,7 @@ NATIVE_03B4:
         LD DE,$03A6  ; ROM $03C4: 11 A6 03
         PUSH DE  ; ROM $03C7: D5
         JP (HL)  ; ROM $03C8: E9
+NATIVE_WORD_14_INPUT_EVENT_DISPATCH:
 NATIVE_03C9:
         CALL $0813  ; ROM $03C9: CD 13 08
         IN A,($00)  ; ROM $03CC: DB 00
@@ -724,38 +743,246 @@ NATIVE_0420:
         LD H,(HL)  ; ROM $0427: 66
         LD L,C  ; ROM $0428: 69
         JP (HL)  ; ROM $0429: E9
-        DB $1A,$E6,$70,$0F,$0F,$0F,$A7,$C8,$32,$1A,$20,$21 ; ROM $042A unclassified
-        DB $E2,$0E,$11,$2A,$20,$C3,$4F,$04,$1A,$E6,$70,$0F ; ROM $0436 unclassified
-        DB $0F,$0F,$A7,$C8,$32,$1B,$20,$21,$F0,$0E,$11,$3D ; ROM $0442 unclassified
-        DB $20,$4F,$06,$00,$09,$4E,$23,$46,$EB,$36,$C0,$11 ; ROM $044E unclassified
-        DB $0B,$00,$19,$71,$23,$70,$C9,$06,$FE,$C2,$68,$04 ; ROM $045A unclassified
-        DB $06,$00,$21,$2A,$20,$36,$C0,$11,$05,$00,$19,$70 ; ROM $0466 unclassified
-        DB $C9,$06,$02,$C3,$63,$04,$06,$FF,$C2,$7F,$04,$06 ; ROM $0472 unclassified
-        DB $00,$21,$2A,$20,$36,$C0,$23,$70,$C9,$06,$01,$C3 ; ROM $047E unclassified
-        DB $7A,$04,$06,$FE,$C2,$93,$04,$06,$00,$21,$3D,$20 ; ROM $048A unclassified
-        DB $C3,$6B,$04,$06,$02,$C3,$8E,$04,$06,$FF,$C2,$A5 ; ROM $0496 unclassified
-        DB $04,$06,$00,$21,$3D,$20,$C3,$82,$04,$06,$01,$C3 ; ROM $04A2 unclassified
-        DB $A0,$04,$C8,$21,$63,$20,$7E,$E6,$80,$CA,$C1,$04 ; ROM $04AE unclassified
-        DB $21,$75,$20,$7E,$E6,$80,$C0,$11,$12,$20,$1A,$A7 ; ROM $04BA unclassified
-        DB $C0,$E5,$EB,$11,$A2,$3E,$01,$10,$20,$CD,$FA,$04 ; ROM $04C6 unclassified
-        DB $3E,$E2,$D3,$01,$11,$2C,$20,$01,$08,$1A,$3A,$1A ; ROM $04D2 unclassified
-        DB $20,$21,$FE,$0E,$CD,$7C,$03,$E1,$F3,$36,$C6,$23 ; ROM $04DE unclassified
-        DB $71,$23,$73,$23,$23,$23,$70,$23,$72,$FB,$3E,$02 ; ROM $04EA unclassified
-        DB $32,$14,$20,$C9,$0A,$3C,$02,$FE,$06,$FA,$11,$05 ; ROM $04F6 unclassified
-        DB $77,$47,$21,$03,$20,$7E,$36,$11,$A7,$CA,$10,$05 ; ROM $0502 unclassified
-        DB $36,$02,$78,$21,$A4,$0F,$C3,$FB,$05,$C8,$21,$87 ; ROM $050E unclassified
-        DB $20,$7E,$E6,$80,$CA,$28,$05,$21,$99,$20,$7E,$E6 ; ROM $051A unclassified
-        DB $80,$C0,$11,$13,$20,$1A,$A7,$C0,$E5,$EB,$11,$B8 ; ROM $0526 unclassified
-        DB $3E,$01,$11,$20,$CD,$FA,$04,$3E,$D2,$D3,$01,$11 ; ROM $0532 unclassified
-        DB $3F,$20,$01,$F8,$F6,$3A,$1B,$20,$C3,$DF,$04,$C8 ; ROM $053E unclassified
-        DB $3E,$04,$32,$14,$20,$D3,$01,$21,$07,$20,$34,$3A ; ROM $054A unclassified
-        DB $06,$20,$4F,$E6,$03,$BE,$D0,$36,$00,$79,$1F,$1F ; ROM $0556 unclassified
-        DB $E6,$03,$3C,$21,$08,$20,$86,$E6,$07,$77,$C8,$3A ; ROM $0562 unclassified
-        DB $04,$20,$A7,$C0,$3A,$08,$20,$A7,$C8,$3D,$32,$08 ; ROM $056E unclassified
-        DB $20,$06,$60,$3A,$06,$20,$E6,$30,$CA,$90,$05,$4F ; ROM $057A unclassified
-        DB $78,$C6,$10,$47,$79,$D6,$10,$C2,$85,$05,$78,$32 ; ROM $0586 unclassified
-        DB $04,$20,$21,$C6,$20,$35,$21,$02,$20,$AF,$77,$23 ; ROM $0592 unclassified
-        DB $77,$23,$23,$77,$C9 ; ROM $059E unclassified
+NATIVE_042A:
+        LD A,(DE)  ; ROM $042A: 1A
+        AND $70  ; ROM $042B: E6 70
+        RRCA  ; ROM $042D: 0F
+        RRCA  ; ROM $042E: 0F
+        RRCA  ; ROM $042F: 0F
+        AND A  ; ROM $0430: A7
+        RET Z  ; ROM $0431: C8
+        LD ($201A),A  ; ROM $0432: 32 1A 20
+        LD HL,$0EE2  ; ROM $0435: 21 E2 0E
+        LD DE,$202A  ; ROM $0438: 11 2A 20
+        JP $044F  ; ROM $043B: C3 4F 04
+NATIVE_043E:
+        LD A,(DE)  ; ROM $043E: 1A
+        AND $70  ; ROM $043F: E6 70
+        RRCA  ; ROM $0441: 0F
+        RRCA  ; ROM $0442: 0F
+        RRCA  ; ROM $0443: 0F
+        AND A  ; ROM $0444: A7
+        RET Z  ; ROM $0445: C8
+        LD ($201B),A  ; ROM $0446: 32 1B 20
+        LD HL,$0EF0  ; ROM $0449: 21 F0 0E
+        LD DE,$203D  ; ROM $044C: 11 3D 20
+NATIVE_044F:
+        LD C,A  ; ROM $044F: 4F
+        LD B,$00  ; ROM $0450: 06 00
+        ADD HL,BC  ; ROM $0452: 09
+        LD C,(HL)  ; ROM $0453: 4E
+        INC HL  ; ROM $0454: 23
+        LD B,(HL)  ; ROM $0455: 46
+        EX DE,HL  ; ROM $0456: EB
+        LD (HL),$C0  ; ROM $0457: 36 C0
+        LD DE,$000B  ; ROM $0459: 11 0B 00
+        ADD HL,DE  ; ROM $045C: 19
+        LD (HL),C  ; ROM $045D: 71
+        INC HL  ; ROM $045E: 23
+        LD (HL),B  ; ROM $045F: 70
+        RET  ; ROM $0460: C9
+NATIVE_0461:
+        LD B,$FE  ; ROM $0461: 06 FE
+NATIVE_0463:
+        JP NZ,$0468  ; ROM $0463: C2 68 04
+        LD B,$00  ; ROM $0466: 06 00
+NATIVE_0468:
+        LD HL,$202A  ; ROM $0468: 21 2A 20
+NATIVE_046B:
+        LD (HL),$C0  ; ROM $046B: 36 C0
+        LD DE,$0005  ; ROM $046D: 11 05 00
+        ADD HL,DE  ; ROM $0470: 19
+        LD (HL),B  ; ROM $0471: 70
+        RET  ; ROM $0472: C9
+NATIVE_0473:
+        LD B,$02  ; ROM $0473: 06 02
+        JP $0463  ; ROM $0475: C3 63 04
+NATIVE_0478:
+        LD B,$FF  ; ROM $0478: 06 FF
+NATIVE_047A:
+        JP NZ,$047F  ; ROM $047A: C2 7F 04
+        LD B,$00  ; ROM $047D: 06 00
+NATIVE_047F:
+        LD HL,$202A  ; ROM $047F: 21 2A 20
+NATIVE_0482:
+        LD (HL),$C0  ; ROM $0482: 36 C0
+        INC HL  ; ROM $0484: 23
+        LD (HL),B  ; ROM $0485: 70
+        RET  ; ROM $0486: C9
+NATIVE_0487:
+        LD B,$01  ; ROM $0487: 06 01
+        JP $047A  ; ROM $0489: C3 7A 04
+NATIVE_048C:
+        LD B,$FE  ; ROM $048C: 06 FE
+NATIVE_048E:
+        JP NZ,$0493  ; ROM $048E: C2 93 04
+        LD B,$00  ; ROM $0491: 06 00
+NATIVE_0493:
+        LD HL,$203D  ; ROM $0493: 21 3D 20
+        JP $046B  ; ROM $0496: C3 6B 04
+NATIVE_0499:
+        LD B,$02  ; ROM $0499: 06 02
+        JP $048E  ; ROM $049B: C3 8E 04
+NATIVE_049E:
+        LD B,$FF  ; ROM $049E: 06 FF
+NATIVE_04A0:
+        JP NZ,$04A5  ; ROM $04A0: C2 A5 04
+        LD B,$00  ; ROM $04A3: 06 00
+NATIVE_04A5:
+        LD HL,$203D  ; ROM $04A5: 21 3D 20
+        JP $0482  ; ROM $04A8: C3 82 04
+NATIVE_04AB:
+        LD B,$01  ; ROM $04AB: 06 01
+        JP $04A0  ; ROM $04AD: C3 A0 04
+NATIVE_04B0:
+        RET Z  ; ROM $04B0: C8
+        LD HL,$2063  ; ROM $04B1: 21 63 20
+        LD A,(HL)  ; ROM $04B4: 7E
+        AND $80  ; ROM $04B5: E6 80
+        JP Z,$04C1  ; ROM $04B7: CA C1 04
+        LD HL,$2075  ; ROM $04BA: 21 75 20
+        LD A,(HL)  ; ROM $04BD: 7E
+        AND $80  ; ROM $04BE: E6 80
+        RET NZ  ; ROM $04C0: C0
+NATIVE_04C1:
+        LD DE,$2012  ; ROM $04C1: 11 12 20
+        LD A,(DE)  ; ROM $04C4: 1A
+        AND A  ; ROM $04C5: A7
+        RET NZ  ; ROM $04C6: C0
+        PUSH HL  ; ROM $04C7: E5
+        EX DE,HL  ; ROM $04C8: EB
+        LD DE,$3EA2  ; ROM $04C9: 11 A2 3E
+        LD BC,$2010  ; ROM $04CC: 01 10 20
+        CALL $04FA  ; ROM $04CF: CD FA 04
+        LD A,$E2  ; ROM $04D2: 3E E2
+        OUT ($01),A  ; ROM $04D4: D3 01
+        LD DE,$202C  ; ROM $04D6: 11 2C 20
+        LD BC,$1A08  ; ROM $04D9: 01 08 1A
+        LD A,($201A)  ; ROM $04DC: 3A 1A 20
+NATIVE_04DF:
+        LD HL,$0EFE  ; ROM $04DF: 21 FE 0E
+        CALL $037C  ; ROM $04E2: CD 7C 03
+        POP HL  ; ROM $04E5: E1
+        DI  ; ROM $04E6: F3
+        LD (HL),$C6  ; ROM $04E7: 36 C6
+        INC HL  ; ROM $04E9: 23
+        LD (HL),C  ; ROM $04EA: 71
+        INC HL  ; ROM $04EB: 23
+        LD (HL),E  ; ROM $04EC: 73
+        INC HL  ; ROM $04ED: 23
+        INC HL  ; ROM $04EE: 23
+        INC HL  ; ROM $04EF: 23
+        LD (HL),B  ; ROM $04F0: 70
+        INC HL  ; ROM $04F1: 23
+        LD (HL),D  ; ROM $04F2: 72
+        EI  ; ROM $04F3: FB
+        LD A,$02  ; ROM $04F4: 3E 02
+        LD ($2014),A  ; ROM $04F6: 32 14 20
+        RET  ; ROM $04F9: C9
+NATIVE_04FA:
+        LD A,(BC)  ; ROM $04FA: 0A
+        INC A  ; ROM $04FB: 3C
+        LD (BC),A  ; ROM $04FC: 02
+        CP $06  ; ROM $04FD: FE 06
+        JP M,$0511  ; ROM $04FF: FA 11 05
+        LD (HL),A  ; ROM $0502: 77
+        LD B,A  ; ROM $0503: 47
+        LD HL,$2003  ; ROM $0504: 21 03 20
+        LD A,(HL)  ; ROM $0507: 7E
+        LD (HL),$11  ; ROM $0508: 36 11
+        AND A  ; ROM $050A: A7
+        JP Z,$0510  ; ROM $050B: CA 10 05
+        LD (HL),$02  ; ROM $050E: 36 02
+NATIVE_0510:
+        LD A,B  ; ROM $0510: 78
+NATIVE_0511:
+        LD HL,$0FA4  ; ROM $0511: 21 A4 0F
+        JP $05FB  ; ROM $0514: C3 FB 05
+NATIVE_0517:
+        RET Z  ; ROM $0517: C8
+        LD HL,$2087  ; ROM $0518: 21 87 20
+        LD A,(HL)  ; ROM $051B: 7E
+        AND $80  ; ROM $051C: E6 80
+        JP Z,$0528  ; ROM $051E: CA 28 05
+        LD HL,$2099  ; ROM $0521: 21 99 20
+        LD A,(HL)  ; ROM $0524: 7E
+        AND $80  ; ROM $0525: E6 80
+        RET NZ  ; ROM $0527: C0
+NATIVE_0528:
+        LD DE,$2013  ; ROM $0528: 11 13 20
+        LD A,(DE)  ; ROM $052B: 1A
+        AND A  ; ROM $052C: A7
+        RET NZ  ; ROM $052D: C0
+        PUSH HL  ; ROM $052E: E5
+        EX DE,HL  ; ROM $052F: EB
+        LD DE,$3EB8  ; ROM $0530: 11 B8 3E
+        LD BC,$2011  ; ROM $0533: 01 11 20
+        CALL $04FA  ; ROM $0536: CD FA 04
+        LD A,$D2  ; ROM $0539: 3E D2
+        OUT ($01),A  ; ROM $053B: D3 01
+        LD DE,$203F  ; ROM $053D: 11 3F 20
+        LD BC,$F6F8  ; ROM $0540: 01 F8 F6
+        LD A,($201B)  ; ROM $0543: 3A 1B 20
+        JP $04DF  ; ROM $0546: C3 DF 04
+NATIVE_0549:
+        RET Z  ; ROM $0549: C8
+        LD A,$04  ; ROM $054A: 3E 04
+        LD ($2014),A  ; ROM $054C: 32 14 20
+        OUT ($01),A  ; ROM $054F: D3 01
+        LD HL,$2007  ; ROM $0551: 21 07 20
+        INC (HL)  ; ROM $0554: 34
+        LD A,($2006)  ; ROM $0555: 3A 06 20
+        LD C,A  ; ROM $0558: 4F
+        AND $03  ; ROM $0559: E6 03
+        CP (HL)  ; ROM $055B: BE
+        RET NC  ; ROM $055C: D0
+        LD (HL),$00  ; ROM $055D: 36 00
+        LD A,C  ; ROM $055F: 79
+        RRA  ; ROM $0560: 1F
+        RRA  ; ROM $0561: 1F
+        AND $03  ; ROM $0562: E6 03
+        INC A  ; ROM $0564: 3C
+        LD HL,$2008  ; ROM $0565: 21 08 20
+        ADD A,(HL)  ; ROM $0568: 86
+        AND $07  ; ROM $0569: E6 07
+        LD (HL),A  ; ROM $056B: 77
+NATIVE_056C:
+        RET Z  ; ROM $056C: C8
+        LD A,($2004)  ; ROM $056D: 3A 04 20
+        AND A  ; ROM $0570: A7
+        RET NZ  ; ROM $0571: C0
+        LD A,($2008)  ; ROM $0572: 3A 08 20
+        AND A  ; ROM $0575: A7
+        RET Z  ; ROM $0576: C8
+        DEC A  ; ROM $0577: 3D
+        LD ($2008),A  ; ROM $0578: 32 08 20
+        LD B,$60  ; ROM $057B: 06 60
+        LD A,($2006)  ; ROM $057D: 3A 06 20
+        AND $30  ; ROM $0580: E6 30
+        JP Z,$0590  ; ROM $0582: CA 90 05
+NATIVE_0585:
+        LD C,A  ; ROM $0585: 4F
+        LD A,B  ; ROM $0586: 78
+        ADD A,$10  ; ROM $0587: C6 10
+        LD B,A  ; ROM $0589: 47
+        LD A,C  ; ROM $058A: 79
+        SUB $10  ; ROM $058B: D6 10
+        JP NZ,$0585  ; ROM $058D: C2 85 05
+NATIVE_0590:
+        LD A,B  ; ROM $0590: 78
+        LD ($2004),A  ; ROM $0591: 32 04 20
+        LD HL,$20C6  ; ROM $0594: 21 C6 20
+        DEC (HL)  ; ROM $0597: 35
+        LD HL,$2002  ; ROM $0598: 21 02 20
+        XOR A  ; ROM $059B: AF
+        LD (HL),A  ; ROM $059C: 77
+        INC HL  ; ROM $059D: 23
+        LD (HL),A  ; ROM $059E: 77
+        INC HL  ; ROM $059F: 23
+        INC HL  ; ROM $05A0: 23
+        LD (HL),A  ; ROM $05A1: 77
+        RET  ; ROM $05A2: C9
+NATIVE_WORD_13_UPDATE_SCORE_TEXT:
 NATIVE_05A3:
         XOR A  ; ROM $05A3: AF
         LD ($2003),A  ; ROM $05A4: 32 03 20
@@ -800,6 +1027,7 @@ NATIVE_05D6:
         LD HL,$201E  ; ROM $05E0: 21 1E 20
         LD DE,$2405  ; ROM $05E3: 11 05 24
         JP $05FB  ; ROM $05E6: C3 FB 05
+NATIVE_WORD_01_DRAW_FORMATTED_DATA:
 NATIVE_05E9:
         LD HL,($2000)  ; ROM $05E9: 2A 00 20
         LD A,(HL)  ; ROM $05EC: 7E
@@ -864,6 +1092,7 @@ NATIVE_062A:
         DEC A  ; ROM $0638: 3D
         JP NZ,$05FB  ; ROM $0639: C2 FB 05
         RET  ; ROM $063C: C9
+NATIVE_WORD_02_SET_RAM_2003:
 NATIVE_063D:
         LD HL,($2000)  ; ROM $063D: 2A 00 20
         LD A,(HL)  ; ROM $0640: 7E
@@ -871,6 +1100,7 @@ NATIVE_063D:
         LD ($2000),HL  ; ROM $0642: 22 00 20
         LD ($2003),A  ; ROM $0645: 32 03 20
         RET  ; ROM $0648: C9
+NATIVE_WORD_03_SET_RAM_2015:
 NATIVE_0649:
         LD HL,($2000)  ; ROM $0649: 2A 00 20
         LD A,(HL)  ; ROM $064C: 7E
@@ -878,6 +1108,7 @@ NATIVE_0649:
         LD ($2000),HL  ; ROM $064E: 22 00 20
         LD ($2015),A  ; ROM $0651: 32 15 20
         RET  ; ROM $0654: C9
+NATIVE_WORD_04_CLEAR_DISPLAY:
 NATIVE_0655:
         DI  ; ROM $0655: F3
         POP HL  ; ROM $0656: E1
@@ -895,6 +1126,7 @@ NATIVE_0662:
         LD SP,$2400  ; ROM $066B: 31 00 24
         EI  ; ROM $066E: FB
         JP (HL)  ; ROM $066F: E9
+NATIVE_WORD_07_CLEAR_OBJECT_FLAGS:
 NATIVE_0670:
         LD HL,($2000)  ; ROM $0670: 2A 00 20
         LD E,(HL)  ; ROM $0673: 5E
@@ -909,6 +1141,7 @@ NATIVE_0670:
         XOR A  ; ROM $067F: AF
         LD (DE),A  ; ROM $0680: 12
         RET  ; ROM $0681: C9
+NATIVE_WORD_09_BRANCH_SCRIPT:
 NATIVE_0682:
         LD HL,($2000)  ; ROM $0682: 2A 00 20
         LD E,(HL)  ; ROM $0685: 5E
@@ -917,6 +1150,7 @@ NATIVE_0682:
         EX DE,HL  ; ROM $0688: EB
         LD ($2000),HL  ; ROM $0689: 22 00 20
         RET  ; ROM $068C: C9
+NATIVE_WORD_05_COPY_INLINE_15:
 NATIVE_068D:
         LD HL,($2000)  ; ROM $068D: 2A 00 20
         LD E,(HL)  ; ROM $0690: 5E
@@ -927,6 +1161,7 @@ NATIVE_068D:
         CALL $0372  ; ROM $0696: CD 72 03
         LD ($2000),HL  ; ROM $0699: 22 00 20
         RET  ; ROM $069C: C9
+NATIVE_WORD_06_COPY_INLINE_9:
 NATIVE_069D:
         LD HL,($2000)  ; ROM $069D: 2A 00 20
         LD E,(HL)  ; ROM $06A0: 5E
@@ -937,6 +1172,7 @@ NATIVE_069D:
         CALL $0372  ; ROM $06A6: CD 72 03
         LD ($2000),HL  ; ROM $06A9: 22 00 20
         RET  ; ROM $06AC: C9
+NATIVE_WORD_08_TOGGLE_OBJECT_FLAGS:
 NATIVE_06AD:
         LD HL,($2000)  ; ROM $06AD: 2A 00 20
         LD E,(HL)  ; ROM $06B0: 5E
@@ -948,6 +1184,7 @@ NATIVE_06AD:
         XOR $60  ; ROM $06B8: EE 60
         LD (DE),A  ; ROM $06BA: 12
         RET  ; ROM $06BB: C9
+NATIVE_WORD_0A_GAME_DISPLAY:
 NATIVE_06BC:
         LD HL,$0F0E  ; ROM $06BC: 21 0E 0F
         XOR A  ; ROM $06BF: AF
@@ -1019,6 +1256,7 @@ NATIVE_072D:
         POP AF  ; ROM $0735: F1
         POP HL  ; ROM $0736: E1
         RET  ; ROM $0737: C9
+NATIVE_WORD_0C_BCD_INCREMENT_INIT:
 NATIVE_0738:
         LD HL,($2000)  ; ROM $0738: 2A 00 20
         LD E,(HL)  ; ROM $073B: 5E
@@ -1031,6 +1269,7 @@ NATIVE_0738:
         DAA  ; ROM $0744: 27
         LD (DE),A  ; ROM $0745: 12
         CALL $05A3  ; ROM $0746: CD A3 05
+NATIVE_WORD_0B_INIT_OBJECT:
 NATIVE_0749:
         LD HL,($2000)  ; ROM $0749: 2A 00 20
         LD E,(HL)  ; ROM $074C: 5E
@@ -1070,6 +1309,7 @@ NATIVE_0749:
         INC HL  ; ROM $0772: 23
         LD (HL),A  ; ROM $0773: 77
         RET  ; ROM $0774: C9
+NATIVE_WORD_0D_SET_OUTPUT_AND_RAM:
 NATIVE_0775:
         LD HL,($2000)  ; ROM $0775: 2A 00 20
         LD A,(HL)  ; ROM $0778: 7E
@@ -1079,7 +1319,9 @@ NATIVE_0775:
         INC HL  ; ROM $077D: 23
         LD ($2000),HL  ; ROM $077E: 22 00 20
         LD ($2014),A  ; ROM $0781: 32 14 20
+NATIVE_0784:
         RET  ; ROM $0784: C9
+NATIVE_WORD_0E_FILL_RECTANGLE:
 NATIVE_0785:
         LD HL,($2000)  ; ROM $0785: 2A 00 20
         LD A,($201D)  ; ROM $0788: 3A 1D 20
@@ -1107,6 +1349,7 @@ NATIVE_079C:
         DEC D  ; ROM $07A6: 15
         JP NZ,$079A  ; ROM $07A7: C2 9A 07
         RET  ; ROM $07AA: C9
+NATIVE_WORD_0F_EXPAND_GRAPHICS:
 NATIVE_07AB:
         LD HL,$2100  ; ROM $07AB: 21 00 21
         LD DE,$0BC4  ; ROM $07AE: 11 C4 0B
@@ -1158,9 +1401,11 @@ NATIVE_07CC:
         DEC B  ; ROM $07E2: 05
         JP NZ,$07BD  ; ROM $07E3: C2 BD 07
         JP $07B1  ; ROM $07E6: C3 B1 07
+NATIVE_WORD_11_DRAW_STATUS_A:
 NATIVE_07E9:
         LD HL,$203F  ; ROM $07E9: 21 3F 20
         JP $07F2  ; ROM $07EC: C3 F2 07
+NATIVE_WORD_12_DRAW_STATUS_B:
 NATIVE_07EF:
         LD HL,$202C  ; ROM $07EF: 21 2C 20
 NATIVE_07F2:
@@ -1180,6 +1425,7 @@ NATIVE_07F2:
         DB $CE,$0F ; ROM $0800 unclassified
         LD A,$07  ; ROM $0802: 3E 07
         JP $05FB  ; ROM $0804: C3 FB 05
+NATIVE_WORD_10_BRANCH_IF_STATE:
 NATIVE_0807:
         LD A,($2008)  ; ROM $0807: 3A 08 20
         AND A  ; ROM $080A: A7
@@ -1187,6 +1433,7 @@ NATIVE_0807:
         LD HL,$0882  ; ROM $080C: 21 82 08
         LD ($2000),HL  ; ROM $080F: 22 00 20
         RET  ; ROM $0812: C9
+NATIVE_WORD_00_WAIT_REPEAT:
 NATIVE_0813:
         LD HL,$20C5  ; ROM $0813: 21 C5 20
         INC (HL)  ; ROM $0816: 34
@@ -1196,128 +1443,422 @@ NATIVE_0813:
         DEC HL  ; ROM $081C: 2B
         LD ($2000),HL  ; ROM $081D: 22 00 20
         RET  ; ROM $0820: C9
-        DB $04,$13,$01,$0C,$61,$0F,$0A,$24,$10,$0F,$03,$5A ; ROM $0821 unclassified
-        DB $00,$01,$29,$6D,$0F,$00,$26,$03,$5A,$00,$01,$0B ; ROM $082D unclassified
-        DB $99,$0F,$14,$3D,$05,$2A,$20,$C3,$01,$00,$00,$40 ; ROM $0839 unclassified
-        DB $00,$66,$0B,$AA,$8B,$0D,$4A,$0D,$8B,$0D,$03,$5A ; ROM $0845 unclassified
-        DB $00,$06,$63,$20,$C6,$03,$54,$00,$FE,$02,$78,$00 ; ROM $0851 unclassified
-        DB $C8,$03,$4B,$00,$01,$0B,$A4,$0F,$14,$3D,$03,$3C ; ROM $085D unclassified
-        DB $00,$05,$3D,$20,$C2,$FF,$40,$00,$60,$00,$66,$27 ; ROM $0869 unclassified
-        DB $A0,$C7,$22,$00,$21,$C7,$22,$03,$40,$00,$09,$21 ; ROM $0875 unclassified
-        DB $08,$01,$27,$D5,$0F,$01,$2A,$05,$2A,$20,$C3,$02 ; ROM $0881 unclassified
-        DB $00,$00,$40,$00,$A0,$0B,$AA,$8B,$0D,$4A,$0D,$8B ; ROM $088D unclassified
-        DB $0D,$00,$04,$13,$0F,$0A,$01,$09,$AF,$0F,$0C,$2E ; ROM $0899 unclassified
-        DB $01,$0C,$B8,$0F,$A2,$3E,$05,$2A,$20,$C0,$01,$00 ; ROM $08A5 unclassified
-        DB $00,$48,$00,$66,$13,$9A,$8B,$0D,$87,$0C,$8B,$0D ; ROM $08B1 unclassified
-        DB $05,$3D,$20,$C0,$FF,$E7,$A0,$48,$00,$66,$13,$9A ; ROM $08BD unclassified
-        DB $C7,$22,$C3,$21,$C7,$22,$06,$63,$20,$06,$00,$00 ; ROM $08C9 unclassified
-        DB $04,$F8,$00,$00,$0A,$C8,$06,$75,$20,$06,$00,$00 ; ROM $08D5 unclassified
-        DB $04,$F8,$00,$00,$0A,$C8,$06,$87,$20,$06,$00,$00 ; ROM $08E1 unclassified
-        DB $04,$F8,$00,$00,$0A,$C8,$06,$99,$20,$06,$00,$00 ; ROM $08ED unclassified
-        DB $04,$F8,$00,$00,$0A,$C8,$03,$1E,$00,$01,$09,$C5 ; ROM $08F9 unclassified
-        DB $0F,$0C,$2E,$03,$0A,$07,$2A,$20,$07,$3D,$20,$00 ; ROM $0905 unclassified
-        DB $01,$05,$A4,$0F,$0E,$2E,$14,$09,$9B,$08 ; ROM $0911 unclassified
-NATIVE_091B:
-        INC C  ; ROM $091B: 0C
-        DEC B  ; ROM $091C: 05
-        DB $20,$2A,$20,$20,$FD,$0D,$0D,$C2,$02,$03,$0F,$00 ; ROM $091D unclassified
-        DB $0B,$2A,$20,$10,$5F,$0E,$12,$03,$2D,$00,$09,$9B ; ROM $0929 unclassified
-        DB $08 ; ROM $0935 unclassified
-NATIVE_0936:
-        LD C,$60  ; ROM $0936: 0E 60
-        DB $10,$09,$5D,$09 ; ROM $0938 unclassified
-NATIVE_093C:
-        LD C,$60  ; ROM $093C: 0E 60
-        LD D,B  ; ROM $093E: 50
-        ADD HL,BC  ; ROM $093F: 09
-        LD E,L  ; ROM $0940: 5D
-        ADD HL,BC  ; ROM $0941: 09
-NATIVE_0942:
-        LD C,$60  ; ROM $0942: 0E 60
-        SUB B  ; ROM $0944: 90
-        ADD HL,BC  ; ROM $0945: 09
-        LD E,L  ; ROM $0946: 5D
-        ADD HL,BC  ; ROM $0947: 09
-NATIVE_0948:
-        LD C,$78  ; ROM $0948: 0E 78
-        DB $10,$09,$5D,$09 ; ROM $094A unclassified
-NATIVE_094E:
-        LD C,$90  ; ROM $094E: 0E 90
-        DB $10,$09,$5D,$09 ; ROM $0950 unclassified
-NATIVE_0954:
-        LD C,$90  ; ROM $0954: 0E 90
-        LD D,B  ; ROM $0956: 50
-        ADD HL,BC  ; ROM $0957: 09
-        LD E,L  ; ROM $0958: 5D
-        ADD HL,BC  ; ROM $0959: 09
-NATIVE_095A:
-        LD C,$90  ; ROM $095A: 0E 90
-        SUB B  ; ROM $095C: 90
-        DEC C  ; ROM $095D: 0D
-        OR D  ; ROM $095E: B2
-        LD (BC),A  ; ROM $095F: 02
-        ADD HL,BC  ; ROM $0960: 09
-        RLA  ; ROM $0961: 17
-        ADD HL,BC  ; ROM $0962: 09
-NATIVE_0963:
-        INC C  ; ROM $0963: 0C
-        LD (BC),A  ; ROM $0964: 02
-        DB $20,$3D,$20,$D0,$39,$23,$0D,$B2,$02,$03,$0A,$00 ; ROM $0965 unclassified
-        DB $0B,$3D,$20,$D0,$9B,$23,$11,$03,$2D,$00,$09,$9B ; ROM $0971 unclassified
-        DB $08,$61,$04,$73,$04,$78,$04,$87,$04,$2A,$04,$2A ; ROM $097D unclassified
-        DB $04,$2A,$04,$B0,$04,$8C,$04,$99,$04,$9E,$04,$AB ; ROM $0989 unclassified
-        DB $04,$3E,$04,$3E,$04,$3E,$04,$17,$05,$84,$07,$84 ; ROM $0995 unclassified
-        DB $07,$84,$07,$84,$07,$84,$07,$84,$07,$49,$05,$6C ; ROM $09A1 unclassified
-        DB $05,$13,$08,$E9,$05,$3D,$06,$49,$06,$55,$06,$8D ; ROM $09AD unclassified
-        DB $06,$9D,$06,$70,$06,$AD,$06,$82,$06,$BC,$06,$49 ; ROM $09B9 unclassified
-        DB $07,$38,$07,$75,$07,$85,$07,$AB,$07,$07,$08,$E9 ; ROM $09C5 unclassified
-        DB $07,$EF,$07,$A3,$05,$C9,$03,$1B,$09,$36,$09,$3C ; ROM $09D1 unclassified
-        DB $09,$42,$09,$48,$09,$4E,$09,$54,$09,$5A,$09,$63 ; ROM $09DD unclassified
-        DB $09,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; ROM $09E9 unclassified
-        DB $00,$00,$00,$3C,$7E,$66,$66,$66,$66,$66,$66,$7E ; ROM $09F5 unclassified
-        DB $3C,$18,$1C,$18,$18,$18,$18,$18,$18,$3C,$3C,$3C ; ROM $0A01 unclassified
-        DB $7E,$66,$60,$7C,$3E,$06,$06,$7E,$7E,$3C,$7E,$66 ; ROM $0A0D unclassified
-        DB $60,$38,$78,$60,$66,$7E,$3C,$66,$66,$66,$66,$7E ; ROM $0A19 unclassified
-        DB $7E,$60,$60,$60,$60,$3E,$3E,$06,$06,$3E,$7E,$60 ; ROM $0A25 unclassified
-        DB $66,$7E,$3C,$3C,$3E,$06,$06,$3E,$7E,$66,$66,$7E ; ROM $0A31 unclassified
-        DB $3C,$7E,$7E,$60,$70,$30,$38,$18,$1C,$0C,$0C,$3C ; ROM $0A3D unclassified
-        DB $7E,$66,$66,$3C,$7E,$66,$66,$7E,$3C,$3C,$7E,$66 ; ROM $0A49 unclassified
-        DB $66,$7E,$7C,$60,$60,$7C,$3C,$10,$38,$38,$38,$38 ; ROM $0A55 unclassified
-        DB $38,$38,$38,$38,$7C,$C0,$C0,$C0,$C0,$C0,$C0,$00 ; ROM $0A61 unclassified
-        DB $00,$C0,$C0,$00,$00,$00,$00,$00,$00,$00,$00,$C0 ; ROM $0A6D unclassified
-        DB $C0,$00,$00,$00,$20,$40,$FF,$40,$20,$00,$00,$F0 ; ROM $0A79 unclassified
-        DB $C0,$A0,$90,$08,$04,$02,$01,$00,$00,$78,$FC,$CC ; ROM $0A85 unclassified
-        DB $E0,$70,$30,$30,$00,$30,$30,$00,$00,$00,$00,$00 ; ROM $0A91 unclassified
-        DB $00,$00,$00,$00,$00,$18,$3C,$7E,$66,$66,$66,$7E ; ROM $0A9D unclassified
-        DB $7E,$66,$66,$3E,$7E,$66,$66,$3E,$7E,$66,$66,$7E ; ROM $0AA9 unclassified
-        DB $3E,$3C,$7E,$66,$06,$06,$06,$06,$66,$7E,$3C,$3E ; ROM $0AB5 unclassified
-        DB $7E,$66,$66,$66,$66,$66,$66,$7E,$3E,$7E,$7E,$06 ; ROM $0AC1 unclassified
-        DB $06,$3E,$3E,$06,$06,$7E,$7E,$7E,$7E,$06,$06,$3E ; ROM $0ACD unclassified
-        DB $3E,$06,$06,$06,$06,$3C,$7E,$66,$06,$06,$76,$76 ; ROM $0AD9 unclassified
-        DB $66,$7E,$3C,$66,$66,$66,$66,$7E,$7E,$66,$66,$66 ; ROM $0AE5 unclassified
-        DB $66,$3C,$3C,$18,$18,$18,$18,$18,$18,$3C,$3C,$06 ; ROM $0AF1 unclassified
-        DB $06,$06,$06,$06,$06,$06,$06,$7E,$7E,$C3,$C3,$E7 ; ROM $0AFD unclassified
-        DB $E7,$FF,$FF,$DB,$C3,$C3,$C3,$66,$66,$6E,$6E,$7E ; ROM $0B09 unclassified
-        DB $7E,$76,$76,$66,$66,$3C,$7E,$66,$66,$66,$66,$66 ; ROM $0B15 unclassified
-        DB $66,$7E,$3C,$3E,$7E,$66,$66,$7E,$3E,$06,$06,$06 ; ROM $0B21 unclassified
-        DB $06,$3E,$7E,$66,$66,$7E,$3E,$76,$66,$66,$66,$3C ; ROM $0B2D unclassified
-        DB $7E,$66,$06,$3E,$7C,$60,$66,$7E,$3C,$7E,$7E,$18 ; ROM $0B39 unclassified
-        DB $18,$18,$18,$18,$18,$18,$18,$66,$66,$66,$66,$66 ; ROM $0B45 unclassified
-        DB $66,$66,$66,$7E,$3C,$66,$66,$66,$66,$66,$7E,$3C ; ROM $0B51 unclassified
-        DB $3C,$18,$18,$C3,$C3,$C3,$DB,$FF,$FF,$E7,$E7,$C3 ; ROM $0B5D unclassified
-        DB $C3,$66,$66,$7E,$3C,$18,$18,$18,$18,$18,$18,$01 ; ROM $0B69 unclassified
-        DB $16,$10,$18,$18,$18,$18,$58,$78,$1B,$1A,$1E,$1E ; ROM $0B75 unclassified
-        DB $98,$98,$78,$38,$18,$18,$18,$18,$18,$18,$18,$02 ; ROM $0B81 unclassified
-        DB $1B,$00,$01,$00,$03,$80,$03,$C0,$07,$C0,$07,$60 ; ROM $0B8D unclassified
-        DB $1D,$00,$31,$80,$07,$E0,$1F,$F0,$3D,$38,$39,$04 ; ROM $0B99 unclassified
-        DB $41,$80,$03,$C0,$07,$E0,$0F,$F8,$1F,$3E,$29,$07 ; ROM $0BA5 unclassified
-        DB $E9,$00,$01,$00,$09,$00,$05,$00,$05,$08,$1F,$38 ; ROM $0BB1 unclassified
-        DB $1B,$38,$29,$CC,$37,$FE,$5D,$03,$15,$00,$05,$00 ; ROM $0BBD unclassified
-        DB $80,$0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00 ; ROM $0BC9 unclassified
-        DB $F8,$FF,$00,$C0,$17,$80,$C0,$3F,$50,$C0,$7F,$60 ; ROM $0BD5 unclassified
-        DB $C0,$1F,$30,$80,$1F,$38,$00,$07,$1C,$80,$0F,$0E ; ROM $0BE1 unclassified
-        DB $F8,$FF,$07,$FC,$FF,$03,$CE,$FF,$01,$C6,$1F,$00 ; ROM $0BED unclassified
-        DB $C6,$1F,$00,$C6,$1F,$00,$C6 ; ROM $0BF9 unclassified
+CMD_0821_CLEAR_VIDEO:
+        DB $04 ; word CLEAR_VIDEO ($04)
+CMD_0822_FORMAT_SCORE:
+        DB $13 ; word FORMAT_SCORE ($13)
+CMD_0823_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $0C ; format
+        DW $0F61 ; source
+        DW $240A ; destination
+CMD_0829_BRANCH_IF_STATE:
+        DB $10 ; word BRANCH_IF_STATE ($10)
+CMD_082A_EXPAND_GLYPHS:
+        DB $0F ; word EXPAND_GLYPHS ($0F)
+CMD_082B_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $5A ; state
+CMD_082D_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_082E_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $29 ; format
+        DW $0F6D ; source
+        DW $2600 ; destination
+CMD_0834_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $5A ; state
+CMD_0836_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0837_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $0B ; format
+        DW $0F99 ; source
+        DW $3D14 ; destination
+CMD_083D_COPY15_TO_RAM:
+        DB $05 ; word COPY15_TO_RAM ($05)
+        DW $202A ; destination
+        DB $C3,$01,$00,$00,$40,$00,$66,$0B,$AA,$8B,$0D,$4A,$0D,$8B,$0D ; inline RAM data
+CMD_084F_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $5A ; state
+CMD_0851_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0852_COPY9_TO_RAM:
+        DB $06 ; word COPY9_TO_RAM ($06)
+        DW $2063 ; destination
+        DB $C6,$03,$54,$00,$FE,$02,$78,$00,$C8 ; inline RAM data
+CMD_085E_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $4B ; state
+CMD_0860_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0861_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $0B ; format
+        DW $0FA4 ; source
+        DW $3D14 ; destination
+CMD_0867_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $3C ; state
+CMD_0869_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_086A_COPY15_TO_RAM:
+        DB $05 ; word COPY15_TO_RAM ($05)
+        DW $203D ; destination
+        DB $C2,$FF,$40,$00,$60,$00,$66,$27,$A0,$C7,$22,$00,$21,$C7,$22 ; inline RAM data
+CMD_087C_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $40 ; state
+CMD_087E_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_087F_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $0821 ; RAM address / target / packed dimension
+CMD_0882_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $27 ; format
+        DW $0FD5 ; source
+        DW $2A01 ; destination
+CMD_0888_COPY15_TO_RAM:
+        DB $05 ; word COPY15_TO_RAM ($05)
+        DW $202A ; destination
+        DB $C3,$02,$00,$00,$40,$00,$A0,$0B,$AA,$8B,$0D,$4A,$0D,$8B,$0D ; inline RAM data
+CMD_089A_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_089B_CLEAR_VIDEO:
+        DB $04 ; word CLEAR_VIDEO ($04)
+CMD_089C_FORMAT_SCORE:
+        DB $13 ; word FORMAT_SCORE ($13)
+CMD_089D_EXPAND_GLYPHS:
+        DB $0F ; word EXPAND_GLYPHS ($0F)
+CMD_089E_DRAW_GAME_STATUS:
+        DB $0A ; word DRAW_GAME_STATUS ($0A)
+CMD_089F_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $09 ; format
+        DW $0FAF ; source
+        DW $2E0C ; destination
+CMD_08A5_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $0C ; format
+        DW $0FB8 ; source
+        DW $3EA2 ; destination
+CMD_08AB_COPY15_TO_RAM:
+        DB $05 ; word COPY15_TO_RAM ($05)
+        DW $202A ; destination
+        DB $C0,$01,$00,$00,$48,$00,$66,$13,$9A,$8B,$0D,$87,$0C,$8B,$0D ; inline RAM data
+CMD_08BD_COPY15_TO_RAM:
+        DB $05 ; word COPY15_TO_RAM ($05)
+        DW $203D ; destination
+        DB $C0,$FF,$E7,$A0,$48,$00,$66,$13,$9A,$C7,$22,$C3,$21,$C7,$22 ; inline RAM data
+CMD_08CF_COPY9_TO_RAM:
+        DB $06 ; word COPY9_TO_RAM ($06)
+        DW $2063 ; destination
+        DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
+CMD_08DB_COPY9_TO_RAM:
+        DB $06 ; word COPY9_TO_RAM ($06)
+        DW $2075 ; destination
+        DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
+CMD_08E7_COPY9_TO_RAM:
+        DB $06 ; word COPY9_TO_RAM ($06)
+        DW $2087 ; destination
+        DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
+CMD_08F3_COPY9_TO_RAM:
+        DB $06 ; word COPY9_TO_RAM ($06)
+        DW $2099 ; destination
+        DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
+CMD_08FF_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $1E ; state
+CMD_0901_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0902_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $09 ; format
+        DW $0FC5 ; source
+        DW $2E0C ; destination
+CMD_0908_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $0A ; state
+CMD_090A_CLEAR_OBJECT_BITS:
+        DB $07 ; word CLEAR_OBJECT_BITS ($07)
+        DW $202A ; RAM address / target / packed dimension
+CMD_090D_CLEAR_OBJECT_BITS:
+        DB $07 ; word CLEAR_OBJECT_BITS ($07)
+        DW $203D ; RAM address / target / packed dimension
+CMD_0910_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0911_DRAW_FORMATTED:
+        DB $01 ; word DRAW_FORMATTED ($01)
+        DB $05 ; format
+        DW $0FA4 ; source
+        DW $2E0E ; destination
+CMD_0917_READ_INPUT_EVENTS:
+        DB $14 ; word READ_INPUT_EVENTS ($14)
+CMD_0918_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $089B ; RAM address / target / packed dimension
+CMD_091B_BCD_INCREMENT_SETUP:
+        DB $0C ; word BCD_INCREMENT_SETUP ($0C)
+        DW $2005 ; BCD counter
+        DW $202A ; descriptor address
+        DB $20 ; flags
+        DW $0DFD ; link pointer
+CMD_0923_SET_OUTPUT_MODE:
+        DB $0D ; word SET_OUTPUT_MODE ($0D)
+        DB $C2 ; output
+        DB $02 ; state
+CMD_0926_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $0F ; state
+CMD_0928_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0929_SETUP_OBJECT:
+        DB $0B ; word SETUP_OBJECT ($0B)
+        DW $202A ; descriptor address
+        DB $10 ; flags
+        DW $0E5F ; link pointer
+CMD_092F_DRAW_STATUS_B:
+        DB $12 ; word DRAW_STATUS_B ($12)
+CMD_0930_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $2D ; state
+CMD_0932_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0933_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $089B ; RAM address / target / packed dimension
+CMD_0936_FILL_VIDEO_RECT:
+        DB $0E ; word FILL_VIDEO_RECT ($0E)
+        DW $1060 ; RAM address / target / packed dimension
+CMD_0939_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $095D ; RAM address / target / packed dimension
+CMD_093C_FILL_VIDEO_RECT:
+        DB $0E ; word FILL_VIDEO_RECT ($0E)
+        DW $5060 ; RAM address / target / packed dimension
+CMD_093F_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $095D ; RAM address / target / packed dimension
+CMD_0942_FILL_VIDEO_RECT:
+        DB $0E ; word FILL_VIDEO_RECT ($0E)
+        DW $9060 ; RAM address / target / packed dimension
+CMD_0945_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $095D ; RAM address / target / packed dimension
+CMD_0948_FILL_VIDEO_RECT:
+        DB $0E ; word FILL_VIDEO_RECT ($0E)
+        DW $1078 ; RAM address / target / packed dimension
+CMD_094B_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $095D ; RAM address / target / packed dimension
+CMD_094E_FILL_VIDEO_RECT:
+        DB $0E ; word FILL_VIDEO_RECT ($0E)
+        DW $1090 ; RAM address / target / packed dimension
+CMD_0951_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $095D ; RAM address / target / packed dimension
+CMD_0954_FILL_VIDEO_RECT:
+        DB $0E ; word FILL_VIDEO_RECT ($0E)
+        DW $5090 ; RAM address / target / packed dimension
+CMD_0957_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $095D ; RAM address / target / packed dimension
+CMD_095A_FILL_VIDEO_RECT:
+        DB $0E ; word FILL_VIDEO_RECT ($0E)
+        DW $9090 ; RAM address / target / packed dimension
+CMD_095D_SET_OUTPUT_MODE:
+        DB $0D ; word SET_OUTPUT_MODE ($0D)
+        DB $B2 ; output
+        DB $02 ; state
+CMD_0960_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $0917 ; RAM address / target / packed dimension
+CMD_0963_BCD_INCREMENT_SETUP:
+        DB $0C ; word BCD_INCREMENT_SETUP ($0C)
+        DW $2002 ; BCD counter
+        DW $203D ; descriptor address
+        DB $D0 ; flags
+        DW $2339 ; link pointer
+CMD_096B_SET_OUTPUT_MODE:
+        DB $0D ; word SET_OUTPUT_MODE ($0D)
+        DB $B2 ; output
+        DB $02 ; state
+CMD_096E_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $0A ; state
+CMD_0970_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_0971_SETUP_OBJECT:
+        DB $0B ; word SETUP_OBJECT ($0B)
+        DW $203D ; descriptor address
+        DB $D0 ; flags
+        DW $239B ; link pointer
+CMD_0977_DRAW_STATUS_A:
+        DB $11 ; word DRAW_STATUS_A ($11)
+CMD_0978_SET_DELAY:
+        DB $03 ; word SET_DELAY ($03)
+        DB $2D ; state
+CMD_097A_WAIT_REPEAT:
+        DB $00 ; word WAIT_REPEAT ($00)
+CMD_097B_SCRIPT_JUMP:
+        DB $09 ; word SCRIPT_JUMP ($09)
+        DW $089B ; RAM address / target / packed dimension
+ROM_NATIVE_EVENT_ACTION_00:
+        DW $0461 ; NATIVE_EVENT_ACTION pointer from ROM $097E
+ROM_NATIVE_EVENT_ACTION_01:
+        DW $0473 ; NATIVE_EVENT_ACTION pointer from ROM $0980
+ROM_NATIVE_EVENT_ACTION_02:
+        DW $0478 ; NATIVE_EVENT_ACTION pointer from ROM $0982
+ROM_NATIVE_EVENT_ACTION_03:
+        DW $0487 ; NATIVE_EVENT_ACTION pointer from ROM $0984
+ROM_NATIVE_EVENT_ACTION_04:
+        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $0986
+ROM_NATIVE_EVENT_ACTION_05:
+        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $0988
+ROM_NATIVE_EVENT_ACTION_06:
+        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $098A
+ROM_NATIVE_EVENT_ACTION_07:
+        DW $04B0 ; NATIVE_EVENT_ACTION pointer from ROM $098C
+ROM_NATIVE_EVENT_ACTION_08:
+        DW $048C ; NATIVE_EVENT_ACTION pointer from ROM $098E
+ROM_NATIVE_EVENT_ACTION_09:
+        DW $0499 ; NATIVE_EVENT_ACTION pointer from ROM $0990
+ROM_NATIVE_EVENT_ACTION_0A:
+        DW $049E ; NATIVE_EVENT_ACTION pointer from ROM $0992
+ROM_NATIVE_EVENT_ACTION_0B:
+        DW $04AB ; NATIVE_EVENT_ACTION pointer from ROM $0994
+ROM_NATIVE_EVENT_ACTION_0C:
+        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $0996
+ROM_NATIVE_EVENT_ACTION_0D:
+        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $0998
+ROM_NATIVE_EVENT_ACTION_0E:
+        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $099A
+ROM_NATIVE_EVENT_ACTION_0F:
+        DW $0517 ; NATIVE_EVENT_ACTION pointer from ROM $099C
+ROM_NATIVE_EVENT_ACTION_10:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $099E
+ROM_NATIVE_EVENT_ACTION_11:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A0
+ROM_NATIVE_EVENT_ACTION_12:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A2
+ROM_NATIVE_EVENT_ACTION_13:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A4
+ROM_NATIVE_EVENT_ACTION_14:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A6
+ROM_NATIVE_EVENT_ACTION_15:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A8
+ROM_NATIVE_EVENT_ACTION_16:
+        DW $0549 ; NATIVE_EVENT_ACTION pointer from ROM $09AA
+ROM_NATIVE_EVENT_ACTION_17:
+        DW $056C ; NATIVE_EVENT_ACTION pointer from ROM $09AC
+ROM_GAME_WORD_00:
+        DW $0813 ; GAME_WORD pointer from ROM $09AE
+ROM_GAME_WORD_01:
+        DW $05E9 ; GAME_WORD pointer from ROM $09B0
+ROM_GAME_WORD_02:
+        DW $063D ; GAME_WORD pointer from ROM $09B2
+ROM_GAME_WORD_03:
+        DW $0649 ; GAME_WORD pointer from ROM $09B4
+ROM_GAME_WORD_04:
+        DW $0655 ; GAME_WORD pointer from ROM $09B6
+ROM_GAME_WORD_05:
+        DW $068D ; GAME_WORD pointer from ROM $09B8
+ROM_GAME_WORD_06:
+        DW $069D ; GAME_WORD pointer from ROM $09BA
+ROM_GAME_WORD_07:
+        DW $0670 ; GAME_WORD pointer from ROM $09BC
+ROM_GAME_WORD_08:
+        DW $06AD ; GAME_WORD pointer from ROM $09BE
+ROM_GAME_WORD_09:
+        DW $0682 ; GAME_WORD pointer from ROM $09C0
+ROM_GAME_WORD_0A:
+        DW $06BC ; GAME_WORD pointer from ROM $09C2
+ROM_GAME_WORD_0B:
+        DW $0749 ; GAME_WORD pointer from ROM $09C4
+ROM_GAME_WORD_0C:
+        DW $0738 ; GAME_WORD pointer from ROM $09C6
+ROM_GAME_WORD_0D:
+        DW $0775 ; GAME_WORD pointer from ROM $09C8
+ROM_GAME_WORD_0E:
+        DW $0785 ; GAME_WORD pointer from ROM $09CA
+ROM_GAME_WORD_0F:
+        DW $07AB ; GAME_WORD pointer from ROM $09CC
+ROM_GAME_WORD_10:
+        DW $0807 ; GAME_WORD pointer from ROM $09CE
+ROM_GAME_WORD_11:
+        DW $07E9 ; GAME_WORD pointer from ROM $09D0
+ROM_GAME_WORD_12:
+        DW $07EF ; GAME_WORD pointer from ROM $09D2
+ROM_GAME_WORD_13:
+        DW $05A3 ; GAME_WORD pointer from ROM $09D4
+ROM_GAME_WORD_14:
+        DW $03C9 ; GAME_WORD pointer from ROM $09D6
+ROM_EVENT_SCRIPT_00:
+        DW $091B ; EVENT_SCRIPT pointer from ROM $09D8
+ROM_EVENT_SCRIPT_01:
+        DW $0936 ; EVENT_SCRIPT pointer from ROM $09DA
+ROM_EVENT_SCRIPT_02:
+        DW $093C ; EVENT_SCRIPT pointer from ROM $09DC
+ROM_EVENT_SCRIPT_03:
+        DW $0942 ; EVENT_SCRIPT pointer from ROM $09DE
+ROM_EVENT_SCRIPT_04:
+        DW $0948 ; EVENT_SCRIPT pointer from ROM $09E0
+ROM_EVENT_SCRIPT_05:
+        DW $094E ; EVENT_SCRIPT pointer from ROM $09E2
+ROM_EVENT_SCRIPT_06:
+        DW $0954 ; EVENT_SCRIPT pointer from ROM $09E4
+ROM_EVENT_SCRIPT_07:
+        DW $095A ; EVENT_SCRIPT pointer from ROM $09E6
+ROM_EVENT_SCRIPT_08:
+        DW $0963 ; EVENT_SCRIPT pointer from ROM $09E8
+        DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; ROM $09EA unclassified
+        DB $00,$00,$3C,$7E,$66,$66,$66,$66,$66,$66,$7E,$3C ; ROM $09F6 unclassified
+        DB $18,$1C,$18,$18,$18,$18,$18,$18,$3C,$3C,$3C,$7E ; ROM $0A02 unclassified
+        DB $66,$60,$7C,$3E,$06,$06,$7E,$7E,$3C,$7E,$66,$60 ; ROM $0A0E unclassified
+        DB $38,$78,$60,$66,$7E,$3C,$66,$66,$66,$66,$7E,$7E ; ROM $0A1A unclassified
+        DB $60,$60,$60,$60,$3E,$3E,$06,$06,$3E,$7E,$60,$66 ; ROM $0A26 unclassified
+        DB $7E,$3C,$3C,$3E,$06,$06,$3E,$7E,$66,$66,$7E,$3C ; ROM $0A32 unclassified
+        DB $7E,$7E,$60,$70,$30,$38,$18,$1C,$0C,$0C,$3C,$7E ; ROM $0A3E unclassified
+        DB $66,$66,$3C,$7E,$66,$66,$7E,$3C,$3C,$7E,$66,$66 ; ROM $0A4A unclassified
+        DB $7E,$7C,$60,$60,$7C,$3C,$10,$38,$38,$38,$38,$38 ; ROM $0A56 unclassified
+        DB $38,$38,$38,$7C,$C0,$C0,$C0,$C0,$C0,$C0,$00,$00 ; ROM $0A62 unclassified
+        DB $C0,$C0,$00,$00,$00,$00,$00,$00,$00,$00,$C0,$C0 ; ROM $0A6E unclassified
+        DB $00,$00,$00,$20,$40,$FF,$40,$20,$00,$00,$F0,$C0 ; ROM $0A7A unclassified
+        DB $A0,$90,$08,$04,$02,$01,$00,$00,$78,$FC,$CC,$E0 ; ROM $0A86 unclassified
+        DB $70,$30,$30,$00,$30,$30,$00,$00,$00,$00,$00,$00 ; ROM $0A92 unclassified
+        DB $00,$00,$00,$00,$18,$3C,$7E,$66,$66,$66,$7E,$7E ; ROM $0A9E unclassified
+        DB $66,$66,$3E,$7E,$66,$66,$3E,$7E,$66,$66,$7E,$3E ; ROM $0AAA unclassified
+        DB $3C,$7E,$66,$06,$06,$06,$06,$66,$7E,$3C,$3E,$7E ; ROM $0AB6 unclassified
+        DB $66,$66,$66,$66,$66,$66,$7E,$3E,$7E,$7E,$06,$06 ; ROM $0AC2 unclassified
+        DB $3E,$3E,$06,$06,$7E,$7E,$7E,$7E,$06,$06,$3E,$3E ; ROM $0ACE unclassified
+        DB $06,$06,$06,$06,$3C,$7E,$66,$06,$06,$76,$76,$66 ; ROM $0ADA unclassified
+        DB $7E,$3C,$66,$66,$66,$66,$7E,$7E,$66,$66,$66,$66 ; ROM $0AE6 unclassified
+        DB $3C,$3C,$18,$18,$18,$18,$18,$18,$3C,$3C,$06,$06 ; ROM $0AF2 unclassified
+        DB $06,$06,$06,$06,$06,$06,$7E,$7E,$C3,$C3,$E7,$E7 ; ROM $0AFE unclassified
+        DB $FF,$FF,$DB,$C3,$C3,$C3,$66,$66,$6E,$6E,$7E,$7E ; ROM $0B0A unclassified
+        DB $76,$76,$66,$66,$3C,$7E,$66,$66,$66,$66,$66,$66 ; ROM $0B16 unclassified
+        DB $7E,$3C,$3E,$7E,$66,$66,$7E,$3E,$06,$06,$06,$06 ; ROM $0B22 unclassified
+        DB $3E,$7E,$66,$66,$7E,$3E,$76,$66,$66,$66,$3C,$7E ; ROM $0B2E unclassified
+        DB $66,$06,$3E,$7C,$60,$66,$7E,$3C,$7E,$7E,$18,$18 ; ROM $0B3A unclassified
+        DB $18,$18,$18,$18,$18,$18,$66,$66,$66,$66,$66,$66 ; ROM $0B46 unclassified
+        DB $66,$66,$7E,$3C,$66,$66,$66,$66,$66,$7E,$3C,$3C ; ROM $0B52 unclassified
+        DB $18,$18,$C3,$C3,$C3,$DB,$FF,$FF,$E7,$E7,$C3,$C3 ; ROM $0B5E unclassified
+        DB $66,$66,$7E,$3C,$18,$18,$18,$18,$18,$18,$01,$16 ; ROM $0B6A unclassified
+        DB $10,$18,$18,$18,$18,$58,$78,$1B,$1A,$1E,$1E,$98 ; ROM $0B76 unclassified
+        DB $98,$78,$38,$18,$18,$18,$18,$18,$18,$18,$02,$1B ; ROM $0B82 unclassified
+        DB $00,$01,$00,$03,$80,$03,$C0,$07,$C0,$07,$60,$1D ; ROM $0B8E unclassified
+        DB $00,$31,$80,$07,$E0,$1F,$F0,$3D,$38,$39,$04,$41 ; ROM $0B9A unclassified
+        DB $80,$03,$C0,$07,$E0,$0F,$F8,$1F,$3E,$29,$07,$E9 ; ROM $0BA6 unclassified
+        DB $00,$01,$00,$09,$00,$05,$00,$05,$08,$1F,$38,$1B ; ROM $0BB2 unclassified
+        DB $38,$29,$CC,$37,$FE,$5D,$03,$15,$00,$05,$00,$80 ; ROM $0BBE unclassified
+        DB $0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8 ; ROM $0BCA unclassified
+        DB $FF,$00,$C0,$17,$80,$C0,$3F,$50,$C0,$7F,$60,$C0 ; ROM $0BD6 unclassified
+        DB $1F,$30,$80,$1F,$38,$00,$07,$1C,$80,$0F,$0E,$F8 ; ROM $0BE2 unclassified
+        DB $FF,$07,$FC,$FF,$03,$CE,$FF,$01,$C6,$1F,$00,$C6 ; ROM $0BEE unclassified
+        DB $1F,$00,$C6,$1F,$00,$C6 ; ROM $0BFA unclassified
 
         ORG $0C00
 ; Device 7609e.bin, SHA1 de3f2e6841122bbe6e2fda5b87d37842c072289a

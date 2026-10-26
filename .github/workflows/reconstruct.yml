@@ -1,7 +1,7 @@
 name: ROM-exact Intel 8080 reconstruction
 on:
   push:
-    branches: [codex/early-8080-re-baseline]
+    branches: [codex/8080-word-semantics-pass2]
   workflow_dispatch:
 permissions:
   contents: write

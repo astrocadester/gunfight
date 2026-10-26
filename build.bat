@@ -4,6 +4,8 @@ cd /d "%~dp0"
 if not exist "src\zout" mkdir "src\zout"
 if not exist "roms\build" mkdir "roms\build"
 if not exist docs mkdir docs
+py -3 tools\audit_words.py
+if errorlevel 1 exit /b 1
 py -3 tools\recover_8080.py gunfight
 if errorlevel 1 exit /b 1
 py -3 tools\interpreter_lineage.py
