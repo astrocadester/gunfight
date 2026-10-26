@@ -1733,519 +1733,618 @@
 1706:	097B          	CMD_097B_SCRIPT_JUMP:
 1707:	097B  09      	        DB $09 ; word SCRIPT_JUMP ($09)
 1708:	097C  9B08    	        DW $089B ; RAM address / target / packed dimension
-1709:	097E  61047304	        DB $61,$04,$73,$04,$78,$04,$87,$04,$2A,$04,$2A,$04 ; ROM $097E unclassified
-	      78048704
-	      2A042A04
-1710:	098A  2A04B004	        DB $2A,$04,$B0,$04,$8C,$04,$99,$04,$9E,$04,$AB,$04 ; ROM $098A unclassified
-	      8C049904
-	      9E04AB04
-1711:	0996  3E043E04	        DB $3E,$04,$3E,$04,$3E,$04,$17,$05,$84,$07,$84,$07 ; ROM $0996 unclassified
-	      3E041705
-	      84078407
-1712:	09A2  84078407	        DB $84,$07,$84,$07,$84,$07,$84,$07,$49,$05,$6C,$05 ; ROM $09A2 unclassified
-	      84078407
-	      49056C05
-1713:	09AE  1308E905	        DB $13,$08,$E9,$05,$3D,$06,$49,$06,$55,$06,$8D,$06 ; ROM $09AE native command/event vectors
-	      3D064906
-	      55068D06
-1714:	09BA  9D067006	        DB $9D,$06,$70,$06,$AD,$06,$82,$06,$BC,$06,$49,$07 ; ROM $09BA native command/event vectors
-	      AD068206
-	      BC064907
-1715:	09C6  38077507	        DB $38,$07,$75,$07,$85,$07,$AB,$07,$07,$08,$E9,$07 ; ROM $09C6 native command/event vectors
-	      8507AB07
-	      0708E907
-1716:	09D2  EF07A305	        DB $EF,$07,$A3,$05,$C9,$03,$1B,$09,$36,$09,$3C,$09 ; ROM $09D2 native command/event vectors
-	      C9031B09
-	      36093C09
-1717:	09DE  42094809	        DB $42,$09,$48,$09,$4E,$09,$54,$09,$5A,$09,$63,$09 ; ROM $09DE native command/event vectors
-	      4E095409
-	      5A096309
-1718:	09EA  00000000	        DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; ROM $09EA unclassified
+1709:	097E          	ROM_NATIVE_EVENT_ACTION_00:
+1710:	097E  6104    	        DW $0461 ; NATIVE_EVENT_ACTION pointer from ROM $097E
+1711:	0980          	ROM_NATIVE_EVENT_ACTION_01:
+1712:	0980  7304    	        DW $0473 ; NATIVE_EVENT_ACTION pointer from ROM $0980
+1713:	0982          	ROM_NATIVE_EVENT_ACTION_02:
+1714:	0982  7804    	        DW $0478 ; NATIVE_EVENT_ACTION pointer from ROM $0982
+1715:	0984          	ROM_NATIVE_EVENT_ACTION_03:
+1716:	0984  8704    	        DW $0487 ; NATIVE_EVENT_ACTION pointer from ROM $0984
+1717:	0986          	ROM_NATIVE_EVENT_ACTION_04:
+1718:	0986  2A04    	        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $0986
+1719:	0988          	ROM_NATIVE_EVENT_ACTION_05:
+1720:	0988  2A04    	        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $0988
+1721:	098A          	ROM_NATIVE_EVENT_ACTION_06:
+1722:	098A  2A04    	        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $098A
+1723:	098C          	ROM_NATIVE_EVENT_ACTION_07:
+1724:	098C  B004    	        DW $04B0 ; NATIVE_EVENT_ACTION pointer from ROM $098C
+1725:	098E          	ROM_NATIVE_EVENT_ACTION_08:
+1726:	098E  8C04    	        DW $048C ; NATIVE_EVENT_ACTION pointer from ROM $098E
+1727:	0990          	ROM_NATIVE_EVENT_ACTION_09:
+1728:	0990  9904    	        DW $0499 ; NATIVE_EVENT_ACTION pointer from ROM $0990
+1729:	0992          	ROM_NATIVE_EVENT_ACTION_0A:
+1730:	0992  9E04    	        DW $049E ; NATIVE_EVENT_ACTION pointer from ROM $0992
+1731:	0994          	ROM_NATIVE_EVENT_ACTION_0B:
+1732:	0994  AB04    	        DW $04AB ; NATIVE_EVENT_ACTION pointer from ROM $0994
+1733:	0996          	ROM_NATIVE_EVENT_ACTION_0C:
+1734:	0996  3E04    	        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $0996
+1735:	0998          	ROM_NATIVE_EVENT_ACTION_0D:
+1736:	0998  3E04    	        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $0998
+1737:	099A          	ROM_NATIVE_EVENT_ACTION_0E:
+1738:	099A  3E04    	        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $099A
+1739:	099C          	ROM_NATIVE_EVENT_ACTION_0F:
+1740:	099C  1705    	        DW $0517 ; NATIVE_EVENT_ACTION pointer from ROM $099C
+1741:	099E          	ROM_NATIVE_EVENT_ACTION_10:
+1742:	099E  8407    	        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $099E
+1743:	09A0          	ROM_NATIVE_EVENT_ACTION_11:
+1744:	09A0  8407    	        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A0
+1745:	09A2          	ROM_NATIVE_EVENT_ACTION_12:
+1746:	09A2  8407    	        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A2
+1747:	09A4          	ROM_NATIVE_EVENT_ACTION_13:
+1748:	09A4  8407    	        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A4
+1749:	09A6          	ROM_NATIVE_EVENT_ACTION_14:
+1750:	09A6  8407    	        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A6
+1751:	09A8          	ROM_NATIVE_EVENT_ACTION_15:
+1752:	09A8  8407    	        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A8
+1753:	09AA          	ROM_NATIVE_EVENT_ACTION_16:
+1754:	09AA  4905    	        DW $0549 ; NATIVE_EVENT_ACTION pointer from ROM $09AA
+1755:	09AC          	ROM_NATIVE_EVENT_ACTION_17:
+1756:	09AC  6C05    	        DW $056C ; NATIVE_EVENT_ACTION pointer from ROM $09AC
+1757:	09AE          	ROM_GAME_WORD_00:
+1758:	09AE  1308    	        DW $0813 ; GAME_WORD pointer from ROM $09AE
+1759:	09B0          	ROM_GAME_WORD_01:
+1760:	09B0  E905    	        DW $05E9 ; GAME_WORD pointer from ROM $09B0
+1761:	09B2          	ROM_GAME_WORD_02:
+1762:	09B2  3D06    	        DW $063D ; GAME_WORD pointer from ROM $09B2
+1763:	09B4          	ROM_GAME_WORD_03:
+1764:	09B4  4906    	        DW $0649 ; GAME_WORD pointer from ROM $09B4
+1765:	09B6          	ROM_GAME_WORD_04:
+1766:	09B6  5506    	        DW $0655 ; GAME_WORD pointer from ROM $09B6
+1767:	09B8          	ROM_GAME_WORD_05:
+1768:	09B8  8D06    	        DW $068D ; GAME_WORD pointer from ROM $09B8
+1769:	09BA          	ROM_GAME_WORD_06:
+1770:	09BA  9D06    	        DW $069D ; GAME_WORD pointer from ROM $09BA
+1771:	09BC          	ROM_GAME_WORD_07:
+1772:	09BC  7006    	        DW $0670 ; GAME_WORD pointer from ROM $09BC
+1773:	09BE          	ROM_GAME_WORD_08:
+1774:	09BE  AD06    	        DW $06AD ; GAME_WORD pointer from ROM $09BE
+1775:	09C0          	ROM_GAME_WORD_09:
+1776:	09C0  8206    	        DW $0682 ; GAME_WORD pointer from ROM $09C0
+1777:	09C2          	ROM_GAME_WORD_0A:
+1778:	09C2  BC06    	        DW $06BC ; GAME_WORD pointer from ROM $09C2
+1779:	09C4          	ROM_GAME_WORD_0B:
+1780:	09C4  4907    	        DW $0749 ; GAME_WORD pointer from ROM $09C4
+1781:	09C6          	ROM_GAME_WORD_0C:
+1782:	09C6  3807    	        DW $0738 ; GAME_WORD pointer from ROM $09C6
+1783:	09C8          	ROM_GAME_WORD_0D:
+1784:	09C8  7507    	        DW $0775 ; GAME_WORD pointer from ROM $09C8
+1785:	09CA          	ROM_GAME_WORD_0E:
+1786:	09CA  8507    	        DW $0785 ; GAME_WORD pointer from ROM $09CA
+1787:	09CC          	ROM_GAME_WORD_0F:
+1788:	09CC  AB07    	        DW $07AB ; GAME_WORD pointer from ROM $09CC
+1789:	09CE          	ROM_GAME_WORD_10:
+1790:	09CE  0708    	        DW $0807 ; GAME_WORD pointer from ROM $09CE
+1791:	09D0          	ROM_GAME_WORD_11:
+1792:	09D0  E907    	        DW $07E9 ; GAME_WORD pointer from ROM $09D0
+1793:	09D2          	ROM_GAME_WORD_12:
+1794:	09D2  EF07    	        DW $07EF ; GAME_WORD pointer from ROM $09D2
+1795:	09D4          	ROM_GAME_WORD_13:
+1796:	09D4  A305    	        DW $05A3 ; GAME_WORD pointer from ROM $09D4
+1797:	09D6          	ROM_GAME_WORD_14:
+1798:	09D6  C903    	        DW $03C9 ; GAME_WORD pointer from ROM $09D6
+1799:	09D8          	ROM_EVENT_SCRIPT_00:
+1800:	09D8  1B09    	        DW $091B ; EVENT_SCRIPT pointer from ROM $09D8
+1801:	09DA          	ROM_EVENT_SCRIPT_01:
+1802:	09DA  3609    	        DW $0936 ; EVENT_SCRIPT pointer from ROM $09DA
+1803:	09DC          	ROM_EVENT_SCRIPT_02:
+1804:	09DC  3C09    	        DW $093C ; EVENT_SCRIPT pointer from ROM $09DC
+1805:	09DE          	ROM_EVENT_SCRIPT_03:
+1806:	09DE  4209    	        DW $0942 ; EVENT_SCRIPT pointer from ROM $09DE
+1807:	09E0          	ROM_EVENT_SCRIPT_04:
+1808:	09E0  4809    	        DW $0948 ; EVENT_SCRIPT pointer from ROM $09E0
+1809:	09E2          	ROM_EVENT_SCRIPT_05:
+1810:	09E2  4E09    	        DW $094E ; EVENT_SCRIPT pointer from ROM $09E2
+1811:	09E4          	ROM_EVENT_SCRIPT_06:
+1812:	09E4  5409    	        DW $0954 ; EVENT_SCRIPT pointer from ROM $09E4
+1813:	09E6          	ROM_EVENT_SCRIPT_07:
+1814:	09E6  5A09    	        DW $095A ; EVENT_SCRIPT pointer from ROM $09E6
+1815:	09E8          	ROM_EVENT_SCRIPT_08:
+1816:	09E8  6309    	        DW $0963 ; EVENT_SCRIPT pointer from ROM $09E8
+1817:	09EA  00000000	        DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; ROM $09EA unclassified
 	      00000000
 	      00000000
-1719:	09F6  00003C7E	        DB $00,$00,$3C,$7E,$66,$66,$66,$66,$66,$66,$7E,$3C ; ROM $09F6 unclassified
+1818:	09F6  00003C7E	        DB $00,$00,$3C,$7E,$66,$66,$66,$66,$66,$66,$7E,$3C ; ROM $09F6 unclassified
 	      66666666
 	      66667E3C
-1720:	0A02  181C1818	        DB $18,$1C,$18,$18,$18,$18,$18,$18,$3C,$3C,$3C,$7E ; ROM $0A02 unclassified
+1819:	0A02  181C1818	        DB $18,$1C,$18,$18,$18,$18,$18,$18,$3C,$3C,$3C,$7E ; ROM $0A02 unclassified
 	      18181818
 	      3C3C3C7E
-1721:	0A0E  66607C3E	        DB $66,$60,$7C,$3E,$06,$06,$7E,$7E,$3C,$7E,$66,$60 ; ROM $0A0E unclassified
+1820:	0A0E  66607C3E	        DB $66,$60,$7C,$3E,$06,$06,$7E,$7E,$3C,$7E,$66,$60 ; ROM $0A0E unclassified
 	      06067E7E
 	      3C7E6660
-1722:	0A1A  38786066	        DB $38,$78,$60,$66,$7E,$3C,$66,$66,$66,$66,$7E,$7E ; ROM $0A1A unclassified
+1821:	0A1A  38786066	        DB $38,$78,$60,$66,$7E,$3C,$66,$66,$66,$66,$7E,$7E ; ROM $0A1A unclassified
 	      7E3C6666
 	      66667E7E
-1723:	0A26  60606060	        DB $60,$60,$60,$60,$3E,$3E,$06,$06,$3E,$7E,$60,$66 ; ROM $0A26 unclassified
+1822:	0A26  60606060	        DB $60,$60,$60,$60,$3E,$3E,$06,$06,$3E,$7E,$60,$66 ; ROM $0A26 unclassified
 	      3E3E0606
 	      3E7E6066
-1724:	0A32  7E3C3C3E	        DB $7E,$3C,$3C,$3E,$06,$06,$3E,$7E,$66,$66,$7E,$3C ; ROM $0A32 unclassified
+1823:	0A32  7E3C3C3E	        DB $7E,$3C,$3C,$3E,$06,$06,$3E,$7E,$66,$66,$7E,$3C ; ROM $0A32 unclassified
 	      06063E7E
 	      66667E3C
-1725:	0A3E  7E7E6070	        DB $7E,$7E,$60,$70,$30,$38,$18,$1C,$0C,$0C,$3C,$7E ; ROM $0A3E unclassified
+1824:	0A3E  7E7E6070	        DB $7E,$7E,$60,$70,$30,$38,$18,$1C,$0C,$0C,$3C,$7E ; ROM $0A3E unclassified
 	      3038181C
 	      0C0C3C7E
-1726:	0A4A  66663C7E	        DB $66,$66,$3C,$7E,$66,$66,$7E,$3C,$3C,$7E,$66,$66 ; ROM $0A4A unclassified
+1825:	0A4A  66663C7E	        DB $66,$66,$3C,$7E,$66,$66,$7E,$3C,$3C,$7E,$66,$66 ; ROM $0A4A unclassified
 	      66667E3C
 	      3C7E6666
-1727:	0A56  7E7C6060	        DB $7E,$7C,$60,$60,$7C,$3C,$10,$38,$38,$38,$38,$38 ; ROM $0A56 unclassified
+1826:	0A56  7E7C6060	        DB $7E,$7C,$60,$60,$7C,$3C,$10,$38,$38,$38,$38,$38 ; ROM $0A56 unclassified
 	      7C3C1038
 	      38383838
-1728:	0A62  3838387C	        DB $38,$38,$38,$7C,$C0,$C0,$C0,$C0,$C0,$C0,$00,$00 ; ROM $0A62 unclassified
+1827:	0A62  3838387C	        DB $38,$38,$38,$7C,$C0,$C0,$C0,$C0,$C0,$C0,$00,$00 ; ROM $0A62 unclassified
 	      C0C0C0C0
 	      C0C00000
-1729:	0A6E  C0C00000	        DB $C0,$C0,$00,$00,$00,$00,$00,$00,$00,$00,$C0,$C0 ; ROM $0A6E unclassified
+1828:	0A6E  C0C00000	        DB $C0,$C0,$00,$00,$00,$00,$00,$00,$00,$00,$C0,$C0 ; ROM $0A6E unclassified
 	      00000000
 	      0000C0C0
-1730:	0A7A  00000020	        DB $00,$00,$00,$20,$40,$FF,$40,$20,$00,$00,$F0,$C0 ; ROM $0A7A unclassified
+1829:	0A7A  00000020	        DB $00,$00,$00,$20,$40,$FF,$40,$20,$00,$00,$F0,$C0 ; ROM $0A7A unclassified
 	      40FF4020
 	      0000F0C0
-1731:	0A86  A0900804	        DB $A0,$90,$08,$04,$02,$01,$00,$00,$78,$FC,$CC,$E0 ; ROM $0A86 unclassified
+1830:	0A86  A0900804	        DB $A0,$90,$08,$04,$02,$01,$00,$00,$78,$FC,$CC,$E0 ; ROM $0A86 unclassified
 	      02010000
 	      78FCCCE0
-1732:	0A92  70303000	        DB $70,$30,$30,$00,$30,$30,$00,$00,$00,$00,$00,$00 ; ROM $0A92 unclassified
+1831:	0A92  70303000	        DB $70,$30,$30,$00,$30,$30,$00,$00,$00,$00,$00,$00 ; ROM $0A92 unclassified
 	      30300000
 	      00000000
-1733:	0A9E  00000000	        DB $00,$00,$00,$00,$18,$3C,$7E,$66,$66,$66,$7E,$7E ; ROM $0A9E unclassified
+1832:	0A9E  00000000	        DB $00,$00,$00,$00,$18,$3C,$7E,$66,$66,$66,$7E,$7E ; ROM $0A9E unclassified
 	      183C7E66
 	      66667E7E
-1734:	0AAA  66663E7E	        DB $66,$66,$3E,$7E,$66,$66,$3E,$7E,$66,$66,$7E,$3E ; ROM $0AAA unclassified
+1833:	0AAA  66663E7E	        DB $66,$66,$3E,$7E,$66,$66,$3E,$7E,$66,$66,$7E,$3E ; ROM $0AAA unclassified
 	      66663E7E
 	      66667E3E
-1735:	0AB6  3C7E6606	        DB $3C,$7E,$66,$06,$06,$06,$06,$66,$7E,$3C,$3E,$7E ; ROM $0AB6 unclassified
+1834:	0AB6  3C7E6606	        DB $3C,$7E,$66,$06,$06,$06,$06,$66,$7E,$3C,$3E,$7E ; ROM $0AB6 unclassified
 	      06060666
 	      7E3C3E7E
-1736:	0AC2  66666666	        DB $66,$66,$66,$66,$66,$66,$7E,$3E,$7E,$7E,$06,$06 ; ROM $0AC2 unclassified
+1835:	0AC2  66666666	        DB $66,$66,$66,$66,$66,$66,$7E,$3E,$7E,$7E,$06,$06 ; ROM $0AC2 unclassified
 	      66667E3E
 	      7E7E0606
-1737:	0ACE  3E3E0606	        DB $3E,$3E,$06,$06,$7E,$7E,$7E,$7E,$06,$06,$3E,$3E ; ROM $0ACE unclassified
+1836:	0ACE  3E3E0606	        DB $3E,$3E,$06,$06,$7E,$7E,$7E,$7E,$06,$06,$3E,$3E ; ROM $0ACE unclassified
 	      7E7E7E7E
 	      06063E3E
-1738:	0ADA  06060606	        DB $06,$06,$06,$06,$3C,$7E,$66,$06,$06,$76,$76,$66 ; ROM $0ADA unclassified
+1837:	0ADA  06060606	        DB $06,$06,$06,$06,$3C,$7E,$66,$06,$06,$76,$76,$66 ; ROM $0ADA unclassified
 	      3C7E6606
 	      06767666
-1739:	0AE6  7E3C6666	        DB $7E,$3C,$66,$66,$66,$66,$7E,$7E,$66,$66,$66,$66 ; ROM $0AE6 unclassified
+1838:	0AE6  7E3C6666	        DB $7E,$3C,$66,$66,$66,$66,$7E,$7E,$66,$66,$66,$66 ; ROM $0AE6 unclassified
 	      66667E7E
 	      66666666
-1740:	0AF2  3C3C1818	        DB $3C,$3C,$18,$18,$18,$18,$18,$18,$3C,$3C,$06,$06 ; ROM $0AF2 unclassified
+1839:	0AF2  3C3C1818	        DB $3C,$3C,$18,$18,$18,$18,$18,$18,$3C,$3C,$06,$06 ; ROM $0AF2 unclassified
 	      18181818
 	      3C3C0606
-1741:	0AFE  06060606	        DB $06,$06,$06,$06,$06,$06,$7E,$7E,$C3,$C3,$E7,$E7 ; ROM $0AFE unclassified
+1840:	0AFE  06060606	        DB $06,$06,$06,$06,$06,$06,$7E,$7E,$C3,$C3,$E7,$E7 ; ROM $0AFE unclassified
 	      06067E7E
 	      C3C3E7E7
-1742:	0B0A  FFFFDBC3	        DB $FF,$FF,$DB,$C3,$C3,$C3,$66,$66,$6E,$6E,$7E,$7E ; ROM $0B0A unclassified
+1841:	0B0A  FFFFDBC3	        DB $FF,$FF,$DB,$C3,$C3,$C3,$66,$66,$6E,$6E,$7E,$7E ; ROM $0B0A unclassified
 	      C3C36666
 	      6E6E7E7E
-1743:	0B16  76766666	        DB $76,$76,$66,$66,$3C,$7E,$66,$66,$66,$66,$66,$66 ; ROM $0B16 unclassified
+1842:	0B16  76766666	        DB $76,$76,$66,$66,$3C,$7E,$66,$66,$66,$66,$66,$66 ; ROM $0B16 unclassified
 	      3C7E6666
 	      66666666
-1744:	0B22  7E3C3E7E	        DB $7E,$3C,$3E,$7E,$66,$66,$7E,$3E,$06,$06,$06,$06 ; ROM $0B22 unclassified
+1843:	0B22  7E3C3E7E	        DB $7E,$3C,$3E,$7E,$66,$66,$7E,$3E,$06,$06,$06,$06 ; ROM $0B22 unclassified
 	      66667E3E
 	      06060606
-1745:	0B2E  3E7E6666	        DB $3E,$7E,$66,$66,$7E,$3E,$76,$66,$66,$66,$3C,$7E ; ROM $0B2E unclassified
+1844:	0B2E  3E7E6666	        DB $3E,$7E,$66,$66,$7E,$3E,$76,$66,$66,$66,$3C,$7E ; ROM $0B2E unclassified
 	      7E3E7666
 	      66663C7E
-1746:	0B3A  66063E7C	        DB $66,$06,$3E,$7C,$60,$66,$7E,$3C,$7E,$7E,$18,$18 ; ROM $0B3A unclassified
+1845:	0B3A  66063E7C	        DB $66,$06,$3E,$7C,$60,$66,$7E,$3C,$7E,$7E,$18,$18 ; ROM $0B3A unclassified
 	      60667E3C
 	      7E7E1818
-1747:	0B46  18181818	        DB $18,$18,$18,$18,$18,$18,$66,$66,$66,$66,$66,$66 ; ROM $0B46 unclassified
+1846:	0B46  18181818	        DB $18,$18,$18,$18,$18,$18,$66,$66,$66,$66,$66,$66 ; ROM $0B46 unclassified
 	      18186666
 	      66666666
-1748:	0B52  66667E3C	        DB $66,$66,$7E,$3C,$66,$66,$66,$66,$66,$7E,$3C,$3C ; ROM $0B52 unclassified
+1847:	0B52  66667E3C	        DB $66,$66,$7E,$3C,$66,$66,$66,$66,$66,$7E,$3C,$3C ; ROM $0B52 unclassified
 	      66666666
 	      667E3C3C
-1749:	0B5E  1818C3C3	        DB $18,$18,$C3,$C3,$C3,$DB,$FF,$FF,$E7,$E7,$C3,$C3 ; ROM $0B5E unclassified
+1848:	0B5E  1818C3C3	        DB $18,$18,$C3,$C3,$C3,$DB,$FF,$FF,$E7,$E7,$C3,$C3 ; ROM $0B5E unclassified
 	      C3DBFFFF
 	      E7E7C3C3
-1750:	0B6A  66667E3C	        DB $66,$66,$7E,$3C,$18,$18,$18,$18,$18,$18,$01,$16 ; ROM $0B6A unclassified
+1849:	0B6A  66667E3C	        DB $66,$66,$7E,$3C,$18,$18,$18,$18,$18,$18,$01,$16 ; ROM $0B6A unclassified
 	      18181818
 	      18180116
-1751:	0B76  10181818	        DB $10,$18,$18,$18,$18,$58,$78,$1B,$1A,$1E,$1E,$98 ; ROM $0B76 unclassified
+1850:	0B76  10181818	        DB $10,$18,$18,$18,$18,$58,$78,$1B,$1A,$1E,$1E,$98 ; ROM $0B76 unclassified
 	      1858781B
 	      1A1E1E98
-1752:	0B82  98783818	        DB $98,$78,$38,$18,$18,$18,$18,$18,$18,$18,$02,$1B ; ROM $0B82 unclassified
+1851:	0B82  98783818	        DB $98,$78,$38,$18,$18,$18,$18,$18,$18,$18,$02,$1B ; ROM $0B82 unclassified
 	      18181818
 	      1818021B
-1753:	0B8E  00010003	        DB $00,$01,$00,$03,$80,$03,$C0,$07,$C0,$07,$60,$1D ; ROM $0B8E unclassified
+1852:	0B8E  00010003	        DB $00,$01,$00,$03,$80,$03,$C0,$07,$C0,$07,$60,$1D ; ROM $0B8E unclassified
 	      8003C007
 	      C007601D
-1754:	0B9A  00318007	        DB $00,$31,$80,$07,$E0,$1F,$F0,$3D,$38,$39,$04,$41 ; ROM $0B9A unclassified
+1853:	0B9A  00318007	        DB $00,$31,$80,$07,$E0,$1F,$F0,$3D,$38,$39,$04,$41 ; ROM $0B9A unclassified
 	      E01FF03D
 	      38390441
-1755:	0BA6  8003C007	        DB $80,$03,$C0,$07,$E0,$0F,$F8,$1F,$3E,$29,$07,$E9 ; ROM $0BA6 unclassified
+1854:	0BA6  8003C007	        DB $80,$03,$C0,$07,$E0,$0F,$F8,$1F,$3E,$29,$07,$E9 ; ROM $0BA6 unclassified
 	      E00FF81F
 	      3E2907E9
-1756:	0BB2  00010009	        DB $00,$01,$00,$09,$00,$05,$00,$05,$08,$1F,$38,$1B ; ROM $0BB2 unclassified
+1855:	0BB2  00010009	        DB $00,$01,$00,$09,$00,$05,$00,$05,$08,$1F,$38,$1B ; ROM $0BB2 unclassified
 	      00050005
 	      081F381B
-1757:	0BBE  3829CC37	        DB $38,$29,$CC,$37,$FE,$5D,$03,$15,$00,$05,$00,$80 ; ROM $0BBE unclassified
+1856:	0BBE  3829CC37	        DB $38,$29,$CC,$37,$FE,$5D,$03,$15,$00,$05,$00,$80 ; ROM $0BBE unclassified
 	      FE5D0315
 	      00050080
-1758:	0BCA  0D00800D	        DB $0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8 ; ROM $0BCA unclassified
+1857:	0BCA  0D00800D	        DB $0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8 ; ROM $0BCA unclassified
 	      00800F00
 	      C89F00F8
-1759:	0BD6  FF00C017	        DB $FF,$00,$C0,$17,$80,$C0,$3F,$50,$C0,$7F,$60,$C0 ; ROM $0BD6 unclassified
+1858:	0BD6  FF00C017	        DB $FF,$00,$C0,$17,$80,$C0,$3F,$50,$C0,$7F,$60,$C0 ; ROM $0BD6 unclassified
 	      80C03F50
 	      C07F60C0
-1760:	0BE2  1F30801F	        DB $1F,$30,$80,$1F,$38,$00,$07,$1C,$80,$0F,$0E,$F8 ; ROM $0BE2 unclassified
+1859:	0BE2  1F30801F	        DB $1F,$30,$80,$1F,$38,$00,$07,$1C,$80,$0F,$0E,$F8 ; ROM $0BE2 unclassified
 	      3800071C
 	      800F0EF8
-1761:	0BEE  FF07FCFF	        DB $FF,$07,$FC,$FF,$03,$CE,$FF,$01,$C6,$1F,$00,$C6 ; ROM $0BEE unclassified
+1860:	0BEE  FF07FCFF	        DB $FF,$07,$FC,$FF,$03,$CE,$FF,$01,$C6,$1F,$00,$C6 ; ROM $0BEE unclassified
 	      03CEFF01
 	      C61F00C6
-1762:	0BFA  1F00C61F	        DB $1F,$00,$C6,$1F,$00,$C6 ; ROM $0BFA unclassified
+1861:	0BFA  1F00C61F	        DB $1F,$00,$C6,$1F,$00,$C6 ; ROM $0BFA unclassified
 	      00C6
-1763:			
-1764:	0C00          	        ORG $0C00
-1765:			; Device 7609e.bin, SHA1 de3f2e6841122bbe6e2fda5b87d37842c072289a
-1766:	0C00  1F00FA3F	        DB $1F,$00,$FA,$3F,$00,$03,$15,$00,$05,$00,$80,$0D ; ROM $0C00 unclassified
+1862:			
+1863:	0C00          	        ORG $0C00
+1864:			; Device 7609e.bin, SHA1 de3f2e6841122bbe6e2fda5b87d37842c072289a
+1865:	0C00  1F00FA3F	        DB $1F,$00,$FA,$3F,$00,$03,$15,$00,$05,$00,$80,$0D ; ROM $0C00 unclassified
 	      00031500
 	      0500800D
-1767:	0C0C  00800D00	        DB $00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8,$FF ; ROM $0C0C unclassified
+1866:	0C0C  00800D00	        DB $00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8,$FF ; ROM $0C0C unclassified
 	      800F00C8
 	      9F00F8FF
-1768:	0C18  00C01700	        DB $00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0,$1F ; ROM $0C18 unclassified
+1867:	0C18  00C01700	        DB $00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0,$1F ; ROM $0C18 unclassified
 	      C03F00C0
 	      7F00C01F
-1769:	0C24  C0801F70	        DB $C0,$80,$1F,$70,$00,$07,$3C,$80,$0F,$0F,$F8,$FF ; ROM $0C24 unclassified
+1868:	0C24  C0801F70	        DB $C0,$80,$1F,$70,$00,$07,$3C,$80,$0F,$0F,$F8,$FF ; ROM $0C24 unclassified
 	      00073C80
 	      0F0FF8FF
-1770:	0C30  03FCFF01	        DB $03,$FC,$FF,$01,$CE,$FF,$00,$C6,$1F,$00,$C6,$1F ; ROM $0C30 unclassified
+1869:	0C30  03FCFF01	        DB $03,$FC,$FF,$01,$CE,$FF,$00,$C6,$1F,$00,$C6,$1F ; ROM $0C30 unclassified
 	      CEFF00C6
 	      1F00C61F
-1771:	0C3C  00C61F00	        DB $00,$C6,$1F,$00,$C6,$1F,$00,$FA,$3F,$00,$03,$15 ; ROM $0C3C unclassified
+1870:	0C3C  00C61F00	        DB $00,$C6,$1F,$00,$C6,$1F,$00,$FA,$3F,$00,$03,$15 ; ROM $0C3C unclassified
 	      C61F00FA
 	      3F000315
-1772:	0C48  00050080	        DB $00,$05,$00,$80,$0D,$00,$80,$0D,$00,$80,$0F,$00 ; ROM $0C48 unclassified
+1871:	0C48  00050080	        DB $00,$05,$00,$80,$0D,$00,$80,$0D,$00,$80,$0F,$00 ; ROM $0C48 unclassified
 	      0D00800D
 	      00800F00
-1773:	0C54  C89F00F8	        DB $C8,$9F,$00,$F8,$FF,$00,$C0,$17,$00,$C0,$3F,$00 ; ROM $0C54 unclassified
+1872:	0C54  C89F00F8	        DB $C8,$9F,$00,$F8,$FF,$00,$C0,$17,$00,$C0,$3F,$00 ; ROM $0C54 unclassified
 	      FF00C017
 	      00C03F00
-1774:	0C60  C07F00C0	        DB $C0,$7F,$00,$C0,$1F,$00,$80,$1F,$C0,$00,$07,$38 ; ROM $0C60 unclassified
+1873:	0C60  C07F00C0	        DB $C0,$7F,$00,$C0,$1F,$00,$80,$1F,$C0,$00,$07,$38 ; ROM $0C60 unclassified
 	      1F00801F
 	      C0000738
-1775:	0C6C  800F0CF8	        DB $80,$0F,$0C,$F8,$FF,$0F,$FC,$FF,$03,$CE,$7F,$00 ; ROM $0C6C unclassified
+1874:	0C6C  800F0CF8	        DB $80,$0F,$0C,$F8,$FF,$0F,$FC,$FF,$03,$CE,$7F,$00 ; ROM $0C6C unclassified
 	      FF0FFCFF
 	      03CE7F00
-1776:	0C78  C61F00C6	        DB $C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00 ; ROM $0C78 unclassified
+1875:	0C78  C61F00C6	        DB $C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00 ; ROM $0C78 unclassified
 	      1F00C61F
 	      00C61F00
-1777:	0C84  FA3F0003	        DB $FA,$3F,$00,$03,$15,$00,$05,$00,$80,$0D,$00,$80 ; ROM $0C84 unclassified
+1876:	0C84  FA3F0003	        DB $FA,$3F,$00,$03,$15,$00,$05,$00,$80,$0D,$00,$80 ; ROM $0C84 unclassified
 	      15000500
 	      800D0080
-1778:	0C90  0D00800F	        DB $0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8,$FF,$00,$C0 ; ROM $0C90 unclassified
+1877:	0C90  0D00800F	        DB $0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8,$FF,$00,$C0 ; ROM $0C90 unclassified
 	      00C89F00
 	      F8FF00C0
-1779:	0C9C  1700C03F	        DB $17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0,$1F,$00,$80 ; ROM $0C9C unclassified
+1878:	0C9C  1700C03F	        DB $17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0,$1F,$00,$80 ; ROM $0C9C unclassified
 	      00C07F00
 	      C01F0080
-1780:	0CA8  1F000007	        DB $1F,$00,$00,$07,$08,$80,$0F,$F0,$F8,$FF,$1F,$FC ; ROM $0CA8 unclassified
+1879:	0CA8  1F000007	        DB $1F,$00,$00,$07,$08,$80,$0F,$F0,$F8,$FF,$1F,$FC ; ROM $0CA8 unclassified
 	      08800FF0
 	      F8FF1FFC
-1781:	0CB4  FF0FCEFF	        DB $FF,$0F,$CE,$FF,$00,$C6,$1F,$00,$C6,$1F,$00,$C6 ; ROM $0CB4 unclassified
+1880:	0CB4  FF0FCEFF	        DB $FF,$0F,$CE,$FF,$00,$C6,$1F,$00,$C6,$1F,$00,$C6 ; ROM $0CB4 unclassified
 	      00C61F00
 	      C61F00C6
-1782:	0CC0  1F00C61F	        DB $1F,$00,$C6,$1F,$00,$FA,$3F,$00,$03,$15,$00,$05 ; ROM $0CC0 unclassified
+1881:	0CC0  1F00C61F	        DB $1F,$00,$C6,$1F,$00,$FA,$3F,$00,$03,$15,$00,$05 ; ROM $0CC0 unclassified
 	      00FA3F00
 	      03150005
-1783:	0CCC  00800D00	        DB $00,$80,$0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F ; ROM $0CCC unclassified
+1882:	0CCC  00800D00	        DB $00,$80,$0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F ; ROM $0CCC unclassified
 	      800D0080
 	      0F00C89F
-1784:	0CD8  00F8FF00	        DB $00,$F8,$FF,$00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F ; ROM $0CD8 unclassified
+1883:	0CD8  00F8FF00	        DB $00,$F8,$FF,$00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F ; ROM $0CD8 unclassified
 	      C01700C0
 	      3F00C07F
-1785:	0CE4  00C01F00	        DB $00,$C0,$1F,$00,$80,$1F,$00,$00,$07,$00,$80,$0F ; ROM $0CE4 unclassified
+1884:	0CE4  00C01F00	        DB $00,$C0,$1F,$00,$80,$1F,$00,$00,$07,$00,$80,$0F ; ROM $0CE4 unclassified
 	      801F0000
 	      0700800F
-1786:	0CF0  00F83F00	        DB $00,$F8,$3F,$00,$FC,$FF,$01,$CE,$FF,$0F,$C6,$1F ; ROM $0CF0 unclassified
+1885:	0CF0  00F83F00	        DB $00,$F8,$3F,$00,$FC,$FF,$01,$CE,$FF,$0F,$C6,$1F ; ROM $0CF0 unclassified
 	      FCFF01CE
 	      FF0FC61F
-1787:	0CFC  7FC61F00	        DB $7F,$C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00,$FA,$3F ; ROM $0CFC unclassified
+1886:	0CFC  7FC61F00	        DB $7F,$C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00,$FA,$3F ; ROM $0CFC unclassified
 	      C61F00C6
 	      1F00FA3F
-1788:	0D08  00031500	        DB $00,$03,$15,$00,$05,$00,$80,$0D,$00,$80,$0D,$00 ; ROM $0D08 unclassified
+1887:	0D08  00031500	        DB $00,$03,$15,$00,$05,$00,$80,$0D,$00,$80,$0D,$00 ; ROM $0D08 unclassified
 	      0500800D
 	      00800D00
-1789:	0D14  800F00C8	        DB $80,$0F,$00,$C8,$9F,$00,$F8,$FF,$00,$C0,$17,$00 ; ROM $0D14 unclassified
+1888:	0D14  800F00C8	        DB $80,$0F,$00,$C8,$9F,$00,$F8,$FF,$00,$C0,$17,$00 ; ROM $0D14 unclassified
 	      9F00F8FF
 	      00C01700
-1790:	0D20  C03F00C0	        DB $C0,$3F,$00,$C0,$7F,$00,$C0,$1F,$00,$80,$1F,$00 ; ROM $0D20 unclassified
+1889:	0D20  C03F00C0	        DB $C0,$3F,$00,$C0,$7F,$00,$C0,$1F,$00,$80,$1F,$00 ; ROM $0D20 unclassified
 	      7F00C01F
 	      00801F00
-1791:	0D2C  00070080	        DB $00,$07,$00,$80,$0F,$00,$F8,$3F,$00,$FC,$FF,$00 ; ROM $0D2C unclassified
+1890:	0D2C  00070080	        DB $00,$07,$00,$80,$0F,$00,$F8,$3F,$00,$FC,$FF,$00 ; ROM $0D2C unclassified
 	      0F00F83F
 	      00FCFF00
-1792:	0D38  CEFF01C6	        DB $CE,$FF,$01,$C6,$FF,$07,$C6,$1F,$1E,$C6,$1F,$70 ; ROM $0D38 unclassified
+1891:	0D38  CEFF01C6	        DB $CE,$FF,$01,$C6,$FF,$07,$C6,$1F,$1E,$C6,$1F,$70 ; ROM $0D38 unclassified
 	      FF07C61F
 	      1EC61F70
-1793:	0D44  C61F00FA	        DB $C6,$1F,$00,$FA,$3F,$00,$03,$15,$00,$05,$00,$80 ; ROM $0D44 unclassified
+1892:	0D44  C61F00FA	        DB $C6,$1F,$00,$FA,$3F,$00,$03,$15,$00,$05,$00,$80 ; ROM $0D44 unclassified
 	      3F000315
 	      00050080
-1794:	0D50  0D00800D	        DB $0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8 ; ROM $0D50 unclassified
+1893:	0D50  0D00800D	        DB $0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8 ; ROM $0D50 unclassified
 	      00800F00
 	      C89F00F8
-1795:	0D5C  FF00C017	        DB $FF,$00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0 ; ROM $0D5C unclassified
+1894:	0D5C  FF00C017	        DB $FF,$00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0 ; ROM $0D5C unclassified
 	      00C03F00
 	      C07F00C0
-1796:	0D68  1F00801F	        DB $1F,$00,$80,$1F,$00,$00,$07,$00,$80,$0F,$00,$F8 ; ROM $0D68 unclassified
+1895:	0D68  1F00801F	        DB $1F,$00,$80,$1F,$00,$00,$07,$00,$80,$0F,$00,$F8 ; ROM $0D68 unclassified
 	      00000700
 	      800F00F8
-1797:	0D74  3F00FC7F	        DB $3F,$00,$FC,$7F,$00,$CE,$FF,$01,$C6,$FF,$03,$C6 ; ROM $0D74 unclassified
+1896:	0D74  3F00FC7F	        DB $3F,$00,$FC,$7F,$00,$CE,$FF,$01,$C6,$FF,$03,$C6 ; ROM $0D74 unclassified
 	      00CEFF01
 	      C6FF03C6
-1798:	0D80  1F17C61F	        DB $1F,$17,$C6,$1F,$0E,$C6,$1F,$14,$FA,$3F,$20,$03 ; ROM $0D80 unclassified
+1897:	0D80  1F17C61F	        DB $1F,$17,$C6,$1F,$0E,$C6,$1F,$14,$FA,$3F,$20,$03 ; ROM $0D80 unclassified
 	      0EC61F14
 	      FA3F2003
-1799:	0D8C  0CF03F00	        DB $0C,$F0,$3F,$00,$F0,$3F,$00,$E0,$3D,$00,$C0,$79 ; ROM $0D8C unclassified
+1898:	0D8C  0CF03F00	        DB $0C,$F0,$3F,$00,$F0,$3F,$00,$E0,$3D,$00,$C0,$79 ; ROM $0D8C unclassified
 	      F03F00E0
 	      3D00C079
-1800:	0D98  00C07100	        DB $00,$C0,$71,$00,$C0,$E1,$00,$C0,$E1,$00,$E0,$60 ; ROM $0D98 unclassified
+1899:	0D98  00C07100	        DB $00,$C0,$71,$00,$C0,$E1,$00,$C0,$E1,$00,$E0,$60 ; ROM $0D98 unclassified
 	      C0E100C0
 	      E100E060
-1801:	0DA4  00707000	        DB $00,$70,$70,$00,$34,$34,$00,$38,$38,$00,$F0,$F0 ; ROM $0DA4 unclassified
+1900:	0DA4  00707000	        DB $00,$70,$70,$00,$34,$34,$00,$38,$38,$00,$F0,$F0 ; ROM $0DA4 unclassified
 	      34340038
 	      3800F0F0
-1802:	0DB0  00030CF0	        DB $00,$03,$0C,$F0,$3F,$00,$E0,$3F,$00,$C0,$1F,$00 ; ROM $0DB0 unclassified
+1901:	0DB0  00030CF0	        DB $00,$03,$0C,$F0,$3F,$00,$E0,$3F,$00,$C0,$1F,$00 ; ROM $0DB0 unclassified
 	      3F00E03F
 	      00C01F00
-1803:	0DBC  C01F00C0	        DB $C0,$1F,$00,$C0,$1F,$00,$C0,$1F,$00,$00,$1E,$00 ; ROM $0DBC unclassified
+1902:	0DBC  C01F00C0	        DB $C0,$1F,$00,$C0,$1F,$00,$C0,$1F,$00,$00,$1E,$00 ; ROM $0DBC unclassified
 	      1F00C01F
 	      00001E00
-1804:	0DC8  001C0000	        DB $00,$1C,$00,$00,$0C,$00,$00,$0D,$00,$00,$0E,$00 ; ROM $0DC8 unclassified
+1903:	0DC8  001C0000	        DB $00,$1C,$00,$00,$0C,$00,$00,$0D,$00,$00,$0E,$00 ; ROM $0DC8 unclassified
 	      0C00000D
 	      00000E00
-1805:	0DD4  003C0003	        DB $00,$3C,$00,$03,$0C,$F0,$3F,$00,$F0,$3F,$00,$E0 ; ROM $0DD4 unclassified
+1904:	0DD4  003C0003	        DB $00,$3C,$00,$03,$0C,$F0,$3F,$00,$F0,$3F,$00,$E0 ; ROM $0DD4 unclassified
 	      0CF03F00
 	      F03F00E0
-1806:	0DE0  1F00C00F	        DB $1F,$00,$C0,$0F,$00,$80,$1F,$00,$00,$3E,$00,$C0 ; ROM $0DE0 unclassified
+1905:	0DE0  1F00C00F	        DB $1F,$00,$C0,$0F,$00,$80,$1F,$00,$00,$3E,$00,$C0 ; ROM $0DE0 unclassified
 	      00801F00
 	      003E00C0
-1807:	0DEC  7C00E078	        DB $7C,$00,$E0,$78,$00,$70,$30,$00,$34,$34,$00,$38 ; ROM $0DEC unclassified
+1906:	0DEC  7C00E078	        DB $7C,$00,$E0,$78,$00,$70,$30,$00,$34,$34,$00,$38 ; ROM $0DEC unclassified
 	      00703000
 	      34340038
-1808:	0DF8  3800F0F0	        DB $38,$00,$F0,$F0,$00,$03,$20,$04,$00,$00,$19,$02 ; ROM $0DF8 unclassified
+1907:	0DF8  3800F0F0	        DB $38,$00,$F0,$F0,$00,$03,$20,$04,$00,$00,$19,$02 ; ROM $0DF8 unclassified
 	      00032004
 	      00001902
-1809:	0E04  007A0100	        DB $00,$7A,$01,$00,$FC,$00,$00,$7E,$05,$00,$FE,$03 ; ROM $0E04 unclassified
+1908:	0E04  007A0100	        DB $00,$7A,$01,$00,$FC,$00,$00,$7E,$05,$00,$FE,$03 ; ROM $0E04 unclassified
 	      FC00007E
 	      0500FE03
-1810:	0E10  80FC0340	        DB $80,$FC,$03,$40,$FE,$07,$38,$F9,$03,$3E,$F0,$FF ; ROM $0E10 unclassified
+1909:	0E10  80FC0340	        DB $80,$FC,$03,$40,$FE,$07,$38,$F9,$03,$3E,$F0,$FF ; ROM $0E10 unclassified
 	      FE0738F9
 	      033EF0FF
-1811:	0E1C  0FA0FF03	        DB $0F,$A0,$FF,$03,$80,$FF,$00,$80,$FF,$00,$C0,$FF ; ROM $0E1C unclassified
+1910:	0E1C  0FA0FF03	        DB $0F,$A0,$FF,$03,$80,$FF,$00,$80,$FF,$00,$C0,$FF ; ROM $0E1C unclassified
 	      80FF0080
 	      FF00C0FF
-1812:	0E28  00E0FF00	        DB $00,$E0,$FF,$00,$E0,$FF,$01,$70,$FF,$03,$30,$FE ; ROM $0E28 unclassified
+1911:	0E28  00E0FF00	        DB $00,$E0,$FF,$00,$E0,$FF,$01,$70,$FF,$03,$30,$FE ; ROM $0E28 unclassified
 	      E0FF0170
 	      FF0330FE
-1813:	0E34  0730FC0F	        DB $07,$30,$FC,$0F,$30,$FE,$0F,$30,$FE,$0F,$30,$F8 ; ROM $0E34 unclassified
+1912:	0E34  0730FC0F	        DB $07,$30,$FC,$0F,$30,$FE,$0F,$30,$FE,$0F,$30,$F8 ; ROM $0E34 unclassified
 	      30FE0F30
 	      FE0F30F8
-1814:	0E40  0F20F007	        DB $0F,$20,$F0,$07,$00,$F0,$07,$00,$F0,$07,$00,$C0 ; ROM $0E40 unclassified
+1913:	0E40  0F20F007	        DB $0F,$20,$F0,$07,$00,$F0,$07,$00,$F0,$07,$00,$C0 ; ROM $0E40 unclassified
 	      00F00700
 	      F00700C0
-1815:	0E4C  07008007	        DB $07,$00,$80,$07,$00,$00,$07,$00,$00,$03,$00,$40 ; ROM $0E4C unclassified
+1914:	0E4C  07008007	        DB $07,$00,$80,$07,$00,$00,$07,$00,$00,$03,$00,$40 ; ROM $0E4C unclassified
 	      00000700
 	      00030040
-1816:	0E58  03008003	        DB $03,$00,$80,$03,$00,$00,$0F,$04,$0B,$A0,$00,$00 ; ROM $0E58 unclassified
+1915:	0E58  03008003	        DB $03,$00,$80,$03,$00,$00,$0F,$04,$0B,$A0,$00,$00 ; ROM $0E58 unclassified
 	      00000F04
 	      0BA00000
-1817:	0E64  00B00100	        DB $00,$B0,$01,$00,$00,$B0,$01,$3C,$00,$B0,$01,$7E ; ROM $0E64 unclassified
+1916:	0E64  00B00100	        DB $00,$B0,$01,$00,$00,$B0,$01,$3C,$00,$B0,$01,$7E ; ROM $0E64 unclassified
 	      00B0013C
 	      00B0017E
-1818:	0E70  00F913FF	        DB $00,$F9,$13,$FF,$00,$FF,$9F,$FF,$81,$F8,$C7,$FF ; ROM $0E70 unclassified
+1917:	0E70  00F913FF	        DB $00,$F9,$13,$FF,$00,$FF,$9F,$FF,$81,$F8,$C7,$FF ; ROM $0E70 unclassified
 	      00FF9FFF
 	      81F8C7FF
-1819:	0E7C  9FFCFFFF	        DB $9F,$FC,$FF,$FF,$FF,$FE,$FF,$FF,$FF,$00,$00,$FF ; ROM $0E7C unclassified
+1918:	0E7C  9FFCFFFF	        DB $9F,$FC,$FF,$FF,$FF,$FE,$FF,$FF,$FF,$00,$00,$FF ; ROM $0E7C unclassified
 	      FFFEFFFF
 	      FF0000FF
-1820:	0E88  40000000	        DB $40,$00,$00,$00,$20,$00,$03,$1C,$00,$7E,$00,$80 ; ROM $0E88 unclassified
+1919:	0E88  40000000	        DB $40,$00,$00,$00,$20,$00,$03,$1C,$00,$7E,$00,$80 ; ROM $0E88 unclassified
 	      2000031C
 	      007E0080
-1821:	0E94  FF01E0FF	        DB $FF,$01,$E0,$FF,$07,$F0,$FF,$0F,$F0,$FF,$0F,$F8 ; ROM $0E94 unclassified
+1920:	0E94  FF01E0FF	        DB $FF,$01,$E0,$FF,$07,$F0,$FF,$0F,$F0,$FF,$0F,$F8 ; ROM $0E94 unclassified
 	      07F0FF0F
 	      F0FF0FF8
-1822:	0EA0  FF1FF8FF	        DB $FF,$1F,$F8,$FF,$1F,$F8,$FF,$1F,$F8,$E7,$1F,$F0 ; ROM $0EA0 unclassified
+1921:	0EA0  FF1FF8FF	        DB $FF,$1F,$F8,$FF,$1F,$F8,$FF,$1F,$F8,$E7,$1F,$F0 ; ROM $0EA0 unclassified
 	      1FF8FF1F
 	      F8E71FF0
-1823:	0EAC  C30FF081	        DB $C3,$0F,$F0,$81,$0F,$E0,$81,$07,$C0,$81,$03,$80 ; ROM $0EAC unclassified
+1922:	0EAC  C30FF081	        DB $C3,$0F,$F0,$81,$0F,$E0,$81,$07,$C0,$81,$03,$80 ; ROM $0EAC unclassified
 	      0FE08107
 	      C0810380
-1824:	0EB8  C301F0FF	        DB $C3,$01,$F0,$FF,$0F,$E0,$FF,$07,$E0,$FF,$07,$F4 ; ROM $0EB8 unclassified
+1923:	0EB8  C301F0FF	        DB $C3,$01,$F0,$FF,$0F,$E0,$FF,$07,$E0,$FF,$07,$F4 ; ROM $0EB8 unclassified
 	      0FE0FF07
 	      E0FF07F4
-1825:	0EC4  FF2F843C	        DB $FF,$2F,$84,$3C,$21,$04,$81,$20,$04,$81,$20,$06 ; ROM $0EC4 unclassified
+1924:	0EC4  FF2F843C	        DB $FF,$2F,$84,$3C,$21,$04,$81,$20,$04,$81,$20,$06 ; ROM $0EC4 unclassified
 	      21048120
 	      04812006
-1826:	0ED0  8160F7FF	        DB $81,$60,$F7,$FF,$EF,$06,$81,$60,$04,$00,$20,$04 ; ROM $0ED0 unclassified
+1925:	0ED0  8160F7FF	        DB $81,$60,$F7,$FF,$EF,$06,$81,$60,$04,$00,$20,$04 ; ROM $0ED0 unclassified
 	      EF068160
 	      04002004
-1827:	0EDC  00200400	        DB $00,$20,$04,$00,$20,$04,$00,$20,$4A,$0D,$46,$0C ; ROM $0EDC unclassified
+1926:	0EDC  00200400	        DB $00,$20,$04,$00,$20,$04,$00,$20,$4A,$0D,$46,$0C ; ROM $0EDC unclassified
 	      20040020
 	      4A0D460C
-1828:	0EE8  870CC40B	        DB $87,$0C,$C4,$0B,$09,$0D,$05,$0C,$C8,$0C,$86,$22 ; ROM $0EE8 unclassified
+1927:	0EE8  870CC40B	        DB $87,$0C,$C4,$0B,$09,$0D,$05,$0C,$C8,$0C,$86,$22 ; ROM $0EE8 unclassified
 	      090D050C
 	      C80C8622
-1829:	0EF4  8221C321	        DB $82,$21,$C3,$21,$00,$21,$45,$22,$41,$21,$04,$22 ; ROM $0EF4 unclassified
+1928:	0EF4  8221C321	        DB $82,$21,$C3,$21,$00,$21,$45,$22,$41,$21,$04,$22 ; ROM $0EF4 unclassified
 	      00214522
 	      41210422
-1830:	0F00  061AFF08	        DB $06,$1A,$FF,$08,$00,$0C,$FA,$FE,$03,$16,$FD,$02 ; ROM $0F00 unclassified
+1929:	0F00  061AFF08	        DB $06,$1A,$FF,$08,$00,$0C,$FA,$FE,$03,$16,$FD,$02 ; ROM $0F00 unclassified
 	      000CFAFE
 	      0316FD02
-1831:	0F0C  01141328	        DB $01,$14,$13,$28,$74,$0B,$33,$36,$74,$0B,$12,$30 ; ROM $0F0C unclassified
+1930:	0F0C  01141328	        DB $01,$14,$13,$28,$74,$0B,$33,$36,$74,$0B,$12,$30 ; ROM $0F0C unclassified
 	      740B3336
 	      740B1230
-1832:	0F18  740B3236	        DB $74,$0B,$32,$36,$8C,$0B,$12,$28,$8C,$0B,$0C,$38 ; ROM $0F18 unclassified
+1931:	0F18  740B3236	        DB $74,$0B,$32,$36,$8C,$0B,$12,$28,$8C,$0B,$0C,$38 ; ROM $0F18 unclassified
 	      8C0B1228
 	      8C0B0C38
-1833:	0F24  740B0C2A	        DB $74,$0B,$0C,$2A,$74,$0B,$0D,$30,$74,$0B,$0C,$2A ; ROM $0F24 unclassified
+1932:	0F24  740B0C2A	        DB $74,$0B,$0C,$2A,$74,$0B,$0D,$30,$74,$0B,$0C,$2A ; ROM $0F24 unclassified
 	      740B0D30
 	      740B0C2A
-1834:	0F30  8C0B0C38	        DB $8C,$0B,$0C,$38,$8C,$0B,$0F,$30,$74,$0B,$11,$11 ; ROM $0F30 unclassified
+1933:	0F30  8C0B0C38	        DB $8C,$0B,$0C,$38,$8C,$0B,$0F,$30,$74,$0B,$11,$11 ; ROM $0F30 unclassified
 	      8C0B0F30
 	      740B1111
-1835:	0F3C  11526599	        DB $11,$52,$65,$99,$99,$99,$11,$11,$11,$53,$75,$99 ; ROM $0F3C unclassified
+1934:	0F3C  11526599	        DB $11,$52,$65,$99,$99,$99,$11,$11,$11,$53,$75,$99 ; ROM $0F3C unclassified
 	      99991111
 	      11537599
-1836:	0F48  99991111	        DB $99,$99,$11,$11,$11,$54,$85,$99,$99,$99,$C4,$00 ; ROM $0F48 unclassified
+1935:	0F48  99991111	        DB $99,$99,$11,$11,$11,$54,$85,$99,$99,$99,$C4,$00 ; ROM $0F48 unclassified
 	      11548599
 	      9999C400
-1837:	0F54  747020FF	        DB $74,$70,$20,$FF,$A0,$0A,$B4,$00,$00,$8E,$0E,$00 ; ROM $0F54 unclassified
+1936:	0F54  747020FF	        DB $74,$70,$20,$FF,$A0,$0A,$B4,$00,$00,$8E,$0E,$00 ; ROM $0F54 unclassified
 	      A00AB400
 	      008E0E00
-1838:	0F60  0047414B	        DB $00,$47,$41,$4B,$45,$40,$40,$40,$40,$4D,$53,$45 ; ROM $0F60 unclassified
+1937:	0F60  0047414B	        DB $00,$47,$41,$4B,$45,$40,$40,$40,$40,$4D,$53,$45 ; ROM $0F60 unclassified
 	      45404040
 	      404D5345
-1839:	0F6C  4F404040	        DB $4F,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40 ; ROM $0F6C unclassified
+1938:	0F6C  4F404040	        DB $4F,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40 ; ROM $0F6C unclassified
 	      40404040
 	      40404040
-1840:	0F78  40404040	        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40 ; ROM $0F78 unclassified
+1939:	0F78  40404040	        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40 ; ROM $0F78 unclassified
 	      40404040
 	      40404040
-1841:	0F84  40404040	        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$00,$00,$25 ; ROM $0F84 unclassified
+1940:	0F84  40404040	        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$00,$00,$25 ; ROM $0F84 unclassified
 	      40404040
 	      40000025
-1842:	0F90  47524C40	        DB $47,$52,$4C,$40,$46,$49,$47,$48,$51,$49,$4C,$50 ; ROM $0F90 unclassified
+1941:	0F90  47524C40	        DB $47,$52,$4C,$40,$46,$49,$47,$48,$51,$49,$4C,$50 ; ROM $0F90 unclassified
 	      46494748
 	      51494C50
-1843:	0F9C  454F5140	        DB $45,$4F,$51,$40,$43,$4D,$49,$4C,$40,$40,$40,$40 ; ROM $0F9C unclassified
+1942:	0F9C  454F5140	        DB $45,$4F,$51,$40,$43,$4D,$49,$4C,$40,$40,$40,$40 ; ROM $0F9C unclassified
 	      434D494C
 	      40404040
-1844:	0FA8  40404040	        DB $40,$40,$40,$40,$40,$40,$40,$47,$45,$51,$40,$4F ; ROM $0FA8 unclassified
+1943:	0FA8  40404040	        DB $40,$40,$40,$40,$40,$40,$40,$47,$45,$51,$40,$4F ; ROM $0FA8 unclassified
 	      40404047
 	      4551404F
-1845:	0FB4  45414455	        DB $45,$41,$44,$55,$3A,$3A,$3A,$3A,$3A,$3A,$20,$3A ; ROM $0FB4 unclassified
+1944:	0FB4  45414455	        DB $45,$41,$44,$55,$3A,$3A,$3A,$3A,$3A,$3A,$20,$3A ; ROM $0FB4 unclassified
 	      3A3A3A3A
 	      3A3A203A
-1846:	0FC0  3A3A3A3A	        DB $3A,$3A,$3A,$3A,$3A,$40,$40,$44,$4F,$41,$54,$3B ; ROM $0FC0 unclassified
+1945:	0FC0  3A3A3A3A	        DB $3A,$3A,$3A,$3A,$3A,$40,$40,$44,$4F,$41,$54,$3B ; ROM $0FC0 unclassified
 	      3A404044
 	      4F41543B
-1847:	0FCC  4040474D	        DB $40,$40,$47,$4D,$51,$40,$4B,$45,$3B,$48,$45,$55 ; ROM $0FCC unclassified
+1946:	0FCC  4040474D	        DB $40,$40,$47,$4D,$51,$40,$4B,$45,$3B,$48,$45,$55 ; ROM $0FCC unclassified
 	      51404B45
 	      3B484555
-1848:	0FD8  404E414F	        DB $40,$4E,$41,$4F,$44,$4C,$45,$4F,$3B,$2E,$55,$4D ; ROM $0FD8 unclassified
+1947:	0FD8  404E414F	        DB $40,$4E,$41,$4F,$44,$4C,$45,$4F,$3B,$2E,$55,$4D ; ROM $0FD8 unclassified
 	      444C454F
 	      3B2E554D
-1849:	0FE4  52404841	        DB $52,$40,$48,$41,$53,$45,$40,$43,$4F,$45,$44,$49 ; ROM $0FE4 unclassified
+1948:	0FE4  52404841	        DB $52,$40,$48,$41,$53,$45,$40,$43,$4F,$45,$44,$49 ; ROM $0FE4 unclassified
 	      53454043
 	      4F454449
-1850:	0FF0  513C0000	        DB $51,$3C,$00,$00,$1A,$4E,$52,$50,$48,$40,$42,$52 ; ROM $0FF0 unclassified
+1949:	0FF0  513C0000	        DB $51,$3C,$00,$00,$1A,$4E,$52,$50,$48,$40,$42,$52 ; ROM $0FF0 unclassified
 	      1A4E5250
 	      48404252
-1851:	0FFC  51514D4C	        DB $51,$51,$4D,$4C ; ROM $0FFC unclassified
+1950:	0FFC  51514D4C	        DB $51,$51,$4D,$4C ; ROM $0FFC unclassified
 **** src/gunfight.asm ****
 
 
 
 Statistics:
 
-   247	symbols
+   301	symbols
   4096	bytes
 
 
 
 Symbol Table:
 
-cmd_0821_clear_video  821+    native_0008        8+    native_04ab      4ab+    
-cmd_0822_format_score  822+    native_0010       10+    native_04b0      4b0+    
-cmd_0823_draw_formatted  823+    native_0021       21+    native_04c1      4c1+    
-cmd_0829_branch_if_state  829+    native_0028       28+    native_04df      4df+    
-cmd_082a_expand_glyphs  82a+    native_0038       38+    native_04fa      4fa+    
-cmd_082b_set_delay  82b+    native_0046       46+    native_0510      510+    
-cmd_082d_wait_repeat  82d+    native_0057       57+    native_0511      511+    
-cmd_082e_draw_formatted  82e+    native_0076       76+    native_0517      517+    
-cmd_0834_set_delay  834+    native_0087       87+    native_0528      528+    
-cmd_0836_wait_repeat  836+    native_0091       91+    native_0549      549+    
-cmd_0837_draw_formatted  837+    native_00a4       a4+    native_056c      56c+    
-cmd_083d_copy15_to_ram  83d+    native_00a6       a6+    native_0585      585+    
-cmd_084f_set_delay  84f+    native_00b4       b4+    native_0590      590+    
-cmd_0851_wait_repeat  851+    native_00ea       ea+    native_05a3      5a3+    
-cmd_0852_copy9_to_ram  852+    native_00ed       ed+    native_05a7      5a7+    
-cmd_085e_set_delay  85e+    native_0103      103+    native_05af      5af+    
-cmd_0860_wait_repeat  860+    native_0108      108+    native_05bb      5bb+    
-cmd_0861_draw_formatted  861+    native_014c      14c+    native_05d6      5d6+    
-cmd_0867_set_delay  867+    native_0151      151+    native_05e9      5e9+    
-cmd_0869_wait_repeat  869+    native_015f      15f+    native_05fb      5fb+    
-cmd_086a_copy15_to_ram  86a+    native_0183      183+    native_05fc      5fc+    
-cmd_087c_set_delay  87c+    native_0198      198+    native_0604      604+    
-cmd_087e_wait_repeat  87e+    native_019f      19f+    native_060d      60d+    
-cmd_087f_script_jump  87f+    native_01b1      1b1+    native_0614      614+    
-cmd_0882_draw_formatted  882+    native_01be      1be+    native_061f      61f+    
-cmd_0888_copy15_to_ram  888+    native_01d4      1d4+    native_0624      624+    
-cmd_089a_wait_repeat  89a+    native_01f6      1f6+    native_062a      62a+    
-cmd_089b_clear_video  89b+    native_0208      208+    native_063d      63d+    
-cmd_089c_format_score  89c+    native_0214      214+    native_0649      649+    
-cmd_089d_expand_glyphs  89d+    native_0218      218+    native_0655      655+    
-cmd_089e_draw_game_status  89e+    native_022d      22d+    native_0662      662+    
-cmd_089f_draw_formatted  89f+    native_023b      23b+    native_0670      670+    
-cmd_08a5_draw_formatted  8a5+    native_023d      23d+    native_0682      682+    
-cmd_08ab_copy15_to_ram  8ab+    native_025e      25e+    native_068d      68d+    
-cmd_08bd_copy15_to_ram  8bd+    native_0280      280+    native_069d      69d+    
-cmd_08cf_copy9_to_ram  8cf+    native_0294      294+    native_06ad      6ad+    
-cmd_08db_copy9_to_ram  8db+    native_0297      297+    native_06bc      6bc+    
-cmd_08e7_copy9_to_ram  8e7+    native_02a7      2a7+    native_06c5      6c5+    
-cmd_08f3_copy9_to_ram  8f3+    native_02b4      2b4+    native_06d5      6d5+    
-cmd_08ff_set_delay  8ff+    native_02ba      2ba+    native_06eb      6eb+    
-cmd_0901_wait_repeat  901+    native_02bd      2bd+    native_0703      703+    
-cmd_0902_draw_formatted  902+    native_02c9      2c9+    native_0719      719+    
-cmd_0908_set_delay  908+    native_02e0      2e0+    native_072d      72d+    
-cmd_090a_clear_object_bits  90a+    native_030c      30c+    native_0738      738+    
-cmd_090d_clear_object_bits  90d+    native_0314      314+    native_0749      749+    
-cmd_0910_wait_repeat  910+    native_0326      326+    native_0775      775+    
-cmd_0911_draw_formatted  911+    native_0332      332+    native_0784      784+    
-cmd_0917_read_input_events  917+    native_033e      33e+    native_0785      785+    
-cmd_0918_script_jump  918+    native_0359      359+    native_079a      79a+    
-cmd_091b_bcd_increment_setup  91b+    native_035f      35f+    native_079c      79c+    
-cmd_0923_set_output_mode  923+    native_0372      372+    native_07ab      7ab+    
-cmd_0926_set_delay  926+    native_0373      373+    native_07b1      7b1+    
-cmd_0928_wait_repeat  928+    native_037c      37c+    native_07bd      7bd+    
-cmd_0929_setup_object  929+    native_0390      390+    native_07c3      7c3+    
-cmd_092f_draw_status_b  92f+    native_0397      397+    native_07cc      7cc+    
-cmd_0930_set_delay  930+    native_039d      39d+    native_07e9      7e9+    
-cmd_0932_wait_repeat  932+    native_03a7      3a7+    native_07ef      7ef+    
-cmd_0933_script_jump  933+    native_03b4      3b4+    native_07f2      7f2+    
-cmd_0936_fill_video_rect  936+    native_03c9      3c9+    native_0807      807+    
-cmd_0939_script_jump  939+    native_0404      404+    native_0813      813+    
-cmd_093c_fill_video_rect  93c+    native_040d      40d+    native_word_00_wait_repeat  813+    
-cmd_093f_script_jump  93f+    native_0412      412+    native_word_01_draw_formatted_data  5e9+    
-cmd_0942_fill_video_rect  942+    native_0420      420+    native_word_02_set_ram_2003  63d+    
-cmd_0945_script_jump  945+    native_042a      42a+    native_word_03_set_ram_2015  649+    
-cmd_0948_fill_video_rect  948+    native_043e      43e+    native_word_04_clear_display  655+    
-cmd_094b_script_jump  94b+    native_044f      44f+    native_word_05_copy_inline_15  68d+    
-cmd_094e_fill_video_rect  94e+    native_0461      461+    native_word_06_copy_inline_9  69d+    
-cmd_0951_script_jump  951+    native_0463      463+    native_word_07_clear_object_flags  670+    
-cmd_0954_fill_video_rect  954+    native_0468      468+    native_word_08_toggle_object_flags  6ad+    
-cmd_0957_script_jump  957+    native_046b      46b+    native_word_09_branch_script  682+    
-cmd_095a_fill_video_rect  95a+    native_0473      473+    native_word_0a_game_display  6bc+    
-cmd_095d_set_output_mode  95d+    native_0478      478+    native_word_0b_init_object  749+    
-cmd_0960_script_jump  960+    native_047a      47a+    native_word_0c_bcd_increment_init  738+    
-cmd_0963_bcd_increment_setup  963+    native_047f      47f+    native_word_0d_set_output_and_ram  775+    
-cmd_096b_set_output_mode  96b+    native_0482      482+    native_word_0e_fill_rectangle  785+    
-cmd_096e_set_delay  96e+    native_0487      487+    native_word_0f_expand_graphics  7ab+    
-cmd_0970_wait_repeat  970+    native_048c      48c+    native_word_10_branch_if_state  807+    
-cmd_0971_setup_object  971+    native_048e      48e+    native_word_11_draw_status_a  7e9+    
-cmd_0977_draw_status_a  977+    native_0493      493+    native_word_12_draw_status_b  7ef+    
-cmd_0978_set_delay  978+    native_0499      499+    native_word_13_update_score_text  5a3+    
-cmd_097a_wait_repeat  97a+    native_049e      49e+    native_word_14_input_event_dispatch  3c9+    
-cmd_097b_script_jump  97b+    native_04a0      4a0+    
-native_0000        0+    native_04a5      4a5+    
+cmd_0821_clear_video  821+    native_0151      151+    native_06bc      6bc+    
+cmd_0822_format_score  822+    native_015f      15f+    native_06c5      6c5+    
+cmd_0823_draw_formatted  823+    native_0183      183+    native_06d5      6d5+    
+cmd_0829_branch_if_state  829+    native_0198      198+    native_06eb      6eb+    
+cmd_082a_expand_glyphs  82a+    native_019f      19f+    native_0703      703+    
+cmd_082b_set_delay  82b+    native_01b1      1b1+    native_0719      719+    
+cmd_082d_wait_repeat  82d+    native_01be      1be+    native_072d      72d+    
+cmd_082e_draw_formatted  82e+    native_01d4      1d4+    native_0738      738+    
+cmd_0834_set_delay  834+    native_01f6      1f6+    native_0749      749+    
+cmd_0836_wait_repeat  836+    native_0208      208+    native_0775      775+    
+cmd_0837_draw_formatted  837+    native_0214      214+    native_0784      784+    
+cmd_083d_copy15_to_ram  83d+    native_0218      218+    native_0785      785+    
+cmd_084f_set_delay  84f+    native_022d      22d+    native_079a      79a+    
+cmd_0851_wait_repeat  851+    native_023b      23b+    native_079c      79c+    
+cmd_0852_copy9_to_ram  852+    native_023d      23d+    native_07ab      7ab+    
+cmd_085e_set_delay  85e+    native_025e      25e+    native_07b1      7b1+    
+cmd_0860_wait_repeat  860+    native_0280      280+    native_07bd      7bd+    
+cmd_0861_draw_formatted  861+    native_0294      294+    native_07c3      7c3+    
+cmd_0867_set_delay  867+    native_0297      297+    native_07cc      7cc+    
+cmd_0869_wait_repeat  869+    native_02a7      2a7+    native_07e9      7e9+    
+cmd_086a_copy15_to_ram  86a+    native_02b4      2b4+    native_07ef      7ef+    
+cmd_087c_set_delay  87c+    native_02ba      2ba+    native_07f2      7f2+    
+cmd_087e_wait_repeat  87e+    native_02bd      2bd+    native_0807      807+    
+cmd_087f_script_jump  87f+    native_02c9      2c9+    native_0813      813+    
+cmd_0882_draw_formatted  882+    native_02e0      2e0+    native_word_00_wait_repeat  813+    
+cmd_0888_copy15_to_ram  888+    native_030c      30c+    native_word_01_draw_formatted_data  5e9+    
+cmd_089a_wait_repeat  89a+    native_0314      314+    native_word_02_set_ram_2003  63d+    
+cmd_089b_clear_video  89b+    native_0326      326+    native_word_03_set_ram_2015  649+    
+cmd_089c_format_score  89c+    native_0332      332+    native_word_04_clear_display  655+    
+cmd_089d_expand_glyphs  89d+    native_033e      33e+    native_word_05_copy_inline_15  68d+    
+cmd_089e_draw_game_status  89e+    native_0359      359+    native_word_06_copy_inline_9  69d+    
+cmd_089f_draw_formatted  89f+    native_035f      35f+    native_word_07_clear_object_flags  670+    
+cmd_08a5_draw_formatted  8a5+    native_0372      372+    native_word_08_toggle_object_flags  6ad+    
+cmd_08ab_copy15_to_ram  8ab+    native_0373      373+    native_word_09_branch_script  682+    
+cmd_08bd_copy15_to_ram  8bd+    native_037c      37c+    native_word_0a_game_display  6bc+    
+cmd_08cf_copy9_to_ram  8cf+    native_0390      390+    native_word_0b_init_object  749+    
+cmd_08db_copy9_to_ram  8db+    native_0397      397+    native_word_0c_bcd_increment_init  738+    
+cmd_08e7_copy9_to_ram  8e7+    native_039d      39d+    native_word_0d_set_output_and_ram  775+    
+cmd_08f3_copy9_to_ram  8f3+    native_03a7      3a7+    native_word_0e_fill_rectangle  785+    
+cmd_08ff_set_delay  8ff+    native_03b4      3b4+    native_word_0f_expand_graphics  7ab+    
+cmd_0901_wait_repeat  901+    native_03c9      3c9+    native_word_10_branch_if_state  807+    
+cmd_0902_draw_formatted  902+    native_0404      404+    native_word_11_draw_status_a  7e9+    
+cmd_0908_set_delay  908+    native_040d      40d+    native_word_12_draw_status_b  7ef+    
+cmd_090a_clear_object_bits  90a+    native_0412      412+    native_word_13_update_score_text  5a3+    
+cmd_090d_clear_object_bits  90d+    native_0420      420+    native_word_14_input_event_dispatch  3c9+    
+cmd_0910_wait_repeat  910+    native_042a      42a+    rom_event_script_00  9d8+    
+cmd_0911_draw_formatted  911+    native_043e      43e+    rom_event_script_01  9da+    
+cmd_0917_read_input_events  917+    native_044f      44f+    rom_event_script_02  9dc+    
+cmd_0918_script_jump  918+    native_0461      461+    rom_event_script_03  9de+    
+cmd_091b_bcd_increment_setup  91b+    native_0463      463+    rom_event_script_04  9e0+    
+cmd_0923_set_output_mode  923+    native_0468      468+    rom_event_script_05  9e2+    
+cmd_0926_set_delay  926+    native_046b      46b+    rom_event_script_06  9e4+    
+cmd_0928_wait_repeat  928+    native_0473      473+    rom_event_script_07  9e6+    
+cmd_0929_setup_object  929+    native_0478      478+    rom_event_script_08  9e8+    
+cmd_092f_draw_status_b  92f+    native_047a      47a+    rom_game_word_00  9ae+    
+cmd_0930_set_delay  930+    native_047f      47f+    rom_game_word_01  9b0+    
+cmd_0932_wait_repeat  932+    native_0482      482+    rom_game_word_02  9b2+    
+cmd_0933_script_jump  933+    native_0487      487+    rom_game_word_03  9b4+    
+cmd_0936_fill_video_rect  936+    native_048c      48c+    rom_game_word_04  9b6+    
+cmd_0939_script_jump  939+    native_048e      48e+    rom_game_word_05  9b8+    
+cmd_093c_fill_video_rect  93c+    native_0493      493+    rom_game_word_06  9ba+    
+cmd_093f_script_jump  93f+    native_0499      499+    rom_game_word_07  9bc+    
+cmd_0942_fill_video_rect  942+    native_049e      49e+    rom_game_word_08  9be+    
+cmd_0945_script_jump  945+    native_04a0      4a0+    rom_game_word_09  9c0+    
+cmd_0948_fill_video_rect  948+    native_04a5      4a5+    rom_game_word_0a  9c2+    
+cmd_094b_script_jump  94b+    native_04ab      4ab+    rom_game_word_0b  9c4+    
+cmd_094e_fill_video_rect  94e+    native_04b0      4b0+    rom_game_word_0c  9c6+    
+cmd_0951_script_jump  951+    native_04c1      4c1+    rom_game_word_0d  9c8+    
+cmd_0954_fill_video_rect  954+    native_04df      4df+    rom_game_word_0e  9ca+    
+cmd_0957_script_jump  957+    native_04fa      4fa+    rom_game_word_0f  9cc+    
+cmd_095a_fill_video_rect  95a+    native_0510      510+    rom_game_word_10  9ce+    
+cmd_095d_set_output_mode  95d+    native_0511      511+    rom_game_word_11  9d0+    
+cmd_0960_script_jump  960+    native_0517      517+    rom_game_word_12  9d2+    
+cmd_0963_bcd_increment_setup  963+    native_0528      528+    rom_game_word_13  9d4+    
+cmd_096b_set_output_mode  96b+    native_0549      549+    rom_game_word_14  9d6+    
+cmd_096e_set_delay  96e+    native_056c      56c+    rom_native_event_action_00  97e+    
+cmd_0970_wait_repeat  970+    native_0585      585+    rom_native_event_action_01  980+    
+cmd_0971_setup_object  971+    native_0590      590+    rom_native_event_action_02  982+    
+cmd_0977_draw_status_a  977+    native_05a3      5a3+    rom_native_event_action_03  984+    
+cmd_0978_set_delay  978+    native_05a7      5a7+    rom_native_event_action_04  986+    
+cmd_097a_wait_repeat  97a+    native_05af      5af+    rom_native_event_action_05  988+    
+cmd_097b_script_jump  97b+    native_05bb      5bb+    rom_native_event_action_06  98a+    
+native_0000        0+    native_05d6      5d6+    rom_native_event_action_07  98c+    
+native_0008        8+    native_05e9      5e9+    rom_native_event_action_08  98e+    
+native_0010       10+    native_05fb      5fb+    rom_native_event_action_09  990+    
+native_0021       21+    native_05fc      5fc+    rom_native_event_action_0a  992+    
+native_0028       28+    native_0604      604+    rom_native_event_action_0b  994+    
+native_0038       38+    native_060d      60d+    rom_native_event_action_0c  996+    
+native_0046       46+    native_0614      614+    rom_native_event_action_0d  998+    
+native_0057       57+    native_061f      61f+    rom_native_event_action_0e  99a+    
+native_0076       76+    native_0624      624+    rom_native_event_action_0f  99c+    
+native_0087       87+    native_062a      62a+    rom_native_event_action_10  99e+    
+native_0091       91+    native_063d      63d+    rom_native_event_action_11  9a0+    
+native_00a4       a4+    native_0649      649+    rom_native_event_action_12  9a2+    
+native_00a6       a6+    native_0655      655+    rom_native_event_action_13  9a4+    
+native_00b4       b4+    native_0662      662+    rom_native_event_action_14  9a6+    
+native_00ea       ea+    native_0670      670+    rom_native_event_action_15  9a8+    
+native_00ed       ed+    native_0682      682+    rom_native_event_action_16  9aa+    
+native_0103      103+    native_068d      68d+    rom_native_event_action_17  9ac+    
+native_0108      108+    native_069d      69d+    
+native_014c      14c+    native_06ad      6ad+    

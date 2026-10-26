@@ -1706,15 +1706,114 @@ CMD_097A_WAIT_REPEAT:
 CMD_097B_SCRIPT_JUMP:
         DB $09 ; word SCRIPT_JUMP ($09)
         DW $089B ; RAM address / target / packed dimension
-        DB $61,$04,$73,$04,$78,$04,$87,$04,$2A,$04,$2A,$04 ; ROM $097E unclassified
-        DB $2A,$04,$B0,$04,$8C,$04,$99,$04,$9E,$04,$AB,$04 ; ROM $098A unclassified
-        DB $3E,$04,$3E,$04,$3E,$04,$17,$05,$84,$07,$84,$07 ; ROM $0996 unclassified
-        DB $84,$07,$84,$07,$84,$07,$84,$07,$49,$05,$6C,$05 ; ROM $09A2 unclassified
-        DB $13,$08,$E9,$05,$3D,$06,$49,$06,$55,$06,$8D,$06 ; ROM $09AE native command/event vectors
-        DB $9D,$06,$70,$06,$AD,$06,$82,$06,$BC,$06,$49,$07 ; ROM $09BA native command/event vectors
-        DB $38,$07,$75,$07,$85,$07,$AB,$07,$07,$08,$E9,$07 ; ROM $09C6 native command/event vectors
-        DB $EF,$07,$A3,$05,$C9,$03,$1B,$09,$36,$09,$3C,$09 ; ROM $09D2 native command/event vectors
-        DB $42,$09,$48,$09,$4E,$09,$54,$09,$5A,$09,$63,$09 ; ROM $09DE native command/event vectors
+ROM_NATIVE_EVENT_ACTION_00:
+        DW $0461 ; NATIVE_EVENT_ACTION pointer from ROM $097E
+ROM_NATIVE_EVENT_ACTION_01:
+        DW $0473 ; NATIVE_EVENT_ACTION pointer from ROM $0980
+ROM_NATIVE_EVENT_ACTION_02:
+        DW $0478 ; NATIVE_EVENT_ACTION pointer from ROM $0982
+ROM_NATIVE_EVENT_ACTION_03:
+        DW $0487 ; NATIVE_EVENT_ACTION pointer from ROM $0984
+ROM_NATIVE_EVENT_ACTION_04:
+        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $0986
+ROM_NATIVE_EVENT_ACTION_05:
+        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $0988
+ROM_NATIVE_EVENT_ACTION_06:
+        DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $098A
+ROM_NATIVE_EVENT_ACTION_07:
+        DW $04B0 ; NATIVE_EVENT_ACTION pointer from ROM $098C
+ROM_NATIVE_EVENT_ACTION_08:
+        DW $048C ; NATIVE_EVENT_ACTION pointer from ROM $098E
+ROM_NATIVE_EVENT_ACTION_09:
+        DW $0499 ; NATIVE_EVENT_ACTION pointer from ROM $0990
+ROM_NATIVE_EVENT_ACTION_0A:
+        DW $049E ; NATIVE_EVENT_ACTION pointer from ROM $0992
+ROM_NATIVE_EVENT_ACTION_0B:
+        DW $04AB ; NATIVE_EVENT_ACTION pointer from ROM $0994
+ROM_NATIVE_EVENT_ACTION_0C:
+        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $0996
+ROM_NATIVE_EVENT_ACTION_0D:
+        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $0998
+ROM_NATIVE_EVENT_ACTION_0E:
+        DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $099A
+ROM_NATIVE_EVENT_ACTION_0F:
+        DW $0517 ; NATIVE_EVENT_ACTION pointer from ROM $099C
+ROM_NATIVE_EVENT_ACTION_10:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $099E
+ROM_NATIVE_EVENT_ACTION_11:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A0
+ROM_NATIVE_EVENT_ACTION_12:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A2
+ROM_NATIVE_EVENT_ACTION_13:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A4
+ROM_NATIVE_EVENT_ACTION_14:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A6
+ROM_NATIVE_EVENT_ACTION_15:
+        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A8
+ROM_NATIVE_EVENT_ACTION_16:
+        DW $0549 ; NATIVE_EVENT_ACTION pointer from ROM $09AA
+ROM_NATIVE_EVENT_ACTION_17:
+        DW $056C ; NATIVE_EVENT_ACTION pointer from ROM $09AC
+ROM_GAME_WORD_00:
+        DW $0813 ; GAME_WORD pointer from ROM $09AE
+ROM_GAME_WORD_01:
+        DW $05E9 ; GAME_WORD pointer from ROM $09B0
+ROM_GAME_WORD_02:
+        DW $063D ; GAME_WORD pointer from ROM $09B2
+ROM_GAME_WORD_03:
+        DW $0649 ; GAME_WORD pointer from ROM $09B4
+ROM_GAME_WORD_04:
+        DW $0655 ; GAME_WORD pointer from ROM $09B6
+ROM_GAME_WORD_05:
+        DW $068D ; GAME_WORD pointer from ROM $09B8
+ROM_GAME_WORD_06:
+        DW $069D ; GAME_WORD pointer from ROM $09BA
+ROM_GAME_WORD_07:
+        DW $0670 ; GAME_WORD pointer from ROM $09BC
+ROM_GAME_WORD_08:
+        DW $06AD ; GAME_WORD pointer from ROM $09BE
+ROM_GAME_WORD_09:
+        DW $0682 ; GAME_WORD pointer from ROM $09C0
+ROM_GAME_WORD_0A:
+        DW $06BC ; GAME_WORD pointer from ROM $09C2
+ROM_GAME_WORD_0B:
+        DW $0749 ; GAME_WORD pointer from ROM $09C4
+ROM_GAME_WORD_0C:
+        DW $0738 ; GAME_WORD pointer from ROM $09C6
+ROM_GAME_WORD_0D:
+        DW $0775 ; GAME_WORD pointer from ROM $09C8
+ROM_GAME_WORD_0E:
+        DW $0785 ; GAME_WORD pointer from ROM $09CA
+ROM_GAME_WORD_0F:
+        DW $07AB ; GAME_WORD pointer from ROM $09CC
+ROM_GAME_WORD_10:
+        DW $0807 ; GAME_WORD pointer from ROM $09CE
+ROM_GAME_WORD_11:
+        DW $07E9 ; GAME_WORD pointer from ROM $09D0
+ROM_GAME_WORD_12:
+        DW $07EF ; GAME_WORD pointer from ROM $09D2
+ROM_GAME_WORD_13:
+        DW $05A3 ; GAME_WORD pointer from ROM $09D4
+ROM_GAME_WORD_14:
+        DW $03C9 ; GAME_WORD pointer from ROM $09D6
+ROM_EVENT_SCRIPT_00:
+        DW $091B ; EVENT_SCRIPT pointer from ROM $09D8
+ROM_EVENT_SCRIPT_01:
+        DW $0936 ; EVENT_SCRIPT pointer from ROM $09DA
+ROM_EVENT_SCRIPT_02:
+        DW $093C ; EVENT_SCRIPT pointer from ROM $09DC
+ROM_EVENT_SCRIPT_03:
+        DW $0942 ; EVENT_SCRIPT pointer from ROM $09DE
+ROM_EVENT_SCRIPT_04:
+        DW $0948 ; EVENT_SCRIPT pointer from ROM $09E0
+ROM_EVENT_SCRIPT_05:
+        DW $094E ; EVENT_SCRIPT pointer from ROM $09E2
+ROM_EVENT_SCRIPT_06:
+        DW $0954 ; EVENT_SCRIPT pointer from ROM $09E4
+ROM_EVENT_SCRIPT_07:
+        DW $095A ; EVENT_SCRIPT pointer from ROM $09E6
+ROM_EVENT_SCRIPT_08:
+        DW $0963 ; EVENT_SCRIPT pointer from ROM $09E8
         DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ; ROM $09EA unclassified
         DB $00,$00,$3C,$7E,$66,$66,$66,$66,$66,$66,$7E,$3C ; ROM $09F6 unclassified
         DB $18,$1C,$18,$18,$18,$18,$18,$18,$3C,$3C,$3C,$7E ; ROM $0A02 unclassified
