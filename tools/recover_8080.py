@@ -4,6 +4,7 @@ All native instruction starts are reached from reset/IRQ vectors. Unclassified
 bytes remain DB, never silently converted into unverified instructions.
 """
 import argparse,hashlib,json,re,zipfile
+from audit_words import audit
 from pathlib import Path
 from collections import deque,Counter
 
@@ -77,9 +78,18 @@ def main():
         parts=[z.read(n) for n in names]
     assert all(len(p)==size for p in parts)
     mem=b"".join(parts);digest=hashlib.sha256(mem).hexdigest()
-    vectors=[mem[2478+2*i]|mem[2478+2*i+1]<<8 for i in range(30)]
+    vectors=[mem[2478+2*i]|mem[2478+2*i+1]<<8 for i in range(21)]
     assert all(v<len(mem) for v in vectors),vectors
     code,owned,entries,edges=recover(mem,(0,8,16,935,*vectors))
+    word_scan=audit(ROOT,game)
+    packet_begins={int(x["pc"],16):x for x in word_scan["unique_packets"]}
+    packet_owner={}
+    for start,p in packet_begins.items():
+        for pos in range(start,start+p["length"]):
+            assert pos not in packet_owner, ("overlapping packet",pos)
+            packet_owner[pos]=start
+    overlapping=sorted(set(packet_owner)&set(owned))
+    assert not overlapping, ("Native code overlaps decoded bytecode",overlapping[:20])
     signatures=[]
     dispatch_tail=bytes.fromhex("07 4F 06 00 09 7E 23 66 6F E9")
     for i in range(len(mem)-len(dispatch_tail)):
@@ -95,6 +105,9 @@ def main():
         asm.extend(["",f"        ORG ${lo:04X}",f"; Device {name}, SHA1 {hashlib.sha1(parts[part]).hexdigest()}"])
         pc=lo
         while pc<hi:
+            if pc in packet_begins:
+                packet=packet_begins[pc]
+                asm.append(f"WORD_{pc:04X}: ; opcode {packet['opcode']}, {packet['length']-1} bytes inline")
             if pc in entries and pc in code:asm.append(f"NATIVE_{pc:04X}:")
             if pc in code and pc+code[pc][1]<=hi:
                 inst,n,_,_=code[pc]
@@ -105,9 +118,13 @@ def main():
                 # Preserve all unclassified bytes, never misidentify as native code.
                 stop=min(hi,pc+12)
                 for p in range(pc+1,stop):
-                    if p in code or p in entries:stop=p;break
+                    if p in code or p in entries or p in packet_begins or (packet_owner.get(p)!=packet_owner.get(pc)):stop=p;break
                 raw=mem[pc:stop]
-                asm.append("        DB "+",".join(f"${b:02X}" for b in raw)+f" ; ROM ${pc:04X} unclassified")
+                category=("bytecode word "+packet_begins[packet_owner[pc]]["opcode"] if pc in packet_owner else
+                          "native command/event vectors" if game=="gunfight" and 0x09AE<=pc<0x09EA else
+                          "native command vectors" if game=="desertgun" and 0x0F61<=pc<0x0F7B else
+                          "unclassified")
+                asm.append("        DB "+",".join(f"${b:02X}" for b in raw)+f" ; ROM ${pc:04X} {category}")
                 pc=stop
     (ROOT/"src"/(game+".asm")).write_text("\n".join(asm)+"\n")
     report={"game":game,"cpu":"Intel 8080","rom_size":len(mem),"sha256":digest,
@@ -115,7 +132,7 @@ def main():
                        for i,(n,p) in enumerate(zip(names,parts))],
             "native_instruction_count":len(code),"native_byte_count":len(owned),
             "edges":edges,"indexed_dispatch_signatures":signatures}
-    report.update({"script_pointer_ram":0x2000,"dispatcher":935,"vector_table":2478,"vector_count":30,"vectors":vectors,"initial_script":2081})
+    report.update({"script_pointer_ram":0x2000,"dispatcher":935,"vector_table":2478,"vector_count":21,"vectors":vectors,"initial_script":2081,"decoded_script_sites":word_scan["distinct_packet_count"]})
     (ROOT/"docs"/"recovery.json").write_text(json.dumps(report,indent=2)+"\n")
     print(game,"native 8080 instructions",len(code),"code bytes",len(owned),
           "indexed dispatches",signatures)
