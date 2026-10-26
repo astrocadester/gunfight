@@ -111,6 +111,11 @@ def main():
     assert len(event_actions)==24 and event_actions[4]==0x042A and event_actions[-1]==0x056C
     code,owned,entries,edges=recover(mem,(0,8,16,935,*vectors,*event_actions))
     word_scan=audit(ROOT,game)
+    word_names=["WAIT_REPEAT","DRAW_FORMATTED_DATA","SET_RAM_2003","SET_RAM_2015","CLEAR_DISPLAY","COPY_INLINE_15","COPY_INLINE_9","CLEAR_OBJECT_FLAGS","TOGGLE_OBJECT_FLAGS","BRANCH_SCRIPT","GAME_DISPLAY","INIT_OBJECT","BCD_INCREMENT_INIT","SET_OUTPUT_AND_RAM","FILL_RECTANGLE","EXPAND_GRAPHICS","BRANCH_IF_STATE","DRAW_STATUS_A","DRAW_STATUS_B","UPDATE_SCORE_TEXT","INPUT_EVENT_DISPATCH"]
+    word_aliases={}
+    for index,address in enumerate(vectors):
+        if game=="desertgun" and index==0:continue # zero goes directly to scheduler
+        word_aliases.setdefault(address,[]).append(index)
     packet_begins={int(x["pc"],16):x for x in word_scan["unique_packets"]}
     packet_owner={}
     for start,p in packet_begins.items():
@@ -173,7 +178,12 @@ def main():
                     offset+=width
                 pc+=len(raw)
                 continue
-            if pc in entries and pc in code:asm.append(f"NATIVE_{pc:04X}:")
+            if pc in entries and pc in code:
+                for index in word_aliases.get(pc,[]):
+                    asm.append(f"NATIVE_WORD_{index:02X}_{word_names[index]}:")
+                if game=="desertgun" and pc==0x11EA:
+                    asm.append("WORD_ZERO_FRAME_SCHEDULER:")
+                asm.append(f"NATIVE_{pc:04X}:")
             if pc in code and pc+code[pc][1]<=hi:
                 inst,n,_,_=code[pc]
                 raw=mem[pc:pc+n].hex(" ").upper()
