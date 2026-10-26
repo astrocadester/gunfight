@@ -5,12 +5,12 @@ Source: original gunfight.zip, SHA256 b1dee22902ce8b8ebd3b5c85293cc350ed789c1088
 ## Runtime identity
 
 - Script-pointer RAM: `$2000`
-- Native command dispatcher: `$03A7`
-- Vector table: `$09AE`
-- Indexed native entries: 21 defensible native handlers ($00–$14); raw table continuation past that is not proven code
-- Initial ROM command stream: `$0821`
+- Native command dispatcher: `$3A7`
+- Vector table: `$9AE`
+- Indexed native entries: 30
+- Initial ROM command stream: `$821`
 
-The dispatcher fetches a bytecode from its saved program counter, advances the pointer, indexes 16-bit native handler entries, and transfers control indirectly. For recovered operand conventions and side-effects, see [the second semantic pass](8080-WORD-SEMANTICS.md). Rows $15–$1D below are historically over-read candidates pointing into likely data, NOT confirmed commands.
+The dispatcher fetches a bytecode from its saved program counter, advances the pointer, indexes 16-bit native handler entries, and transfers control indirectly. Entry count does not imply each command has identical operands.
 
 | Index | Native handler | First 8 bytes at handler |
 |---:|---:|---|

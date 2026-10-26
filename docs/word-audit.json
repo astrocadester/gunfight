@@ -1,0 +1,1280 @@
+{
+  "game": "gunfight",
+  "sha256": "b1dee22902ce8b8ebd3b5c85293cc350ed789c1088a02442db54184563428343",
+  "vector_base": "09AE",
+  "vector_entries": [
+    {
+      "index": "00",
+      "native_address": "0813",
+      "known_operand_width": 0
+    },
+    {
+      "index": "01",
+      "native_address": "05E9",
+      "known_operand_width": 5
+    },
+    {
+      "index": "02",
+      "native_address": "063D",
+      "known_operand_width": 1
+    },
+    {
+      "index": "03",
+      "native_address": "0649",
+      "known_operand_width": 1
+    },
+    {
+      "index": "04",
+      "native_address": "0655",
+      "known_operand_width": 0
+    },
+    {
+      "index": "05",
+      "native_address": "068D",
+      "known_operand_width": 17
+    },
+    {
+      "index": "06",
+      "native_address": "069D",
+      "known_operand_width": 11
+    },
+    {
+      "index": "07",
+      "native_address": "0670",
+      "known_operand_width": 2
+    },
+    {
+      "index": "08",
+      "native_address": "06AD",
+      "known_operand_width": 2
+    },
+    {
+      "index": "09",
+      "native_address": "0682",
+      "known_operand_width": 2
+    },
+    {
+      "index": "0A",
+      "native_address": "06BC",
+      "known_operand_width": 0
+    },
+    {
+      "index": "0B",
+      "native_address": "0749",
+      "known_operand_width": 5
+    },
+    {
+      "index": "0C",
+      "native_address": "0738",
+      "known_operand_width": 7
+    },
+    {
+      "index": "0D",
+      "native_address": "0775",
+      "known_operand_width": 2
+    },
+    {
+      "index": "0E",
+      "native_address": "0785",
+      "known_operand_width": 2
+    },
+    {
+      "index": "0F",
+      "native_address": "07AB",
+      "known_operand_width": 0
+    },
+    {
+      "index": "10",
+      "native_address": "0807",
+      "known_operand_width": 0
+    },
+    {
+      "index": "11",
+      "native_address": "07E9",
+      "known_operand_width": 0
+    },
+    {
+      "index": "12",
+      "native_address": "07EF",
+      "known_operand_width": 0
+    },
+    {
+      "index": "13",
+      "native_address": "05A3",
+      "known_operand_width": 0
+    },
+    {
+      "index": "14",
+      "native_address": "03C9",
+      "known_operand_width": 0
+    }
+  ],
+  "streams": [
+    {
+      "root": "0821",
+      "packets": [
+        {
+          "pc": "0821",
+          "opcode": "04",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0822",
+          "opcode": "13",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0823",
+          "opcode": "01",
+          "operand": "0C610F0A24",
+          "length": 6
+        },
+        {
+          "pc": "0829",
+          "opcode": "10",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "082A",
+          "opcode": "0F",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "082B",
+          "opcode": "03",
+          "operand": "5A",
+          "length": 2
+        },
+        {
+          "pc": "082D",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "082E",
+          "opcode": "01",
+          "operand": "296D0F0026",
+          "length": 6
+        },
+        {
+          "pc": "0834",
+          "opcode": "03",
+          "operand": "5A",
+          "length": 2
+        },
+        {
+          "pc": "0836",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0837",
+          "opcode": "01",
+          "operand": "0B990F143D",
+          "length": 6
+        },
+        {
+          "pc": "083D",
+          "opcode": "05",
+          "operand": "2A20C30100004000660BAA8B0D4A0D8B0D",
+          "length": 18,
+          "ram_destination": "202A",
+          "inline_copy_bytes": 15
+        },
+        {
+          "pc": "084F",
+          "opcode": "03",
+          "operand": "5A",
+          "length": 2
+        },
+        {
+          "pc": "0851",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0852",
+          "opcode": "06",
+          "operand": "6320C6035400FE027800C8",
+          "length": 12,
+          "ram_destination": "2063",
+          "inline_copy_bytes": 9
+        },
+        {
+          "pc": "085E",
+          "opcode": "03",
+          "operand": "4B",
+          "length": 2
+        },
+        {
+          "pc": "0860",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0861",
+          "opcode": "01",
+          "operand": "0BA40F143D",
+          "length": 6
+        },
+        {
+          "pc": "0867",
+          "opcode": "03",
+          "operand": "3C",
+          "length": 2
+        },
+        {
+          "pc": "0869",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "086A",
+          "opcode": "05",
+          "operand": "3D20C2FF400060006627A0C7220021C722",
+          "length": 18,
+          "ram_destination": "203D",
+          "inline_copy_bytes": 15
+        },
+        {
+          "pc": "087C",
+          "opcode": "03",
+          "operand": "40",
+          "length": 2
+        },
+        {
+          "pc": "087E",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "087F",
+          "opcode": "09",
+          "operand": "2108",
+          "length": 3
+        }
+      ],
+      "stop_pc": "0821",
+      "stop_reason": "cycle"
+    },
+    {
+      "root": "089B",
+      "packets": [
+        {
+          "pc": "089B",
+          "opcode": "04",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "089C",
+          "opcode": "13",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "089D",
+          "opcode": "0F",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "089E",
+          "opcode": "0A",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "089F",
+          "opcode": "01",
+          "operand": "09AF0F0C2E",
+          "length": 6
+        },
+        {
+          "pc": "08A5",
+          "opcode": "01",
+          "operand": "0CB80FA23E",
+          "length": 6
+        },
+        {
+          "pc": "08AB",
+          "opcode": "05",
+          "operand": "2A20C0010000480066139A8B0D870C8B0D",
+          "length": 18,
+          "ram_destination": "202A",
+          "inline_copy_bytes": 15
+        },
+        {
+          "pc": "08BD",
+          "opcode": "05",
+          "operand": "3D20C0FFE7A0480066139AC722C321C722",
+          "length": 18,
+          "ram_destination": "203D",
+          "inline_copy_bytes": 15
+        },
+        {
+          "pc": "08CF",
+          "opcode": "06",
+          "operand": "632006000004F800000AC8",
+          "length": 12,
+          "ram_destination": "2063",
+          "inline_copy_bytes": 9
+        },
+        {
+          "pc": "08DB",
+          "opcode": "06",
+          "operand": "752006000004F800000AC8",
+          "length": 12,
+          "ram_destination": "2075",
+          "inline_copy_bytes": 9
+        },
+        {
+          "pc": "08E7",
+          "opcode": "06",
+          "operand": "872006000004F800000AC8",
+          "length": 12,
+          "ram_destination": "2087",
+          "inline_copy_bytes": 9
+        },
+        {
+          "pc": "08F3",
+          "opcode": "06",
+          "operand": "992006000004F800000AC8",
+          "length": 12,
+          "ram_destination": "2099",
+          "inline_copy_bytes": 9
+        },
+        {
+          "pc": "08FF",
+          "opcode": "03",
+          "operand": "1E",
+          "length": 2
+        },
+        {
+          "pc": "0901",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0902",
+          "opcode": "01",
+          "operand": "09C50F0C2E",
+          "length": 6
+        },
+        {
+          "pc": "0908",
+          "opcode": "03",
+          "operand": "0A",
+          "length": 2
+        },
+        {
+          "pc": "090A",
+          "opcode": "07",
+          "operand": "2A20",
+          "length": 3
+        },
+        {
+          "pc": "090D",
+          "opcode": "07",
+          "operand": "3D20",
+          "length": 3
+        },
+        {
+          "pc": "0910",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0911",
+          "opcode": "01",
+          "operand": "05A40F0E2E",
+          "length": 6
+        },
+        {
+          "pc": "0917",
+          "opcode": "14",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0918",
+          "opcode": "09",
+          "operand": "9B08",
+          "length": 3
+        }
+      ],
+      "stop_pc": "089B",
+      "stop_reason": "cycle"
+    },
+    {
+      "root": "0882",
+      "packets": [
+        {
+          "pc": "0882",
+          "opcode": "01",
+          "operand": "27D50F012A",
+          "length": 6
+        },
+        {
+          "pc": "0888",
+          "opcode": "05",
+          "operand": "2A20C30200004000A00BAA8B0D4A0D8B0D",
+          "length": 18,
+          "ram_destination": "202A",
+          "inline_copy_bytes": 15
+        },
+        {
+          "pc": "089A",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        }
+      ],
+      "stop_pc": "089B",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "091B",
+      "packets": [
+        {
+          "pc": "091B",
+          "opcode": "0C",
+          "operand": "05202A2020FD0D",
+          "length": 8
+        },
+        {
+          "pc": "0923",
+          "opcode": "0D",
+          "operand": "C202",
+          "length": 3
+        },
+        {
+          "pc": "0926",
+          "opcode": "03",
+          "operand": "0F",
+          "length": 2
+        },
+        {
+          "pc": "0928",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0929",
+          "opcode": "0B",
+          "operand": "2A20105F0E",
+          "length": 6
+        },
+        {
+          "pc": "092F",
+          "opcode": "12",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0930",
+          "opcode": "03",
+          "operand": "2D",
+          "length": 2
+        },
+        {
+          "pc": "0932",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0933",
+          "opcode": "09",
+          "operand": "9B08",
+          "length": 3
+        }
+      ],
+      "stop_pc": "089B",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "0936",
+      "packets": [
+        {
+          "pc": "0936",
+          "opcode": "0E",
+          "operand": "6010",
+          "length": 3
+        },
+        {
+          "pc": "0939",
+          "opcode": "09",
+          "operand": "5D09",
+          "length": 3
+        },
+        {
+          "pc": "095D",
+          "opcode": "0D",
+          "operand": "B202",
+          "length": 3
+        },
+        {
+          "pc": "0960",
+          "opcode": "09",
+          "operand": "1709",
+          "length": 3
+        }
+      ],
+      "stop_pc": "0917",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "093C",
+      "packets": [
+        {
+          "pc": "093C",
+          "opcode": "0E",
+          "operand": "6050",
+          "length": 3
+        },
+        {
+          "pc": "093F",
+          "opcode": "09",
+          "operand": "5D09",
+          "length": 3
+        }
+      ],
+      "stop_pc": "095D",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "0942",
+      "packets": [
+        {
+          "pc": "0942",
+          "opcode": "0E",
+          "operand": "6090",
+          "length": 3
+        },
+        {
+          "pc": "0945",
+          "opcode": "09",
+          "operand": "5D09",
+          "length": 3
+        }
+      ],
+      "stop_pc": "095D",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "0948",
+      "packets": [
+        {
+          "pc": "0948",
+          "opcode": "0E",
+          "operand": "7810",
+          "length": 3
+        },
+        {
+          "pc": "094B",
+          "opcode": "09",
+          "operand": "5D09",
+          "length": 3
+        }
+      ],
+      "stop_pc": "095D",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "094E",
+      "packets": [
+        {
+          "pc": "094E",
+          "opcode": "0E",
+          "operand": "9010",
+          "length": 3
+        },
+        {
+          "pc": "0951",
+          "opcode": "09",
+          "operand": "5D09",
+          "length": 3
+        }
+      ],
+      "stop_pc": "095D",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "0954",
+      "packets": [
+        {
+          "pc": "0954",
+          "opcode": "0E",
+          "operand": "9050",
+          "length": 3
+        },
+        {
+          "pc": "0957",
+          "opcode": "09",
+          "operand": "5D09",
+          "length": 3
+        }
+      ],
+      "stop_pc": "095D",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "095A",
+      "packets": [
+        {
+          "pc": "095A",
+          "opcode": "0E",
+          "operand": "9090",
+          "length": 3
+        }
+      ],
+      "stop_pc": "095D",
+      "stop_reason": "joins-known-script"
+    },
+    {
+      "root": "0963",
+      "packets": [
+        {
+          "pc": "0963",
+          "opcode": "0C",
+          "operand": "02203D20D03923",
+          "length": 8
+        },
+        {
+          "pc": "096B",
+          "opcode": "0D",
+          "operand": "B202",
+          "length": 3
+        },
+        {
+          "pc": "096E",
+          "opcode": "03",
+          "operand": "0A",
+          "length": 2
+        },
+        {
+          "pc": "0970",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0971",
+          "opcode": "0B",
+          "operand": "3D20D09B23",
+          "length": 6
+        },
+        {
+          "pc": "0977",
+          "opcode": "11",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "0978",
+          "opcode": "03",
+          "operand": "2D",
+          "length": 2
+        },
+        {
+          "pc": "097A",
+          "opcode": "00",
+          "operand": "",
+          "length": 1
+        },
+        {
+          "pc": "097B",
+          "opcode": "09",
+          "operand": "9B08",
+          "length": 3
+        }
+      ],
+      "stop_pc": "089B",
+      "stop_reason": "joins-known-script"
+    }
+  ],
+  "packet_counts": {
+    "00": 13,
+    "01": 9,
+    "03": 12,
+    "04": 2,
+    "05": 5,
+    "06": 5,
+    "07": 2,
+    "09": 11,
+    "0A": 1,
+    "0B": 2,
+    "0C": 2,
+    "0D": 3,
+    "0E": 7,
+    "0F": 2,
+    "10": 1,
+    "11": 1,
+    "12": 1,
+    "13": 2,
+    "14": 1
+  },
+  "distinct_packet_count": 82,
+  "unique_packets": [
+    {
+      "pc": "0821",
+      "opcode": "04",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0822",
+      "opcode": "13",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0823",
+      "opcode": "01",
+      "operand": "0C610F0A24",
+      "length": 6
+    },
+    {
+      "pc": "0829",
+      "opcode": "10",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "082A",
+      "opcode": "0F",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "082B",
+      "opcode": "03",
+      "operand": "5A",
+      "length": 2
+    },
+    {
+      "pc": "082D",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "082E",
+      "opcode": "01",
+      "operand": "296D0F0026",
+      "length": 6
+    },
+    {
+      "pc": "0834",
+      "opcode": "03",
+      "operand": "5A",
+      "length": 2
+    },
+    {
+      "pc": "0836",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0837",
+      "opcode": "01",
+      "operand": "0B990F143D",
+      "length": 6
+    },
+    {
+      "pc": "083D",
+      "opcode": "05",
+      "operand": "2A20C30100004000660BAA8B0D4A0D8B0D",
+      "length": 18,
+      "ram_destination": "202A",
+      "inline_copy_bytes": 15
+    },
+    {
+      "pc": "084F",
+      "opcode": "03",
+      "operand": "5A",
+      "length": 2
+    },
+    {
+      "pc": "0851",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0852",
+      "opcode": "06",
+      "operand": "6320C6035400FE027800C8",
+      "length": 12,
+      "ram_destination": "2063",
+      "inline_copy_bytes": 9
+    },
+    {
+      "pc": "085E",
+      "opcode": "03",
+      "operand": "4B",
+      "length": 2
+    },
+    {
+      "pc": "0860",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0861",
+      "opcode": "01",
+      "operand": "0BA40F143D",
+      "length": 6
+    },
+    {
+      "pc": "0867",
+      "opcode": "03",
+      "operand": "3C",
+      "length": 2
+    },
+    {
+      "pc": "0869",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "086A",
+      "opcode": "05",
+      "operand": "3D20C2FF400060006627A0C7220021C722",
+      "length": 18,
+      "ram_destination": "203D",
+      "inline_copy_bytes": 15
+    },
+    {
+      "pc": "087C",
+      "opcode": "03",
+      "operand": "40",
+      "length": 2
+    },
+    {
+      "pc": "087E",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "087F",
+      "opcode": "09",
+      "operand": "2108",
+      "length": 3
+    },
+    {
+      "pc": "0882",
+      "opcode": "01",
+      "operand": "27D50F012A",
+      "length": 6
+    },
+    {
+      "pc": "0888",
+      "opcode": "05",
+      "operand": "2A20C30200004000A00BAA8B0D4A0D8B0D",
+      "length": 18,
+      "ram_destination": "202A",
+      "inline_copy_bytes": 15
+    },
+    {
+      "pc": "089A",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "089B",
+      "opcode": "04",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "089C",
+      "opcode": "13",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "089D",
+      "opcode": "0F",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "089E",
+      "opcode": "0A",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "089F",
+      "opcode": "01",
+      "operand": "09AF0F0C2E",
+      "length": 6
+    },
+    {
+      "pc": "08A5",
+      "opcode": "01",
+      "operand": "0CB80FA23E",
+      "length": 6
+    },
+    {
+      "pc": "08AB",
+      "opcode": "05",
+      "operand": "2A20C0010000480066139A8B0D870C8B0D",
+      "length": 18,
+      "ram_destination": "202A",
+      "inline_copy_bytes": 15
+    },
+    {
+      "pc": "08BD",
+      "opcode": "05",
+      "operand": "3D20C0FFE7A0480066139AC722C321C722",
+      "length": 18,
+      "ram_destination": "203D",
+      "inline_copy_bytes": 15
+    },
+    {
+      "pc": "08CF",
+      "opcode": "06",
+      "operand": "632006000004F800000AC8",
+      "length": 12,
+      "ram_destination": "2063",
+      "inline_copy_bytes": 9
+    },
+    {
+      "pc": "08DB",
+      "opcode": "06",
+      "operand": "752006000004F800000AC8",
+      "length": 12,
+      "ram_destination": "2075",
+      "inline_copy_bytes": 9
+    },
+    {
+      "pc": "08E7",
+      "opcode": "06",
+      "operand": "872006000004F800000AC8",
+      "length": 12,
+      "ram_destination": "2087",
+      "inline_copy_bytes": 9
+    },
+    {
+      "pc": "08F3",
+      "opcode": "06",
+      "operand": "992006000004F800000AC8",
+      "length": 12,
+      "ram_destination": "2099",
+      "inline_copy_bytes": 9
+    },
+    {
+      "pc": "08FF",
+      "opcode": "03",
+      "operand": "1E",
+      "length": 2
+    },
+    {
+      "pc": "0901",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0902",
+      "opcode": "01",
+      "operand": "09C50F0C2E",
+      "length": 6
+    },
+    {
+      "pc": "0908",
+      "opcode": "03",
+      "operand": "0A",
+      "length": 2
+    },
+    {
+      "pc": "090A",
+      "opcode": "07",
+      "operand": "2A20",
+      "length": 3
+    },
+    {
+      "pc": "090D",
+      "opcode": "07",
+      "operand": "3D20",
+      "length": 3
+    },
+    {
+      "pc": "0910",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0911",
+      "opcode": "01",
+      "operand": "05A40F0E2E",
+      "length": 6
+    },
+    {
+      "pc": "0917",
+      "opcode": "14",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0918",
+      "opcode": "09",
+      "operand": "9B08",
+      "length": 3
+    },
+    {
+      "pc": "091B",
+      "opcode": "0C",
+      "operand": "05202A2020FD0D",
+      "length": 8
+    },
+    {
+      "pc": "0923",
+      "opcode": "0D",
+      "operand": "C202",
+      "length": 3
+    },
+    {
+      "pc": "0926",
+      "opcode": "03",
+      "operand": "0F",
+      "length": 2
+    },
+    {
+      "pc": "0928",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0929",
+      "opcode": "0B",
+      "operand": "2A20105F0E",
+      "length": 6
+    },
+    {
+      "pc": "092F",
+      "opcode": "12",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0930",
+      "opcode": "03",
+      "operand": "2D",
+      "length": 2
+    },
+    {
+      "pc": "0932",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0933",
+      "opcode": "09",
+      "operand": "9B08",
+      "length": 3
+    },
+    {
+      "pc": "0936",
+      "opcode": "0E",
+      "operand": "6010",
+      "length": 3
+    },
+    {
+      "pc": "0939",
+      "opcode": "09",
+      "operand": "5D09",
+      "length": 3
+    },
+    {
+      "pc": "093C",
+      "opcode": "0E",
+      "operand": "6050",
+      "length": 3
+    },
+    {
+      "pc": "093F",
+      "opcode": "09",
+      "operand": "5D09",
+      "length": 3
+    },
+    {
+      "pc": "0942",
+      "opcode": "0E",
+      "operand": "6090",
+      "length": 3
+    },
+    {
+      "pc": "0945",
+      "opcode": "09",
+      "operand": "5D09",
+      "length": 3
+    },
+    {
+      "pc": "0948",
+      "opcode": "0E",
+      "operand": "7810",
+      "length": 3
+    },
+    {
+      "pc": "094B",
+      "opcode": "09",
+      "operand": "5D09",
+      "length": 3
+    },
+    {
+      "pc": "094E",
+      "opcode": "0E",
+      "operand": "9010",
+      "length": 3
+    },
+    {
+      "pc": "0951",
+      "opcode": "09",
+      "operand": "5D09",
+      "length": 3
+    },
+    {
+      "pc": "0954",
+      "opcode": "0E",
+      "operand": "9050",
+      "length": 3
+    },
+    {
+      "pc": "0957",
+      "opcode": "09",
+      "operand": "5D09",
+      "length": 3
+    },
+    {
+      "pc": "095A",
+      "opcode": "0E",
+      "operand": "9090",
+      "length": 3
+    },
+    {
+      "pc": "095D",
+      "opcode": "0D",
+      "operand": "B202",
+      "length": 3
+    },
+    {
+      "pc": "0960",
+      "opcode": "09",
+      "operand": "1709",
+      "length": 3
+    },
+    {
+      "pc": "0963",
+      "opcode": "0C",
+      "operand": "02203D20D03923",
+      "length": 8
+    },
+    {
+      "pc": "096B",
+      "opcode": "0D",
+      "operand": "B202",
+      "length": 3
+    },
+    {
+      "pc": "096E",
+      "opcode": "03",
+      "operand": "0A",
+      "length": 2
+    },
+    {
+      "pc": "0970",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0971",
+      "opcode": "0B",
+      "operand": "3D20D09B23",
+      "length": 6
+    },
+    {
+      "pc": "0977",
+      "opcode": "11",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "0978",
+      "opcode": "03",
+      "operand": "2D",
+      "length": 2
+    },
+    {
+      "pc": "097A",
+      "opcode": "00",
+      "operand": "",
+      "length": 1
+    },
+    {
+      "pc": "097B",
+      "opcode": "09",
+      "operand": "9B08",
+      "length": 3
+    }
+  ],
+  "opcode_frequency": {
+    "00": 13,
+    "01": 9,
+    "03": 12,
+    "04": 2,
+    "05": 5,
+    "06": 5,
+    "07": 2,
+    "09": 11,
+    "0A": 1,
+    "0B": 2,
+    "0C": 2,
+    "0D": 3,
+    "0E": 7,
+    "0F": 2,
+    "10": 1,
+    "11": 1,
+    "12": 1,
+    "13": 2,
+    "14": 1
+  },
+  "event_vectors": [
+    "03C9",
+    "091B",
+    "0936",
+    "093C",
+    "0942",
+    "0948",
+    "094E",
+    "0954",
+    "095A",
+    "0963"
+  ],
+  "caution": "Static flow only: native interrupt paths and RAM-resident copied code require separate emulation. Command operands and native code must not be flattened into raw opcodes."
+}
