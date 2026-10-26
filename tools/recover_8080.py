@@ -105,7 +105,11 @@ def main():
     mem=b"".join(parts);digest=hashlib.sha256(mem).hexdigest()
     vectors=[mem[2478+2*i]|mem[2478+2*i+1]<<8 for i in range(21)]
     assert all(v<len(mem) for v in vectors),vectors
-    code,owned,entries,edges=recover(mem,(0,8,16,935,*vectors))
+    # Dynamic native event actions selected via table $097E-$09AD.
+    # These are *code entry addresses*, not bytecode words.
+    event_actions=[int.from_bytes(mem[p:p+2],"little") for p in range(0x097E,0x09AE,2)]
+    assert len(event_actions)==24 and event_actions[4]==0x042A and event_actions[-1]==0x056C
+    code,owned,entries,edges=recover(mem,(0,8,16,935,*vectors,*event_actions))
     word_scan=audit(ROOT,game)
     packet_begins={int(x["pc"],16):x for x in word_scan["unique_packets"]}
     packet_owner={}
@@ -193,7 +197,7 @@ def main():
                        for i,(n,p) in enumerate(zip(names,parts))],
             "native_instruction_count":len(code),"native_byte_count":len(owned),
             "edges":edges,"indexed_dispatch_signatures":signatures}
-    report.update({"script_pointer_ram":0x2000,"dispatcher":935,"vector_table":2478,"vector_count":21,"vectors":vectors,"initial_script":2081,"decoded_script_sites":word_scan["distinct_packet_count"]})
+    report.update({"script_pointer_ram":0x2000,"dispatcher":935,"vector_table":2478,"vector_count":21,"vectors":vectors,"initial_script":2081,"decoded_script_sites":word_scan["distinct_packet_count"],"native_event_actions":event_actions})
     (ROOT/"docs"/"recovery.json").write_text(json.dumps(report,indent=2)+"\n")
     print(game,"native 8080 instructions",len(code),"code bytes",len(owned),
           "indexed dispatches",signatures)
