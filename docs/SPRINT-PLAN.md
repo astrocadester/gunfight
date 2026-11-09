@@ -49,3 +49,11 @@ The next gate is native zmac compilation plus four-chip SHA-1 verification. Furt
 - Updated README, native implementation notes and graphics documentation. The Gun Fight repo retains **no dependency/link to WB**; the introductory architecture establishes the 1975 starting point without asserting identical later machine-code reuse.
 - Updated WB PR #45's 8080 chapter to explain the native input/table details, sprite/font recovery and Gun Fight's different dispatcher, with a compact local memory-map SVG. WB's outward source links remain to the Gun Fight repo's regular `main` paths, not to this development PR branch.
 - **Verification:** Independent static comparison confirms all 1,024 bytes of data in `$0C00–$0FFF` are unchanged from the previous PR #4 checkpoint. Existing static script and word aliases remain 82/21. Native assembler, chip hashes, MAME and hardware remain unexecuted in this pass.
+
+## v20261108-0005 — README and memory-map presentation
+
+- Replaced the README's Midway advertisement image with the existing original gameplay screenshot at `images/gun-fight-27737.jpg`; retained the marquee image.
+- Added a small marquee-inspired cowboy emblem within the header of `images/gunfight-memory-map.svg` without modifying the ROM, RAM or original device descriptions.
+- Replaced the two gray memory-range headings with "Other address space" (`$4000–$FFFF`) and "No identified ROM or RAM" (`$1000–$1FFF`), retaining the relevant `$400F` screen-clear stack detail.
+- Verified the referenced screenshot exists in `images/`, the README no longer points to the flyer, and SVG element tags are structurally balanced.
+- This was a documentation/artwork-only update; no native build, ROM hash or MAME execution was performed.
