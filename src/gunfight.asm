@@ -31,7 +31,7 @@ INTERRUPT_VECTOR_08:
 ; -----------------------------------------------------------------------------
 ; INTERRUPT_VECTOR_10
 ; Interrupt entry; preserves registers and updates alternating video-state paths.
-; Entry: RST NATIVE_0010:0. Uses flag at $20B9 and video object state.
+; Entry: RST $10. Uses flag at $20B9 and video object state.
 ; -----------------------------------------------------------------------------
 INTERRUPT_VECTOR_10:
         PUSH HL
@@ -47,7 +47,7 @@ INTERRUPT_VECTOR_10:
         LD HL,$206F
 NATIVE_0021:
         PUSH HL
-        CALL $02BD
+        CALL TAKE_AND_CLEAR_OBJECT_POINTER
         JP Z,$0038
 NATIVE_0028:
         LD A,(DE)
@@ -73,7 +73,7 @@ NATIVE_0038:
         LD HL,$20A2
 NATIVE_0046:
         PUSH HL
-        CALL $02BD
+        CALL TAKE_AND_CLEAR_OBJECT_POINTER
         JP Z,$0076
         LD A,(DE)
         INC DE
@@ -123,13 +123,13 @@ NATIVE_0087:
         JP M,$0218
         LD HL,$20AB
 NATIVE_0091:
-        CALL $02BD
+        CALL TAKE_AND_CLEAR_OBJECT_POINTER
         PUSH DE
         JP Z,$00B4
-        CALL $02BD
+        CALL TAKE_AND_CLEAR_OBJECT_POINTER
         EX DE,HL
         PUSH DE
-        CALL $02BD
+        CALL TAKE_AND_CLEAR_OBJECT_POINTER
         POP DE
         JP Z,$00B4
 NATIVE_00A4:
@@ -147,14 +147,14 @@ NATIVE_00A6:
         JP NZ,$00A4
 NATIVE_00B4:
         POP HL
-        CALL $02BD
+        CALL TAKE_AND_CLEAR_OBJECT_POINTER
         JP Z,$0218
         LD A,(DE)
         INC DE
         OUT ($02),A
         PUSH DE
         EX (SP),HL
-        CALL $02BD
+        CALL TAKE_AND_CLEAR_OBJECT_POINTER
         LD E,(HL)
         INC HL
         LD D,(HL)
@@ -266,7 +266,7 @@ NATIVE_015F:
         JP P,$0183
         LD A,$FF
         LD ($20C4),A
-        CALL $025E
+        CALL UPDATE_ACTIVE_OBJECT_COORDINATES
         LD A,(HL)
         RLA
         OR $7F
@@ -276,7 +276,7 @@ NATIVE_015F:
         PUSH HL
         LD BC,$0009
         ADD HL,BC
-        CALL $0359
+        CALL VIDEO_ADDRESS_FROM_PACKED_COORDINATES
         LD (HL),E
         INC HL
         LD (HL),D
@@ -302,7 +302,7 @@ NATIVE_019F:
         LD A,(HL)
         AND A
         JP P,$01B1
-        CALL $025E
+        CALL UPDATE_ACTIVE_OBJECT_COORDINATES
         LD A,($20BD)
         AND A
         CALL Z,$02C9
@@ -422,11 +422,16 @@ NATIVE_023D:
         LD A,($20BC)
         LD B,A
         RET
-NATIVE_025E:
+; -----------------------------------------------------------------------------
+; UPDATE_ACTIVE_OBJECT_COORDINATES
+; Update object-state fields and clear active flag when both trajectory components become zero.
+; Called by the frame/interrupt update path; helper at $0280 applies per-axis bounds.
+; -----------------------------------------------------------------------------
+UPDATE_ACTIVE_OBJECT_COORDINATES:
         PUSH HL
         LD A,(HL)
         INC HL
-        CALL $0280
+        CALL STEP_OBJECT_AXIS
         LD E,D
         EX (SP),HL
         XOR (HL)
@@ -437,7 +442,7 @@ NATIVE_025E:
         INC HL
         INC HL
         INC HL
-        CALL $0280
+        CALL STEP_OBJECT_AXIS
         DEC HL
         LD B,(HL)
         POP HL
@@ -452,7 +457,12 @@ NATIVE_025E:
         AND (HL)
         LD (HL),A
         RET
-NATIVE_0280:
+; -----------------------------------------------------------------------------
+; STEP_OBJECT_AXIS
+; Advance a compact object-axis record using its speed, direction and limit fields.
+; Used by UPDATE_ACTIVE_OBJECT_COORDINATES; handles boundary response.
+; -----------------------------------------------------------------------------
+STEP_OBJECT_AXIS:
         AND $03
         LD B,A
         LD A,(HL)
@@ -500,7 +510,12 @@ NATIVE_02BA:
         LD D,(HL)
         AND A
         RET
-NATIVE_02BD:
+; -----------------------------------------------------------------------------
+; TAKE_AND_CLEAR_OBJECT_POINTER
+; Read a little-endian pointer through HL, clear its two bytes, and return the old pointer in DE.
+; Input HL points to pointer storage; output HL advances two bytes; A and B are modified.
+; -----------------------------------------------------------------------------
+TAKE_AND_CLEAR_OBJECT_POINTER:
         XOR A
         LD E,(HL)
         LD (HL),A
@@ -531,7 +546,7 @@ NATIVE_02E0:
         INC HL
         LD (HL),B
         INC HL
-        CALL $0359
+        CALL VIDEO_ADDRESS_FROM_PACKED_COORDINATES
         LD (HL),E
         INC HL
         LD (HL),D
@@ -611,7 +626,12 @@ NATIVE_033E:
         RET
         DB $8B,$0D,$B1,$0D,$D7,$0D,$B1,$0D,$C7,$22,$ED,$22
         DB $13,$23,$ED,$22
-NATIVE_0359:
+; -----------------------------------------------------------------------------
+; VIDEO_ADDRESS_FROM_PACKED_COORDINATES
+; Convert packed pixel coordinates in DE to a bitmap byte address relative to $2400.
+; Output DE is bitmap address and C is the low three bits of original E (pixel phase); modifies A, B and HL temporarily.
+; -----------------------------------------------------------------------------
+VIDEO_ADDRESS_FROM_PACKED_COORDINATES:
         LD A,E
         AND $07
         LD C,A
@@ -716,7 +736,7 @@ NATIVE_WORD_14_INPUT_EVENT_DISPATCH:
 ; -----------------------------------------------------------------------------
 ; VM_INPUT_EVENT_DISPATCH
 ; Sample controller inputs and dispatch input transitions via action tables.
-; I/O: ports $00 and NATIVE_03C9:; action table $097E; updates game/event state.
+; I/O: ports $00 and $01; action table $097E; updates game/event state.
 ; -----------------------------------------------------------------------------
 VM_INPUT_EVENT_DISPATCH:
         CALL WAIT_OR_REPEAT_COMMAND
@@ -790,7 +810,12 @@ NATIVE_0420:
         LD H,(HL)
         LD L,C
         JP (HL)
-NATIVE_042A:
+; -----------------------------------------------------------------------------
+; PLAYER_ONE_AIM_ACTION
+; Extract player-one input direction from DE and use table $0EE2 to update the object record at $202A.
+; A masked input field selects a ROM movement/aim descriptor.
+; -----------------------------------------------------------------------------
+PLAYER_ONE_AIM_ACTION:
         LD A,(DE)
         AND $70
         RRCA
@@ -802,7 +827,12 @@ NATIVE_042A:
         LD HL,$0EE2
         LD DE,$202A
         JP $044F
-NATIVE_043E:
+; -----------------------------------------------------------------------------
+; PLAYER_TWO_AIM_ACTION
+; Extract player-two input direction from DE and use table $0EF0 to update the object record at $203D.
+; Both players share the descriptor selection path at $044F.
+; -----------------------------------------------------------------------------
+PLAYER_TWO_AIM_ACTION:
         LD A,(DE)
         AND $70
         RRCA
@@ -954,7 +984,7 @@ NATIVE_0510:
         LD A,B
 NATIVE_0511:
         LD HL,$0FA4
-        JP $05FB
+        JP DRAW_FORMATTED_TEXT
 ; -----------------------------------------------------------------------------
 ; PLAYER_TWO_FIRE_ACTION
 ; Player-two firing path; checks projectile/object state and updates shot hardware.
@@ -986,7 +1016,12 @@ NATIVE_0528:
         LD BC,$F6F8
         LD A,($201B)
         JP $04DF
-NATIVE_0549:
+; -----------------------------------------------------------------------------
+; ADVANCE_ROUND_EVENT_COUNTER
+; Native input-event action: update output port $01, advance event counters and choose state at $2008.
+; Uses $2006/$2007 as state/count inputs; alternate exit at $056C.
+; -----------------------------------------------------------------------------
+ADVANCE_ROUND_EVENT_COUNTER:
         RET Z
         LD A,$04
         LD ($2014),A
@@ -1008,7 +1043,12 @@ NATIVE_0549:
         ADD A,(HL)
         AND $07
         LD (HL),A
-NATIVE_056C:
+; -----------------------------------------------------------------------------
+; UPDATE_ROUND_STATE
+; Native input-event action: adjust $2008 when $2004 is clear.
+; This address is also reached from the preceding event action.
+; -----------------------------------------------------------------------------
+UPDATE_ROUND_STATE:
         RET Z
         LD A,($2004)
         AND A
@@ -1093,11 +1133,11 @@ NATIVE_05D6:
         LD A,$08
         LD HL,$201E
         LD DE,$2405
-        JP $05FB
+        JP DRAW_FORMATTED_TEXT
 NATIVE_WORD_01_DRAW_FORMATTED_DATA:
 ; -----------------------------------------------------------------------------
 ; DRAW_FORMATTED_DATA
-; VM word NATIVE_05E9:: consume inline format and two little-endian addresses.
+; VM word $01: consume inline format and two little-endian addresses.
 ; Script operand: format8, source16, destination16.
 ; -----------------------------------------------------------------------------
 DRAW_FORMATTED_DATA:
@@ -1115,7 +1155,12 @@ DRAW_FORMATTED_DATA:
         INC HL
         LD ($2000),HL
         POP HL
-NATIVE_05FB:
+; -----------------------------------------------------------------------------
+; DRAW_FORMATTED_TEXT
+; Render A characters from source HL to display address DE; characters below $30 move the destination.
+; Character patterns are read at ROM $09F8, ten scanline bytes per glyph; bitmap row stride is $20.
+; -----------------------------------------------------------------------------
+DRAW_FORMATTED_TEXT:
         PUSH AF
 NATIVE_05FC:
         LD A,(HL)
@@ -1162,7 +1207,7 @@ NATIVE_062A:
         INC DE
         POP AF
         DEC A
-        JP NZ,$05FB
+        JP NZ,DRAW_FORMATTED_TEXT
         RET
 NATIVE_WORD_02_SET_RAM_2003:
 NATIVE_063D:
@@ -1189,8 +1234,8 @@ NATIVE_WORD_04_CLEAR_DISPLAY:
 CLEAR_BITMAP_DISPLAY:
         DI
         POP HL
-        LD BC,RESET_ENTRY
-        LD DE,RESET_ENTRY
+        LD BC,$0000
+        LD DE,$0000
         LD A,$10
         LD SP,$400F
 NATIVE_0662:
@@ -1272,7 +1317,12 @@ NATIVE_06AD:
         LD (DE),A
         RET
 NATIVE_WORD_0A_GAME_DISPLAY:
-NATIVE_06BC:
+; -----------------------------------------------------------------------------
+; RUN_GAME_DISPLAY_SEQUENCE
+; VM word $0A: use status state to select native graphic object drawing.
+; Calls DRAW_NATIVE_OBJECT_DATA; uses $2016 state and output port $02.
+; -----------------------------------------------------------------------------
+RUN_GAME_DISPLAY_SEQUENCE:
         LD HL,$0F0E
         XOR A
         OUT ($02),A
@@ -1419,7 +1469,12 @@ NATIVE_0775:
 NATIVE_0784:
         RET
 NATIVE_WORD_0E_FILL_RECTANGLE:
-NATIVE_0785:
+; -----------------------------------------------------------------------------
+; FILL_DISPLAY_RECTANGLE
+; VM word $0E: consume a packed dimension word and fill a display rectangle.
+; Uses $201D, packed coordinate conversion, and 32-byte display stride.
+; -----------------------------------------------------------------------------
+FILL_DISPLAY_RECTANGLE:
         LD HL,($2000)
         LD A,($201D)
         LD E,(HL)
@@ -1430,7 +1485,7 @@ NATIVE_0785:
         SUB D
         LD L,$02
         LD H,A
-        CALL $0359
+        CALL VIDEO_ADDRESS_FROM_PACKED_COORDINATES
         EX DE,HL
 NATIVE_079A:
         PUSH HL
@@ -1515,7 +1570,7 @@ NATIVE_07F2:
         LD BC,$0004
         ADD HL,BC
         LD D,(HL)
-        CALL $0359
+        CALL VIDEO_ADDRESS_FROM_PACKED_COORDINATES
         DEC DE
         DEC D
         DEC D
@@ -1526,11 +1581,11 @@ NATIVE_07F2:
 ; Device 7609f.bin, SHA1 215b068663e431582591001cbe028929fa96d49f
         DB $CE,$0F
         LD A,$07
-        JP $05FB
+        JP DRAW_FORMATTED_TEXT
 NATIVE_WORD_10_BRANCH_IF_STATE:
 ; -----------------------------------------------------------------------------
 ; BRANCH_TO_ALTERNATE_SCENE
-; VM word NATIVE_0807:0: redirect script to $0882 when $2008 is active.
+; VM word $10: redirect script to $0882 when $2008 is active.
 ; Conditional script pointer replacement.
 ; -----------------------------------------------------------------------------
 BRANCH_TO_ALTERNATE_SCENE:
