@@ -627,7 +627,7 @@ NATIVE_033E:
 ; Four 16-bit drawing/animation source pointers for each player.
 ; The state bits at $2009 select one of four entries (index 0,2,4,6).
 PLAYER_ONE_FRAME_POINTERS:
-        DW $0D8B,$0DB1,$0DD7,$0DB1
+        DW ROM_FRAME_PATTERN_A,ROM_FRAME_PATTERN_B,ROM_FRAME_PATTERN_C,ROM_FRAME_PATTERN_B
 PLAYER_TWO_FRAME_POINTERS:
         DW $22C7,$22ED,$2313,$22ED
 ; -----------------------------------------------------------------------------
@@ -2187,7 +2187,7 @@ FONT_SCORE_DIGITS:
 
         ORG $0C00
 ; Device 7609e.bin, SHA1 de3f2e6841122bbe6e2fda5b87d37842c072289a
-; Packed graphics and table data; original pixel bytes are shown in ROM order.
+; Packed graphics and game tables.
         DB $1F,$00,$FA,$3F,$00,$03,$15,$00,$05,$00,$80,$0D
         DB $00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8,$FF
         DB $00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0,$1F
@@ -2224,12 +2224,11 @@ PACKED_GRAPHICS_BITSTREAM:
         DB $1F,$17,$C6,$1F,$0E,$C6,$1F,$14,$FA,$3F,$20
 
 ; -----------------------------------------------------------------------------
-; ROM_FRAME_PATTERN_A: 24 stored bits per row, 12 rows.
-; Header bytes: width=3 bytes, height=12 rows, as used by DRAW_NATIVE_OBJECT_DATA.
-; Bit previews follow ROM MSB-first order; screen orientation is hardware-dependent.
+; ROM_FRAME_PATTERN_A: 3 bytes per row (24 stored bits) x 12 rows.
+; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
 ROM_FRAME_PATTERN_A:
-        DB $03,$0C ; width in bytes, height in rows
+        DB $03,$0C ; width (bytes), height (rows)
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $E0,$3D,$00 ; ###..... ..####.# ........
@@ -2244,12 +2243,11 @@ ROM_FRAME_PATTERN_A:
         DB $F0,$F0,$00 ; ####.... ####.... ........
 
 ; -----------------------------------------------------------------------------
-; ROM_FRAME_PATTERN_B: 24 stored bits per row, 12 rows.
-; Header bytes: width=3 bytes, height=12 rows, as used by DRAW_NATIVE_OBJECT_DATA.
-; Bit previews follow ROM MSB-first order; screen orientation is hardware-dependent.
+; ROM_FRAME_PATTERN_B: 3 bytes per row (24 stored bits) x 12 rows.
+; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
 ROM_FRAME_PATTERN_B:
-        DB $03,$0C ; width in bytes, height in rows
+        DB $03,$0C ; width (bytes), height (rows)
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $E0,$3F,$00 ; ###..... ..###### ........
         DB $C0,$1F,$00 ; ##...... ...##### ........
@@ -2264,12 +2262,11 @@ ROM_FRAME_PATTERN_B:
         DB $00,$3C,$00 ; ........ ..####.. ........
 
 ; -----------------------------------------------------------------------------
-; ROM_FRAME_PATTERN_C: 24 stored bits per row, 12 rows.
-; Header bytes: width=3 bytes, height=12 rows, as used by DRAW_NATIVE_OBJECT_DATA.
-; Bit previews follow ROM MSB-first order; screen orientation is hardware-dependent.
+; ROM_FRAME_PATTERN_C: 3 bytes per row (24 stored bits) x 12 rows.
+; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
 ROM_FRAME_PATTERN_C:
-        DB $03,$0C ; width in bytes, height in rows
+        DB $03,$0C ; width (bytes), height (rows)
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $E0,$1F,$00 ; ###..... ...##### ........
@@ -2284,12 +2281,11 @@ ROM_FRAME_PATTERN_C:
         DB $F0,$F0,$00 ; ####.... ####.... ........
 
 ; -----------------------------------------------------------------------------
-; ROM_OBJECT_PATTERN_32_ROWS: 24 stored bits per row, 32 rows.
-; Header bytes: width=3 bytes, height=32 rows, as used by DRAW_NATIVE_OBJECT_DATA.
-; Bit previews follow ROM MSB-first order; screen orientation is hardware-dependent.
+; ROM_OBJECT_PATTERN_32_ROWS: 3 bytes per row (24 stored bits) x 32 rows.
+; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
 ROM_OBJECT_PATTERN_32_ROWS:
-        DB $03,$20 ; width in bytes, height in rows
+        DB $03,$20 ; width (bytes), height (rows)
         DB $04,$00,$00 ; .....#.. ........ ........
         DB $19,$02,$00 ; ...##..# ......#. ........
         DB $7A,$01,$00 ; .####.#. .......# ........
@@ -2322,38 +2318,52 @@ ROM_OBJECT_PATTERN_32_ROWS:
         DB $00,$40,$03 ; ........ .#...... ......##
         DB $00,$80,$03 ; ........ #....... ......##
         DB $00,$00,$0F ; ........ ........ ....####
-        DB $04,$0B,$A0,$00,$00,$00,$B0,$01,$00,$00,$B0,$01
-        DB $3C,$00,$B0,$01,$7E,$00,$F9,$13,$FF,$00,$FF,$9F
-        DB $FF,$81,$F8,$C7,$FF,$9F,$FC,$FF,$FF,$FF,$FE,$FF
-        DB $FF,$FF,$00,$00,$FF,$40,$00,$00,$00,$20,$00,$03
-        DB $1C,$00,$7E,$00,$80,$FF,$01,$E0,$FF,$07,$F0,$FF
-        DB $0F,$F0,$FF,$0F,$F8,$FF,$1F,$F8,$FF,$1F,$F8,$FF
-        DB $1F,$F8,$E7,$1F,$F0,$C3,$0F,$F0,$81,$0F,$E0,$81
-        DB $07,$C0,$81,$03,$80,$C3,$01,$F0,$FF,$0F,$E0,$FF
-        DB $07,$E0,$FF,$07,$F4,$FF,$2F,$84,$3C,$21,$04,$81
-        DB $20,$04,$81,$20,$06,$81,$60,$F7,$FF,$EF,$06,$81
-        DB $60,$04,$00,$20,$04,$00,$20,$04,$00,$20,$04,$00
-        DB $20,$4A,$0D,$46,$0C,$87,$0C,$C4,$0B,$09,$0D,$05
-        DB $0C,$C8,$0C,$86,$22,$82,$21,$C3,$21,$00,$21,$45
-        DB $22,$41,$21,$04,$22,$06,$1A,$FF,$08,$00,$0C,$FA
-        DB $FE,$03,$16,$FD,$02,$01,$14,$13,$28,$74,$0B,$33
-        DB $36,$74,$0B,$12,$30,$74,$0B,$32,$36,$8C,$0B,$12
-        DB $28,$8C,$0B,$0C,$38,$74,$0B,$0C,$2A,$74,$0B,$0D
-        DB $30,$74,$0B,$0C,$2A,$8C,$0B,$0C,$38,$8C,$0B,$0F
-        DB $30,$74,$0B,$11,$11,$11,$52,$65,$99,$99,$99,$11
-        DB $11,$11,$53,$75,$99,$99,$99,$11,$11,$11,$54,$85
-        DB $99,$99,$99,$C4,$00,$74,$70,$20,$FF,$A0,$0A,$B4
-        DB $00,$00,$8E,$0E,$00,$00,$47,$41,$4B,$45,$40,$40
-        DB $40,$40,$4D,$53,$45,$4F,$40,$40,$40,$40,$40,$40
+
+; -----------------------------------------------------------------------------
+; ROM_OBJECT_PATTERN_4BYTE_11ROWS: 4 bytes per row (32 stored bits) x 11 rows.
+; Inline bits are shown MSB-first, not necessarily final display orientation.
+; -----------------------------------------------------------------------------
+ROM_OBJECT_PATTERN_4BYTE_11ROWS:
+        DB $04,$0B ; width (bytes), height (rows)
+        DB $A0,$00,$00,$00 ; #.#..... ........ ........ ........
+        DB $B0,$01,$00,$00 ; #.##.... .......# ........ ........
+        DB $B0,$01,$3C,$00 ; #.##.... .......# ..####.. ........
+        DB $B0,$01,$7E,$00 ; #.##.... .......# .######. ........
+        DB $F9,$13,$FF,$00 ; #####..# ...#..## ######## ........
+        DB $FF,$9F,$FF,$81 ; ######## #..##### ######## #......#
+        DB $F8,$C7,$FF,$9F ; #####... ##...### ######## #..#####
+        DB $FC,$FF,$FF,$FF ; ######.. ######## ######## ########
+        DB $FE,$FF,$FF,$FF ; #######. ######## ######## ########
+        DB $00,$00,$FF,$40 ; ........ ........ ######## .#......
+        DB $00,$00,$00,$20 ; ........ ........ ........ ..#.....
+        DB $00,$03,$1C,$00,$7E,$00,$80,$FF,$01,$E0,$FF,$07
+        DB $F0,$FF,$0F,$F0,$FF,$0F,$F8,$FF,$1F,$F8,$FF,$1F
+        DB $F8,$FF,$1F,$F8,$E7,$1F,$F0,$C3,$0F,$F0,$81,$0F
+        DB $E0,$81,$07,$C0,$81,$03,$80,$C3,$01,$F0,$FF,$0F
+        DB $E0,$FF,$07,$E0,$FF,$07,$F4,$FF,$2F,$84,$3C,$21
+        DB $04,$81,$20,$04,$81,$20,$06,$81,$60,$F7,$FF,$EF
+        DB $06,$81,$60,$04,$00,$20,$04,$00,$20,$04,$00,$20
+        DB $04,$00,$20,$4A,$0D,$46,$0C,$87,$0C,$C4,$0B,$09
+        DB $0D,$05,$0C,$C8,$0C,$86,$22,$82,$21,$C3,$21,$00
+        DB $21,$45,$22,$41,$21,$04,$22,$06,$1A,$FF,$08,$00
+        DB $0C,$FA,$FE,$03,$16,$FD,$02,$01,$14,$13,$28,$74
+        DB $0B,$33,$36,$74,$0B,$12,$30,$74,$0B,$32,$36,$8C
+        DB $0B,$12,$28,$8C,$0B,$0C,$38,$74,$0B,$0C,$2A,$74
+        DB $0B,$0D,$30,$74,$0B,$0C,$2A,$8C,$0B,$0C,$38,$8C
+        DB $0B,$0F,$30,$74,$0B,$11,$11,$11,$52,$65,$99,$99
+        DB $99,$11,$11,$11,$53,$75,$99,$99,$99,$11,$11,$11
+        DB $54,$85,$99,$99,$99,$C4,$00,$74,$70,$20,$FF,$A0
+        DB $0A,$B4,$00,$00,$8E,$0E,$00,$00,$47,$41,$4B,$45
+        DB $40,$40,$40,$40,$4D,$53,$45,$4F,$40,$40,$40,$40
         DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
         DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$00,$00,$25,$47,$52,$4C,$40,$46,$49,$47
-        DB $48,$51,$49,$4C,$50,$45,$4F,$51,$40,$43,$4D,$49
-        DB $4C,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $47,$45,$51,$40,$4F,$45,$41,$44,$55,$3A,$3A,$3A
-        DB $3A,$3A,$3A,$20,$3A,$3A,$3A,$3A,$3A,$3A,$40,$40
-        DB $44,$4F,$41,$54,$3B,$40,$40,$47,$4D,$51,$40,$4B
-        DB $45,$3B,$48,$45,$55,$40,$4E,$41,$4F,$44,$4C,$45
-        DB $4F,$3B,$2E,$55,$4D,$52,$40,$48,$41,$53,$45,$40
-        DB $43,$4F,$45,$44,$49,$51,$3C,$00,$00,$1A,$4E,$52
-        DB $50,$48,$40,$42,$52,$51,$51,$4D,$4C
+        DB $40,$40,$40,$40,$00,$00,$25,$47,$52,$4C,$40,$46
+        DB $49,$47,$48,$51,$49,$4C,$50,$45,$4F,$51,$40,$43
+        DB $4D,$49,$4C,$40,$40,$40,$40,$40,$40,$40,$40,$40
+        DB $40,$40,$47,$45,$51,$40,$4F,$45,$41,$44,$55,$3A
+        DB $3A,$3A,$3A,$3A,$3A,$20,$3A,$3A,$3A,$3A,$3A,$3A
+        DB $40,$40,$44,$4F,$41,$54,$3B,$40,$40,$47,$4D,$51
+        DB $40,$4B,$45,$3B,$48,$45,$55,$40,$4E,$41,$4F,$44
+        DB $4C,$45,$4F,$3B,$2E,$55,$4D,$52,$40,$48,$41,$53
+        DB $45,$40,$43,$4F,$45,$44,$49,$51,$3C,$00,$00,$1A
+        DB $4E,$52,$50,$48,$40,$42,$52,$51,$51,$4D,$4C
