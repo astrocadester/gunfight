@@ -50,12 +50,14 @@ mame gunfight -window -skip_gameinfo -rompath roms/build
 
 Four consecutive 1 KB devices form the $0000–$0FFF executable image.
 
-| Device | ROM addresses | SHA-1 |
-| --- | --- | --- |
-| `7609h.bin` | `$0000–$03FF` | `99d01313e251818d336281700e206d9003c71dae` |
-| `7609g.bin` | `$0400–$07FF` | `c177e3f72db9af17ab99b2481448ca26318184b9` |
-| `7609f.bin` | `$0800–$0BFF` | `215b068663e431582591001cbe028929fa96d49f` |
-| `7609e.bin` | `$0C00–$0FFF` | `de3f2e6841122bbe6e2fda5b87d37842c072289a` |
+The device order and original SHA-1 checks are maintained by both build scripts and recorded in the [ROM memory map](docs/memory-map.md).
+
+```text
+$0000–$03FF   7609h.bin
+$0400–$07FF   7609g.bin
+$0800–$0BFF   7609f.bin
+$0C00–$0FFF   7609e.bin
+```
 
 The memory map identifies original ROM regions separately from working RAM, bitmap addresses, and interpreter ownership.
 
