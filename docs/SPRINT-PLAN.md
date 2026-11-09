@@ -26,3 +26,17 @@ Maintained ASM has an initial semantic-label/header pass and raw inline graphics
 - Recovered ten 8×10 digit glyphs at ROM $09F8 directly in ASM with inline pixel rows; their bytes and order are preserved.
 - Further native names/headers added; remaining generic branches and non-font sprite data are future hard RE work.
 - Native build and MAME verification remain distinct unexecuted gates.
+
+
+## v20261108-0003 — debt-reduction hard RE
+
+- Corrected the returned-register contract for the native pointer-clearing helper at `$02BD` and updated the implementation notes.
+- Recovered eight directional controller action entries and the shared no-op handler used by six input table positions.
+- Named and documented additional VM handler entry points, native display/aim/shot services, and the four-entry frame pointer tables at `$0349` / `$0351`.
+- Reconciled every one of the 82 statically decoded script labels with the 21-command dictionary; script jumps now reference the matching labels where available.
+- Identified native pattern headers and row boundaries at `$0D8B`, `$0DB1`, `$0DD7`, `$0DFD`, and `$0E5F`; decoded all five patterns inline without introducing external graphics.
+- Corrected `docs/interpreter.json` to 21 native handlers plus nine event-script pointers. Rewrote outdated data-provenance conclusions to reflect the native code already traced.
+- Isolated Python RE generator outputs in `src/zout` and `docs/generated` so they no longer overwrite maintained ASM, README references, or the memory-map.
+- Ran independent static source-layout inspection: 4 KB; four contiguous original ROM divisions; all expected key offsets and 310 defined labels resolved. Native assembler, ROM hashes, and MAME have not been executed in this session.
+
+The next gate is native zmac compilation plus four-chip SHA-1 verification. Further RE focuses on full object/collision lifecycles, remaining non-font sprite boundaries, and interrupt scheduling.
