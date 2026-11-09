@@ -1,55 +1,20 @@
-# Gun Fight (1975)
+# Gun Fight
 
-![Original Midway Gun Fight marquee](images/gun-fight-15120-marquee.jpg)
+Gun Fight (1975) is Midway's two-player western shoot-out, developed by Dave Nutting Associates on an Intel 8080 arcade platform. This project reconstructs the four original 1 KB ROMs as readable, rebuildable 8080 assembly and documents the game's interpreter, hardware interfaces, gameplay, graphics, and data.
 
-**Gun Fight** is Midway's 1975 two-player western arcade game, developed on Dave Nutting Associates' Intel 8080-based video platform. This repository reconstructs the program from its four original 1 KB ROM devices, maintains readable 8080 assembly, and documents the game's native routines and early indexed game-command interpreter.
+![Gun Fight marquee](images/gun-fight-15120-marquee.jpg)
 
-The original ROM is the authority. Descriptive symbols and annotations are reverse-engineered names, not purported surviving DNA source identifiers. Assembly changes must reproduce the original 4,096 bytes exactly.
+Gun Fight was among the first commercially released microprocessor-based video games. The two players move and aim their cowboys, fire a limited supply of shots, and compete over successive timed duels. Different screens introduce obstacles into the line of fire.
 
-## The game
+![Gun Fight original Midway advertisement](images/December_1975_advertisement_for_Gun_Fight_by_Midway.jpg)
 
-![Gun Fight arcade cabinet](images/gun-fight-01563-01.jpg)
+## Project layout
 
-Two players control cowboys who move, aim, and fire across the playfield. The program handles controls, projectiles, collisions, score, timing, and bitmap graphics through a combination of native Intel 8080 routines and compact interpreted command streams.
-
-![Gun Fight gameplay](images/gun-fight-02585-01.jpg)
-
-## How the program works
-
-The CPU begins at the reset vector, initializes game state and the video display, then starts the primary command stream at `$0821`. An alternate script begins at `$089B`. The native dispatcher at `$03A7` reads a command through the script pointer in RAM `$2000`, looks up its handler in the table at `$09AE`, and transfers control to native 8080 code.
-
-There are **21 established native command handlers** (tokens `$00–$14`). Subsequent pairs in ROM belong to event-script selection, not nine additional VM words. A separate table at `$097E` supplies **24 native input-action pointers**.
-
-The main script organizes game startup and display work; native input actions control the cowboys, shots, status, and event transitions. The original command streams contain inline operands and object data. They must not be interpreted as uninterrupted 8080 instructions.
-
-![Gun Fight interpreted VM and memory organization](images/gunfight-memory-map.svg)
-
-The detailed analysis lives in [command semantics](docs/8080-WORD-SEMANTICS.md), [native implementations](docs/NATIVE-WORD-IMPLEMENTATIONS.md), [decoded command scripts](docs/decoded-scripts.md), and [ROM vector ownership](docs/ROM-VECTOR-OWNERSHIP.md).
-
-## ROM and memory organization
-
-Four 1 KB ROM devices form the original 4 KB program image:
-
-- `$0000–$03FF`: `7609h.bin` — reset and interrupt paths, native update services.
-- `$0400–$07FF`: `7609g.bin` — controller and game operations, display and object services.
-- `$0800–$0BFF`: `7609f.bin` — native VM words, startup and event scripts, vector tables.
-- `$0C00–$0FFF`: `7609e.bin` — packed graphic, text and other game data.
-
-The VM script cursor resides at `$2000`; game state and object records occupy the `$20xx` region, with graphics expansion into RAM beginning at `$2100`. Bitmap display operations use addresses from `$2400` upward. For the original chip hashes and address interpretations, see [memory-map notes](docs/memory-map.md).
-
-## Assembly and graphics
-
-`src/gunfight.asm` is the maintained, buildable reconstruction. Meaningful native routines use descriptive labels and function headers. Interpreted commands are emitted as `DB` tokens, `DW` pointers, and grouped literal payloads. Data remains data unless references and machine behavior establish an executable path.
-
-The graphics regions contain packed bitmap and character data used by the rendering routines. Their display formats and sprite boundaries must be recovered from the native decoding paths; the source is progressively annotated with those findings rather than inventing sprite definitions.
-
-See [data classification](docs/DB-PROVENANCE.md) and the [engineering rules](ENGINEERING-RULES.md).
+The maintained reconstruction is [`src/gunfight.asm`](src/gunfight.asm); [`build.sh`](build.sh) and [`build.bat`](build.bat) assemble it with the bundled zmac 1.3. The four original devices are preserved in [`roms/original/gunfight.zip`](roms/original/gunfight.zip). Recovered interpreter definitions, script traces, hardware notes, and research reports are in [`docs/`](docs/). The standalone Python scripts under [`tools/`](tools/) are RE aids; the normal ROM build does not invoke them.
 
 ## Build
 
-Like the Sea Wolf / Missile reconstruction, the ordinary build uses the bundled **zmac 1.3** and native OS commands. It **does not run Python** or regenerate the maintained assembly.
-
-Linux (from the repository root):
+Linux:
 
 ```sh
 ./build.sh
@@ -61,33 +26,77 @@ Windows 10/11:
 build.bat
 ```
 
-Both scripts:
+Both scripts assemble `src/gunfight.asm` with **zmac 1.3**, create a 4 KB program image, split it into the original four 1 KB devices, verify their SHA-1 identities, and produce `roms/build/gunfight.zip` for MAME. Any ROM mismatch stops the build. Human-edited source is not regenerated during a build.
 
-1. Assemble `src/gunfight.asm` with `tools/zmac` or `tools/zmac.exe` into a 4 KB image and assembler listing.
-2. Split the image into four original device files and verify each against its original SHA-1 digest. Any mismatch fails the build.
-3. Package the verified device files into `roms/build/gunfight.zip` for MAME.
+Generated files:
 
-Outputs: `roms/build/gunfight.bin`, `roms/build/7609h.bin`, `7609g.bin`, `7609f.bin`, `7609e.bin`, `roms/build/gunfight.zip`, and `src/zout/gunfight.lst`.
+```text
+roms/build/gunfight.bin
+roms/build/7609h.bin
+roms/build/7609g.bin
+roms/build/7609f.bin
+roms/build/7609e.bin
+roms/build/gunfight.zip
+src/zout/gunfight.lst
+```
 
-Run with a compatible MAME installation:
+## Run in MAME
 
 ```sh
 mame gunfight -window -skip_gameinfo -rompath roms/build
 ```
 
-## Reverse-engineering tools
+## ROM organization
 
-The Python scripts in `tools/` are **separate research utilities**, not build dependencies. `recover_8080.py` reconstructs instruction paths from the ROM; `audit_words.py` analyzes the interpreted stream; `interpreter_lineage.py` inventories vectors; `memory_map.py` generates research data; `verify_rom.py` performs additional independent analysis checks.
+Four consecutive 1 KB devices form the $0000–$0FFF executable image.
 
-The research generator can regenerate a fresh disassembly and therefore overwrite human-edited source. Run it only deliberately in an RE workspace, and reconcile its findings into the maintained assembly.
+| Device | ROM addresses | SHA-1 |
+| --- | --- | --- |
+| `7609h.bin` | `$0000–$03FF` | `99d01313e251818d336281700e206d9003c71dae` |
+| `7609g.bin` | `$0400–$07FF` | `c177e3f72db9af17ab99b2481448ca26318184b9` |
+| `7609f.bin` | `$0800–$0BFF` | `215b068663e431582591001cbe028929fa96d49f` |
+| `7609e.bin` | `$0C00–$0FFF` | `de3f2e6841122bbe6e2fda5b87d37842c072289a` |
 
-## Project files
+The memory map identifies original ROM regions separately from working RAM, bitmap addresses, and interpreter ownership.
 
-- [Maintained assembly source](src/gunfight.asm) and [Linux build](build.sh) / [Windows build](build.bat).
-- [ROM interpreter](docs/interpreter.md), [word dictionary](docs/8080-WORD-SEMANTICS.md), and [decoded scripts](docs/decoded-scripts.md).
-- [Memory map](docs/memory-map.md), [data provenance](docs/DB-PROVENANCE.md), and [native implementation audit](docs/NATIVE-WORD-IMPLEMENTATIONS.md).
-- [Sprint plan](docs/SPRINT-PLAN.md) and [technical debt](docs/TECHNICAL-DEBT.md).
+![Gun Fight Intel 8080 memory map](images/gunfight-memory-map.svg)
 
-## References
+## Indexed game-command interpreter
 
-The repository includes original documentation in `docs/GunFight.pdf` and `docs/gunfight_2.pdf`. The wider DNA interpreter comparison is in the [DNA TERSE Workbench runtime variants](https://github.com/lizard43/dnaTERSE-WB/blob/docs/runtime-variant-inventory-v20261107-0001/docs/TERSE-RUNTIME-VARIANTS.md).
+Gun Fight contains an early indexed VM at `$03A7`. Its script pointer is stored at RAM `$2000`, and its native command vector table starts at ROM `$09AE`. There are **21 native command handlers** (tokens `$00–$14`), with separate native input-action and event-script pointer tables.
+
+The main program starts interpreting at `$0821`; gameplay initialization also uses `$089B`. Commands carry inline operands: for example, `$05` copies 15 literal bytes into a game-object record, and `$06` copies nine bytes. Other handlers draw score text, fill video regions, initialize objects, wait on timers, or redirect game-script execution.
+
+```asm
+; Game setup — interpreted command stream at $089B
+DB $04                     ; clear display
+DB $13                     ; update scores
+DB $0F                     ; expand packed graphics
+DB $0A                     ; select display sequence
+DB $01,$09                 ; draw formatted data
+DW $0FAF,$2E0C             ; source and bitmap destination
+```
+
+The complete reconstructed commands and native effects are in [8080 word semantics](docs/8080-WORD-SEMANTICS.md), [decoded game scripts](docs/decoded-scripts.md), [native implementations](docs/NATIVE-WORD-IMPLEMENTATIONS.md), and [vector ownership](docs/ROM-VECTOR-OWNERSHIP.md).
+
+## Native code and input
+
+The Intel 8080 reset path initializes game state and enters the VM. Input handling samples ports `$00` and `$01`; a 24-entry table at `$097E` selects native movement, aim and firing actions. The two firing paths at `$04B0` and `$0517` share the shot-state service at `$04FA`. Score conversion and formatted display are implemented by separate native services.
+
+The source carries function headings, descriptive labels and explanatory comments at meaningful operations. The original ROM is the behavioral and byte-level reference. See [native implementation analysis](docs/NATIVE-WORD-IMPLEMENTATIONS.md) and [interpreter dispatch](docs/interpreter.md).
+
+## Graphics and game data
+
+Display-memory writes begin at `$2400`. The ROM contains character shapes, bit patterns, graphics tables, and object descriptors. The score/text renderer at `$05FB` uses ten scanline bytes per glyph with a 32-byte screen-line stride; the packed graphics expander at `$07AB` writes unpacked data into RAM beginning at `$2100`.
+
+The assembly keeps the original data inline. [Data classification](docs/DB-PROVENANCE.md) distinguishes script operands, native code, graphics, tables, and bytes whose specific function remains under analysis.
+
+## Research and references
+
+- [Memory map and device assignments](docs/memory-map.md)
+- [Command semantics and execution notes](docs/8080-WORD-SEMANTICS.md)
+- [Original ROM pointer ownership](docs/ROM-VECTOR-OWNERSHIP.md)
+- [Original documentation](docs/GunFight.pdf) and [supplementary manual](docs/gunfight_2.pdf)
+- [Reverse-engineering sprint plan](docs/SPRINT-PLAN.md)
+
+The engineering requirements are maintained separately in [ENGINEERING-RULES.md](ENGINEERING-RULES.md), with remaining tasks in [technical debt](docs/TECHNICAL-DEBT.md).
