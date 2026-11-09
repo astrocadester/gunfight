@@ -816,7 +816,7 @@ VM_INPUT_EVENT_DISPATCH:
         LD HL,$201C
         LD A,(HL)
         AND A
-        JP Z,$0404
+        JP Z,VM_REFRESH_SCORE_IF_NEEDED
         LD (HL),$00
         RLCA
         LD E,A
@@ -832,10 +832,11 @@ VM_INPUT_EVENT_DISPATCH:
 ; Device 7609g.bin, SHA1 c177e3f72db9af17ab99b2481448ca26318184b9
         LD ($2000),HL
         RET
-NATIVE_0404:
+; Internal 0404: At VM input/event word exit, refresh score when round state $2009 is below $22.
+VM_REFRESH_SCORE_IF_NEEDED:
         LD A,($2009)
         CP $22
-        CALL P,$05A7
+        CALL P,SCORE_FORMAT_FOUR_FIELDS
         RET
 ; -----------------------------------------------------------------------------
 ; DISPATCH_INPUT_TRANSITION
@@ -847,18 +848,20 @@ DISPATCH_INPUT_TRANSITION:
         RET Z
         LD C,A
         LD B,$01
-NATIVE_0412:
+; Internal 0412: Rotate change mask C and shift bit mask B until first changed input bit.
+INPUT_SCAN_FOR_CHANGED_BIT:
         LD A,C
         RRCA
-        JP C,$0420
+        JP C,INPUT_UPDATE_BIT_AND_TAIL_CALL
         LD C,A
         LD A,B
         RLCA
         LD B,A
         INC DE
         INC DE
-        JP $0412
-NATIVE_0420:
+        JP INPUT_SCAN_FOR_CHANGED_BIT
+; Internal 0420: Update stored input state at HL; load native action address from DE and JP (HL).
+INPUT_UPDATE_BIT_AND_TAIL_CALL:
         LD A,B
         XOR (HL)
         LD (HL),A
@@ -928,12 +931,15 @@ INSTALL_AIM_DESCRIPTOR:
 ; Player-one input action: write $FE (or zero when input inactive) to object field at $202A+5.
 PLAYER_ONE_AXIS5_NEGATIVE:
         LD B,$FE
-NATIVE_0463:
-        JP NZ,$0468
+; Internal 0463: If transition flags indicate release, zero B before storing axis5 velocity.
+P1_AXIS5_APPLY_PRESS_FLAG:
+        JP NZ,P1_AXIS5_SELECT_OBJECT
         LD B,$00
-NATIVE_0468:
+; Internal 0468: Select player-one object base $202A; shared store begins at next label.
+P1_AXIS5_SELECT_OBJECT:
         LD HL,$202A
-NATIVE_046B:
+; Internal 046B: Shared player-axis helper: mark object $C0 and write signed velocity at offset +5.
+STORE_AXIS5_COMPONENT:
         LD (HL),$C0
         LD DE,$0005
         ADD HL,DE
@@ -943,17 +949,20 @@ NATIVE_046B:
 ; Player-one input action: write $02 (or zero when input inactive) to object field at $202A+5.
 PLAYER_ONE_AXIS5_POSITIVE:
         LD B,$02
-        JP $0463
+        JP P1_AXIS5_APPLY_PRESS_FLAG
 ; PLAYER_ONE_AXIS1_NEGATIVE
 ; Player-one input action: write $FF (or zero when input inactive) to object field at $202A+1.
 PLAYER_ONE_AXIS1_NEGATIVE:
         LD B,$FF
-NATIVE_047A:
-        JP NZ,$047F
+; Internal 047A: If transition flags indicate release, zero B before storing axis1 velocity.
+P1_AXIS1_APPLY_PRESS_FLAG:
+        JP NZ,P1_AXIS1_SELECT_OBJECT
         LD B,$00
-NATIVE_047F:
+; Internal 047F: Select player-one object base $202A for axis1 update.
+P1_AXIS1_SELECT_OBJECT:
         LD HL,$202A
-NATIVE_0482:
+; Internal 0482: Shared axis helper: mark object $C0 and write signed velocity to byte +1.
+STORE_AXIS1_COMPONENT:
         LD (HL),$C0
         INC HL
         LD (HL),B
@@ -962,37 +971,41 @@ NATIVE_0482:
 ; Player-one input action: write $01 (or zero when input inactive) to object field at $202A+1.
 PLAYER_ONE_AXIS1_POSITIVE:
         LD B,$01
-        JP $047A
+        JP P1_AXIS1_APPLY_PRESS_FLAG
 ; PLAYER_TWO_AXIS5_NEGATIVE
 ; Player-two input action: write $FE (or zero when input inactive) to object field at $203D+5.
 PLAYER_TWO_AXIS5_NEGATIVE:
         LD B,$FE
-NATIVE_048E:
-        JP NZ,$0493
+; Internal 048E: Player-two axis5 press/release gating before shared velocity store.
+P2_AXIS5_APPLY_PRESS_FLAG:
+        JP NZ,P2_AXIS5_SELECT_OBJECT
         LD B,$00
-NATIVE_0493:
+; Internal 0493: Select player-two object base $203D and jump to shared +5 velocity store.
+P2_AXIS5_SELECT_OBJECT:
         LD HL,$203D
-        JP $046B
+        JP STORE_AXIS5_COMPONENT
 ; PLAYER_TWO_AXIS5_POSITIVE
 ; Player-two input action: write $02 (or zero when input inactive) to object field at $203D+5.
 PLAYER_TWO_AXIS5_POSITIVE:
         LD B,$02
-        JP $048E
+        JP P2_AXIS5_APPLY_PRESS_FLAG
 ; PLAYER_TWO_AXIS1_NEGATIVE
 ; Player-two input action: write $FF (or zero when input inactive) to object field at $203D+1.
 PLAYER_TWO_AXIS1_NEGATIVE:
         LD B,$FF
-NATIVE_04A0:
-        JP NZ,$04A5
+; Internal 04A0: Player-two axis1 press/release gating before shared velocity store.
+P2_AXIS1_APPLY_PRESS_FLAG:
+        JP NZ,P2_AXIS1_SELECT_OBJECT
         LD B,$00
-NATIVE_04A5:
+; Internal 04A5: Select player-two object base $203D and jump to shared +1 velocity store.
+P2_AXIS1_SELECT_OBJECT:
         LD HL,$203D
-        JP $0482
+        JP STORE_AXIS1_COMPONENT
 ; PLAYER_TWO_AXIS1_POSITIVE
 ; Player-two input action: write $01 (or zero when input inactive) to object field at $203D+1.
 PLAYER_TWO_AXIS1_POSITIVE:
         LD B,$01
-        JP $04A0
+        JP P2_AXIS1_APPLY_PRESS_FLAG
 ; -----------------------------------------------------------------------------
 ; PLAYER_ONE_FIRE_ACTION
 ; Player-one firing path; checks projectile/object state and updates shot hardware.
@@ -1003,12 +1016,13 @@ PLAYER_ONE_FIRE_ACTION:
         LD HL,$2063
         LD A,(HL)
         AND $80
-        JP Z,$04C1
+        JP Z,FIRE_P1_CHECK_GUARD_AND_LAUNCH
         LD HL,$2075
         LD A,(HL)
         AND $80
         RET NZ
-NATIVE_04C1:
+; Internal 04C1: Reject fire when $2012 nonzero; otherwise update count and configure projectile.
+FIRE_P1_CHECK_GUARD_AND_LAUNCH:
         LD DE,$2012
         LD A,(DE)
         AND A
@@ -1023,7 +1037,8 @@ NATIVE_04C1:
         LD DE,$202C
         LD BC,$1A08
         LD A,($201A)
-NATIVE_04DF:
+; Internal 04DF: Shared firing tail: apply direction-based shot position; atomically write projectile fields.
+FIRE_INSTALL_PROJECTILE_FROM_DIRECTION:
         LD HL,SHOT_PARAMETER_BASE
         CALL SELECT_AIM_DESCRIPTOR
         POP HL
@@ -1053,18 +1068,20 @@ UPDATE_SHOT_STATE:
         INC A
         LD (BC),A
         CP $06
-        JP M,$0511
+        JP M,SHOT_DRAW_AMMO_INDICATOR
         LD (HL),A
         LD B,A
         LD HL,$2003
         LD A,(HL)
         LD (HL),$11
         AND A
-        JP Z,$0510
+        JP Z,SHOT_RESTORE_DISPLAY_DIGIT
         LD (HL),$02
-NATIVE_0510:
+; Internal 0510: Restore A from B after updating round state, before drawing ammunition indicator.
+SHOT_RESTORE_DISPLAY_DIGIT:
         LD A,B
-NATIVE_0511:
+; Internal 0511: Tail-call formatted text with character stream $0FA4.
+SHOT_DRAW_AMMO_INDICATOR:
         LD HL,$0FA4
         JP DRAW_FORMATTED_TEXT
 ; -----------------------------------------------------------------------------
@@ -1077,12 +1094,13 @@ PLAYER_TWO_FIRE_ACTION:
         LD HL,$2087
         LD A,(HL)
         AND $80
-        JP Z,$0528
+        JP Z,FIRE_P2_CHECK_GUARD_AND_LAUNCH
         LD HL,$2099
         LD A,(HL)
         AND $80
         RET NZ
-NATIVE_0528:
+; Internal 0528: Reject fire when $2013 nonzero; otherwise update count and configure projectile.
+FIRE_P2_CHECK_GUARD_AND_LAUNCH:
         LD DE,$2013
         LD A,(DE)
         AND A
@@ -1097,7 +1115,7 @@ NATIVE_0528:
         LD DE,$203F
         LD BC,$F6F8
         LD A,($201B)
-        JP $04DF
+        JP FIRE_INSTALL_PROJECTILE_FROM_DIRECTION
 ; -----------------------------------------------------------------------------
 ; ADVANCE_ROUND_EVENT_COUNTER
 ; Handle a native event trigger: set output $01 to $04, advance $2007 and update $2008.
@@ -1143,16 +1161,18 @@ UPDATE_ROUND_STATE:
         LD B,$60
         LD A,($2006)
         AND $30
-        JP Z,$0590
-NATIVE_0585:
+        JP Z,ROUND_RESET_SCORE_AND_MODE
+; Internal 0585: Adjust B in $10 increments using $2006 upper mode bits.
+ROUND_SELECT_SPEED_FROM_SETTINGS:
         LD C,A
         LD A,B
         ADD A,$10
         LD B,A
         LD A,C
         SUB $10
-        JP NZ,$0585
-NATIVE_0590:
+        JP NZ,ROUND_SELECT_SPEED_FROM_SETTINGS
+; Internal 0590: Store resulting round mode, decrement $20C6 and clear selected score bytes.
+ROUND_RESET_SCORE_AND_MODE:
         LD A,B
         LD ($2004),A
         LD HL,$20C6
@@ -1175,20 +1195,23 @@ NATIVE_WORD_13_UPDATE_SCORE_TEXT:
 UPDATE_SCORE_DISPLAY:
         XOR A
         LD ($2003),A
-NATIVE_05A7:
+; Internal 05A7: Begin four-field BCD score-to-text formatting at RAM $201E.
+SCORE_FORMAT_FOUR_FIELDS:
         LD C,$04
         LD HL,$201E
         LD DE,$2002
-NATIVE_05AF:
+; Internal 05AF: Extract high nibble from RAM source, choosing placeholder $10 for leading zero.
+SCORE_DECODE_HIGH_BCD_DIGIT:
         LD A,(DE)
         RRA
         RRA
         RRA
         RRA
         AND $0F
-        JP NZ,$05BB
+        JP NZ,SCORE_WRITE_BCD_DIGITS
         LD A,$10
-NATIVE_05BB:
+; Internal 05BB: Emit ASCII high/low score digits into formatted text buffer.
+SCORE_WRITE_BCD_DIGITS:
         ADD A,$30
         LD (HL),A
         INC HL
@@ -1199,19 +1222,20 @@ NATIVE_05BB:
         LD B,$2B
         LD A,C
         CP $03
-        JP NZ,$05D6
+        JP NZ,SCORE_NEXT_FIELD_AND_RENDER
         LD B,$2C
         LD A,(DE)
         AND A
-        JP NZ,$05D6
+        JP NZ,SCORE_NEXT_FIELD_AND_RENDER
         LD (HL),$40
-NATIVE_05D6:
+; Internal 05D6: Advance source/output pointers; render after four fields.
+SCORE_NEXT_FIELD_AND_RENDER:
         INC DE
         INC HL
         LD (HL),B
         INC HL
         DEC C
-        JP NZ,$05AF
+        JP NZ,SCORE_DECODE_HIGH_BCD_DIGIT
         LD A,$08
         LD HL,$201E
         LD DE,$2405
@@ -1244,38 +1268,45 @@ DRAW_FORMATTED_DATA:
 ; -----------------------------------------------------------------------------
 DRAW_FORMATTED_TEXT:
         PUSH AF
-NATIVE_05FC:
+; Internal 05FC: Fetch source char; values under $30 act as horizontal destination advances.
+TEXT_FETCH_CHARACTER_OR_ADVANCE:
         LD A,(HL)
         INC HL
         SUB $30
-        JP P,$0614
+        JP P,TEXT_LOOKUP_FONT_GLYPH
         LD B,A
-NATIVE_0604:
+; Internal 0604: Advance bitmap byte address and handle 32-byte scanline boundary.
+TEXT_ADVANCE_DISPLAY_COLUMN:
         INC E
         LD A,E
         AND $1F
-        JP NZ,$060D
+        JP NZ,TEXT_CONTINUE_COLUMN_ADVANCE
         INC D
         INC D
-NATIVE_060D:
+; Internal 060D: Loop B column increments, then fetch next source byte.
+TEXT_CONTINUE_COLUMN_ADVANCE:
         INC B
-        JP NZ,$0604
-        JP $05FC
-NATIVE_0614:
+        JP NZ,TEXT_ADVANCE_DISPLAY_COLUMN
+        JP TEXT_FETCH_CHARACTER_OR_ADVANCE
+; Internal 0614: Use character minus $30 as index into 10-byte digit glyph records.
+TEXT_LOOKUP_FONT_GLYPH:
         PUSH HL
         PUSH DE
         LD HL,FONT_SCORE_DIGITS
-        JP Z,$0624
+        JP Z,TEXT_SETUP_TEN_SCANLINES
         LD BC,$000A
-NATIVE_061F:
+; Internal 061F: Advance font pointer by 10 bytes until glyph index exhausted.
+TEXT_SKIP_TO_NEXT_DIGIT_GLYPH:
         ADD HL,BC
         DEC A
-        JP NZ,$061F
-NATIVE_0624:
+        JP NZ,TEXT_SKIP_TO_NEXT_DIGIT_GLYPH
+; Internal 0624: Exchange source/destination and initialize ten glyph rows with $20 stride.
+TEXT_SETUP_TEN_SCANLINES:
         EX DE,HL
         LD BC,$0020
         LD A,$0A
-NATIVE_062A:
+; Internal 062A: Write one glyph byte to bitmap, step one scanline and repeat ten times.
+TEXT_COPY_NEXT_GLYPH_ROW:
         PUSH AF
         LD A,(DE)
         INC DE
@@ -1283,7 +1314,7 @@ NATIVE_062A:
         ADD HL,BC
         POP AF
         DEC A
-        JP NZ,$062A
+        JP NZ,TEXT_COPY_NEXT_GLYPH_ROW
         POP DE
         POP HL
         INC DE
@@ -1328,11 +1359,12 @@ CLEAR_BITMAP_DISPLAY:
         LD DE,$0000
         LD A,$10
         LD SP,$400F
-NATIVE_0662:
+; Internal 0662: Zero-fill video using PUSH BC from temporary stack pointer $400F.
+CLEAR_DISPLAY_PUSH_WORD_LOOP:
         PUSH BC
         INC DE
         CP D
-        JP NZ,$0662
+        JP NZ,CLEAR_DISPLAY_PUSH_WORD_LOOP
         XOR A
         OUT ($01),A
         LD SP,$2400
@@ -1429,15 +1461,17 @@ RUN_GAME_DISPLAY_SEQUENCE:
         XOR A
         OUT ($02),A
         LD A,($2002)
-NATIVE_06C5:
+; Internal 06C5: Reduce display state and determine whether the next pattern needs frame setup.
+GAME_SELECT_NEXT_PATTERN:
         DEC A
-        JP M,$06EB
+        JP M,GAME_SELECT_SECOND_PATTERN_SET
         CP $02
-        CALL P,$0719
+        CALL P,GAME_PREPARE_SPECIAL_OBJECT
         CP $05
-        JP M,$06D5
+        JP M,GAME_DRAW_PATTERN_FROM_TABLE
         LD A,$04
-NATIVE_06D5:
+; Internal 06D5: Read graphic pointer and destination from table; draw current pattern.
+GAME_DRAW_PATTERN_FROM_TABLE:
         LD E,(HL)
         INC HL
         LD D,(HL)
@@ -1454,19 +1488,21 @@ NATIVE_06D5:
         POP AF
         POP HL
         DEC A
-        JP P,$06D5
-NATIVE_06EB:
+        JP P,GAME_DRAW_PATTERN_FROM_TABLE
+; Internal 06EB: Select secondary graphics set once bit7 of $2016 permits.
+GAME_SELECT_SECOND_PATTERN_SET:
         LD A,($2016)
         LD B,A
         AND $80
-        JP NZ,$0703
+        JP NZ,GAME_DRAW_FINAL_PATTERN_GROUP
         LD A,B
         OR $80
         LD ($2016),A
         LD HL,$0F22
         LD A,($2005)
-        JP $06C5
-NATIVE_0703:
+        JP GAME_SELECT_NEXT_PATTERN
+; Internal 0703: If bit6 of $2016 not set, set it, select port-$02 mode and draw last group.
+GAME_DRAW_FINAL_PATTERN_GROUP:
         LD A,($2016)
         AND $40
         RET NZ
@@ -1476,19 +1512,21 @@ NATIVE_0703:
         OUT ($02),A
         XOR A
         LD HL,$0F36
-        JP $06D5
-NATIVE_0719:
+        JP GAME_DRAW_PATTERN_FROM_TABLE
+; Internal 0719: Check object at $2050 and copy a 15-byte initialization record when inactive.
+GAME_PREPARE_SPECIAL_OBJECT:
         PUSH HL
         PUSH AF
         LD HL,$2050
         LD A,(HL)
         AND $80
-        JP NZ,$072D
+        JP NZ,GAME_SET_PATTERN_READY_FLAG
         EX DE,HL
         LD C,$0F
         LD HL,$0F52
         CALL COPY_SCRIPT_LITERAL_BLOCK
-NATIVE_072D:
+; Internal 072D: Set bit6 in $2016; restore caller AF/HL saved by special-object helper.
+GAME_SET_PATTERN_READY_FLAG:
         LD A,($2016)
         OR $40
         LD ($2016),A
@@ -1595,19 +1633,21 @@ FILL_DISPLAY_RECTANGLE:
         LD H,A
         CALL VIDEO_ADDRESS_FROM_PACKED_COORDINATES
         EX DE,HL
-NATIVE_079A:
+; Internal 079A: Save row destination and fill another horizontal span using 32-byte stride.
+RECTANGLE_NEXT_SCANLINE:
         PUSH HL
         LD C,E
-NATIVE_079C:
+; Internal 079C: Fill C consecutive video bytes with B.
+RECTANGLE_FILL_ROW_BYTES:
         LD (HL),B
         INC HL
         DEC C
-        JP NZ,$079C
+        JP NZ,RECTANGLE_FILL_ROW_BYTES
         POP HL
         LD C,$20
         ADD HL,BC
         DEC D
-        JP NZ,$079A
+        JP NZ,RECTANGLE_NEXT_SCANLINE
         RET
 NATIVE_WORD_0F_EXPAND_GRAPHICS_TABLE:
 ; -----------------------------------------------------------------------------
@@ -1618,7 +1658,8 @@ NATIVE_WORD_0F_EXPAND_GRAPHICS_TABLE:
 EXPAND_PACKED_GRAPHICS:
         LD HL,$2100
         LD DE,$0BC4
-NATIVE_07B1:
+; Internal 07B1: Read next packed graphics record from ROM $0BC4; zero byte ends stream.
+EXPAND_GRAPHICS_NEXT_BLOCK:
         LD A,(DE)
         AND A
         RET Z
@@ -1631,13 +1672,15 @@ NATIVE_07B1:
         LD B,A
         LD (HL),A
         INC HL
-NATIVE_07BD:
+; Internal 07BD: Compute destination offset from record width for the next packed column.
+EXPAND_GRAPHICS_NEXT_COLUMN:
         PUSH BC
         LD A,B
         LD B,$00
         ADD HL,BC
         LD B,A
-NATIVE_07C3:
+; Internal 07C3: Read next source byte and prepare eight-bit rotation into display orientation.
+EXPAND_GRAPHICS_READ_PACKED_COLUMN:
         DEC HL
         LD A,(DE)
         INC DE
@@ -1645,7 +1688,8 @@ NATIVE_07C3:
         LD D,A
         LD E,$00
         LD B,$08
-NATIVE_07CC:
+; Internal 07CC: Rotate source bits into the expanded byte through D/E shift registers.
+EXPAND_GRAPHICS_ROTATE_EIGHT_BITS:
         LD A,D
         RRA
         LD D,A
@@ -1653,19 +1697,19 @@ NATIVE_07CC:
         RLA
         LD E,A
         DEC B
-        JP NZ,$07CC
+        JP NZ,EXPAND_GRAPHICS_ROTATE_EIGHT_BITS
         LD (HL),E
         POP DE
         DEC C
-        JP NZ,$07C3
+        JP NZ,EXPAND_GRAPHICS_READ_PACKED_COLUMN
         POP BC
         LD A,B
         LD B,$00
         ADD HL,BC
         LD B,A
         DEC B
-        JP NZ,$07BD
-        JP $07B1
+        JP NZ,EXPAND_GRAPHICS_NEXT_COLUMN
+        JP EXPAND_GRAPHICS_NEXT_BLOCK
 NATIVE_WORD_11_DRAW_STATUS_203F:
 ; -----------------------------------------------------------------------------
 ; DRAW_SECOND_PLAYER_STATUS
@@ -1673,7 +1717,7 @@ NATIVE_WORD_11_DRAW_STATUS_203F:
 ; -----------------------------------------------------------------------------
 DRAW_SECOND_PLAYER_STATUS:
         LD HL,$203F
-        JP $07F2
+        JP DRAW_STATUS_GET_BITMAP_DESTINATION
 NATIVE_WORD_12_DRAW_STATUS_202C:
 ; -----------------------------------------------------------------------------
 ; DRAW_FIRST_PLAYER_STATUS
@@ -1681,7 +1725,8 @@ NATIVE_WORD_12_DRAW_STATUS_202C:
 ; -----------------------------------------------------------------------------
 DRAW_FIRST_PLAYER_STATUS:
         LD HL,$202C
-NATIVE_07F2:
+; Internal 07F2: Read packed object coordinates and derive display destination for 7 chars.
+DRAW_STATUS_GET_BITMAP_DESTINATION:
         LD E,(HL)
         LD BC,$0004
         ADD HL,BC
