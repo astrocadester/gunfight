@@ -26,7 +26,7 @@ INTERRUPT_VECTOR_08:
         PUSH DE
         PUSH BC
         PUSH AF
-        JP $0087
+        JP IRQ_RESUME_COMMON_FRAME_PATH
         DB $00
 ; -----------------------------------------------------------------------------
 ; INTERRUPT_VECTOR_10
@@ -43,13 +43,15 @@ INTERRUPT_VECTOR_10:
         CPL
         LD (HL),A
         AND A
-        JP M,$00EA
+        JP M,IRQ_SCAN_PROJECTILE_RECORDS
         LD HL,$206F
-NATIVE_0021:
+; Internal 0021: Shared IRQ loop: extract next nonzero list pointer from a 0x12-byte slot at $206F.
+IRQ_COPY_OBJECT_LIST_ENTRY:
         PUSH HL
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
-        JP Z,$0038
-NATIVE_0028:
+        JP Z,IRQ_ADVANCE_FIRST_LIST_SLOT
+; Internal 0028: Copy a pair of source bytes to a destination row, advance by $20, repeat using B.
+IRQ_COPY_OBJECT_LIST_ROW:
         LD A,(DE)
         INC DE
         LD (HL),A
@@ -62,19 +64,21 @@ NATIVE_0028:
         ADD HL,BC
         DEC B
         AND A
-        JP Z,$0028
-NATIVE_0038:
+        JP Z,IRQ_COPY_OBJECT_LIST_ROW
+; Internal 0038: Restore list slot address and advance $12 until low byte reaches $B7.
+IRQ_ADVANCE_FIRST_LIST_SLOT:
         POP HL
         LD DE,$0012
         ADD HL,DE
         LD A,L
         CP $B7
-        JP NZ,$0021
+        JP NZ,IRQ_COPY_OBJECT_LIST_ENTRY
         LD HL,$20A2
-NATIVE_0046:
+; Internal 0046: Process the $20A2-list slots, setting bitmap pointer and the port-$02 mode.
+IRQ_COMPOSITE_SECOND_LIST_ENTRY:
         PUSH HL
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
-        JP Z,$0076
+        JP Z,IRQ_ADVANCE_SECOND_LIST_SLOT
         LD A,(DE)
         INC DE
         EX DE,HL
@@ -84,7 +88,8 @@ NATIVE_0046:
         INC HL
         EX DE,HL
         OUT ($02),A
-NATIVE_0057:
+; Internal 0057: Merge two source bytes through graphics ports $04/$03 with OR into bitmap row.
+IRQ_COMPOSITE_SECOND_LIST_ROW:
         LD A,(HL)
         LD (DE),A
         INC DE
@@ -107,48 +112,54 @@ NATIVE_0057:
         ADD HL,BC
         DEC B
         AND A
-        JP Z,$0057
-NATIVE_0076:
+        JP Z,IRQ_COMPOSITE_SECOND_LIST_ROW
+; Internal 0076: Restore list slot and step backward by $12 until low byte reaches $5A.
+IRQ_ADVANCE_SECOND_LIST_SLOT:
         POP HL
         LD DE,$FFEE
         ADD HL,DE
         LD A,L
         CP $5A
-        JP NZ,$0046
+        JP NZ,IRQ_COMPOSITE_SECOND_LIST_ENTRY
         LD HL,$20B2
-        JP $0091
-NATIVE_0087:
+        JP IRQ_CONSUME_BITMAP_JOB
+; Internal 0087: Shared continuation of RST $08/$10: choose pending bitmap operations or input sampling.
+IRQ_RESUME_COMMON_FRAME_PATH:
         LD A,($20B9)
         AND A
-        JP M,$0218
+        JP M,IRQ_SAMPLE_PORT2_AND_RESTORE
         LD HL,$20AB
-NATIVE_0091:
+; Internal 0091: Consume pointer fields from pending draw/clear descriptor at HL.
+IRQ_CONSUME_BITMAP_JOB:
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
         PUSH DE
-        JP Z,$00B4
+        JP Z,IRQ_RENDER_PENDING_SPRITE_JOB
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
         EX DE,HL
         PUSH DE
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
         POP DE
-        JP Z,$00B4
-NATIVE_00A4:
+        JP Z,IRQ_RENDER_PENDING_SPRITE_JOB
+; Internal 00A4: Use B as fill value to clear C bytes per row for D rows.
+IRQ_CLEAR_BITMAP_ROW_GROUP:
         PUSH HL
         LD C,E
-NATIVE_00A6:
+; Internal 00A6: Inner fill loop: write B to (HL), advance until C expires.
+IRQ_CLEAR_BITMAP_ROW_BYTES:
         LD (HL),B
         INC HL
         DEC C
-        JP NZ,$00A6
+        JP NZ,IRQ_CLEAR_BITMAP_ROW_BYTES
         POP HL
         LD C,$20
         ADD HL,BC
         DEC D
-        JP NZ,$00A4
-NATIVE_00B4:
+        JP NZ,IRQ_CLEAR_BITMAP_ROW_GROUP
+; Internal 00B4: Restore pending descriptor, select video mode and draw two object-pattern sources.
+IRQ_RENDER_PENDING_SPRITE_JOB:
         POP HL
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
-        JP Z,$0218
+        JP Z,IRQ_SAMPLE_PORT2_AND_RESTORE
         LD A,(DE)
         INC DE
         OUT ($02),A
@@ -181,38 +192,42 @@ NATIVE_00B4:
         LD (HL),E
         INC HL
         LD (HL),D
-        JP $0218
-NATIVE_00EA:
+        JP IRQ_SAMPLE_PORT2_AND_RESTORE
+; Internal 00EA: Begin pass over projectile/object records at $2063.
+IRQ_SCAN_PROJECTILE_RECORDS:
         LD HL,$2063
-NATIVE_00ED:
+; Internal 00ED: Check active flag and coordinate window for one $12-byte projectile slot.
+IRQ_CHECK_PROJECTILE_SLOT:
         LD A,(HL)
         AND A
         PUSH HL
-        JP P,$0151
+        JP P,IRQ_NEXT_PROJECTILE_SLOT
         INC HL
         LD A,(HL)
         AND A
         INC HL
         LD A,(HL)
-        JP M,$0103
+        JP M,IRQ_CHECK_PROJECTILE_UPPER_WINDOW
         CP $70
-        JP NC,$0108
-        JP $0151
-NATIVE_0103:
+        JP NC,IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS
+        JP IRQ_NEXT_PROJECTILE_SLOT
+; Internal 0103: Apply upper limit $90 to signed/alternate projectile coordinate path.
+IRQ_CHECK_PROJECTILE_UPPER_WINDOW:
         CP $90
-        JP NC,$0151
-NATIVE_0108:
+        JP NC,IRQ_NEXT_PROJECTILE_SLOT
+; Internal 0108: Check additional record field and lower bound before reporting collision code.
+IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         LD DE,$000C
         ADD HL,DE
         LD A,(HL)
         AND A
-        JP Z,$0151
+        JP Z,IRQ_NEXT_PROJECTILE_SLOT
         LD DE,$FFF8
         ADD HL,DE
         LD A,(HL)
         SUB $10
         CP $C0
-        JP NC,$0151
+        JP NC,IRQ_NEXT_PROJECTILE_SLOT
         POP HL
         PUSH HL
         LD (HL),$A0
@@ -244,26 +259,29 @@ NATIVE_0108:
         LD A,C
         RRA
         LD A,(HL)
-        JP NC,$014C
+        JP NC,IRQ_STORE_COLLISION_SELECTOR
         RRA
         RRA
         RRA
         RRA
-NATIVE_014C:
+; Internal 014C: Extract low nibble of ROM table value into RAM $201C (event selector).
+IRQ_STORE_COLLISION_SELECTOR:
         AND $0F
         LD ($201C),A
-NATIVE_0151:
+; Internal 0151: Advance by $12 through projectile records until low byte is $AB.
+IRQ_NEXT_PROJECTILE_SLOT:
         POP HL
         LD DE,$0012
         ADD HL,DE
         LD A,$AB
         CP L
-        JP NZ,$00ED
+        JP NZ,IRQ_CHECK_PROJECTILE_SLOT
         LD HL,$2063
-NATIVE_015F:
+; Internal 015F: Update an active object and calculate its bitmap address and bit phase.
+IRQ_UPDATE_VISIBLE_OBJECT_SLOT:
         LD A,(HL)
         AND A
-        JP P,$0183
+        JP P,IRQ_NEXT_VISIBLE_OBJECT_SLOT
         LD A,$FF
         LD ($20C4),A
         CALL UPDATE_ACTIVE_OBJECT_COORDINATES
@@ -272,7 +290,7 @@ NATIVE_015F:
         OR $7F
         AND (HL)
         LD (HL),A
-        JP P,$0183
+        JP P,IRQ_NEXT_VISIBLE_OBJECT_SLOT
         PUSH HL
         LD BC,$0009
         ADD HL,BC
@@ -283,89 +301,99 @@ NATIVE_015F:
         INC HL
         LD (HL),C
         POP HL
-NATIVE_0183:
+; Internal 0183: Advance active object record by $12; after final slot, examine $20BE.
+IRQ_NEXT_VISIBLE_OBJECT_SLOT:
         LD BC,$0012
         ADD HL,BC
         LD A,$AB
         CP L
-        JP NZ,$015F
+        JP NZ,IRQ_UPDATE_VISIBLE_OBJECT_SLOT
         LD HL,($20BE)
         LD A,L
         OR H
-        JP NZ,$0198
+        JP NZ,IRQ_BEGIN_OBJECT_CYCLE
         LD HL,$202A
-NATIVE_0198:
+; Internal 0198: Save initial walker address to $20C0 and clear cycle activity byte $20BD.
+IRQ_BEGIN_OBJECT_CYCLE:
         LD ($20C0),HL
         XOR A
         LD ($20BD),A
-NATIVE_019F:
+; Internal 019F: Update active object, optionally prepare drawing job, persist current pointer.
+IRQ_STEP_OBJECT_CYCLE:
         LD A,(HL)
         AND A
-        JP P,$01B1
+        JP P,IRQ_ADVANCE_OBJECT_CYCLE
         CALL UPDATE_ACTIVE_OBJECT_COORDINATES
         LD A,($20BD)
         AND A
-        CALL Z,$02C9
+        CALL Z,QUEUE_OBJECT_BITMAP_UPDATE
         LD ($20BE),HL
-NATIVE_01B1:
+; Internal 01B1: Advance the object walker by $13, wrapping at $2063 to $202A.
+IRQ_ADVANCE_OBJECT_CYCLE:
         LD DE,$0013
         ADD HL,DE
         LD A,$63
         CP L
-        JP NZ,$01BE
+        JP NZ,IRQ_CHECK_OBJECT_CYCLE_COMPLETE
         LD HL,$202A
-NATIVE_01BE:
+; Internal 01BE: Compare walker against starting slot and update output/timing after a full pass.
+IRQ_CHECK_OBJECT_CYCLE_COMPLETE:
         LD A,($20C0)
         CP L
-        JP NZ,$019F
+        JP NZ,IRQ_STEP_OBJECT_CYCLE
         LD HL,$2014
         LD A,(HL)
         AND A
-        JP Z,$01D4
+        JP Z,IRQ_ADVANCE_ROUND_TIMERS
         DEC (HL)
-        JP NZ,$01D4
+        JP NZ,IRQ_ADVANCE_ROUND_TIMERS
         XOR A
         OUT ($01),A
-NATIVE_01D4:
+; Internal 01D4: Decrease round timer at $2009 and update BCD game-state counters on rollover.
+IRQ_ADVANCE_ROUND_TIMERS:
         LD HL,$2009
         DEC (HL)
-        JP P,$0208
+        JP P,IRQ_DECREMENT_FRAME_DELAY
         LD (HL),$22
         LD HL,$2004
         LD A,(HL)
         AND A
-        JP Z,$01F6
+        JP Z,IRQ_UPDATE_SECOND_BCD_TIMER
         ADD A,$99
         DAA
         LD (HL),A
-        JP NZ,$01F6
+        JP NZ,IRQ_UPDATE_SECOND_BCD_TIMER
         EX DE,HL
         LD HL,$20C4
         INC (HL)
-        JP NZ,$039D
+        JP NZ,INSTALL_INITIAL_VM_SCRIPT
         EX DE,HL
         INC (HL)
-NATIVE_01F6:
+; Internal 01F6: Update BCD timer at $2003; on expiry transition to wait counter.
+IRQ_UPDATE_SECOND_BCD_TIMER:
         LD HL,$2003
         LD A,(HL)
         AND A
-        JP Z,$0208
+        JP Z,IRQ_DECREMENT_FRAME_DELAY
         ADD A,$99
         DAA
         LD (HL),A
-        JP NZ,$0218
-        JP $0214
-NATIVE_0208:
+        JP NZ,IRQ_SAMPLE_PORT2_AND_RESTORE
+        JP IRQ_DECREMENT_WAIT_COUNTER
+; Internal 0208: Decrement $2015 and branch to frame end until the delay expires.
+IRQ_DECREMENT_FRAME_DELAY:
         LD HL,$2015
         LD A,(HL)
         AND A
-        JP Z,$0218
+        JP Z,IRQ_SAMPLE_PORT2_AND_RESTORE
         DEC (HL)
-        JP NZ,$0218
-NATIVE_0214:
+        JP NZ,IRQ_SAMPLE_PORT2_AND_RESTORE
+; Internal 0214: Decrement waiting/repeat counter at $20C5.
+IRQ_DECREMENT_WAIT_COUNTER:
         LD HL,$20C5
         DEC (HL)
-NATIVE_0218:
+; Internal 0218: Double-sample input port $02; dispatch stable changes, restore saved registers.
+IRQ_SAMPLE_PORT2_AND_RESTORE:
         IN A,($02)
         LD B,A
         IN A,($02)
@@ -397,10 +425,12 @@ DRAW_NATIVE_OBJECT_DATA:
         LD A,(DE)
         INC DE
         LD B,A
-NATIVE_023B:
+; Internal 023B: Save source dimensions and destination, start another 32-byte-spaced bitmap row.
+DRAW_OBJECT_NEXT_ROW:
         PUSH BC
         PUSH HL
-NATIVE_023D:
+; Internal 023D: Feed a pattern byte to port $04, read pixel result at port $03, and store.
+DRAW_OBJECT_ROW_BYTES:
         LD A,(DE)
         INC DE
         OUT ($04),A
@@ -408,7 +438,7 @@ NATIVE_023D:
         LD (HL),A
         INC HL
         DEC C
-        JP NZ,$023D
+        JP NZ,DRAW_OBJECT_ROW_BYTES
         XOR A
         OUT ($04),A
         IN A,($03)
@@ -418,7 +448,7 @@ NATIVE_023D:
         ADD HL,BC
         POP BC
         DEC B
-        JP NZ,$023B
+        JP NZ,DRAW_OBJECT_NEXT_ROW
         LD A,($20BC)
         LD B,A
         RET
@@ -472,41 +502,46 @@ STEP_OBJECT_AXIS:
         INC HL
         SUB (HL)
         INC HL
-        JP C,$0297
+        JP C,AXIS_HANDLE_LIMIT_VIOLATION
         SUB (HL)
-        JP NC,$0297
+        JP NC,AXIS_HANDLE_LIMIT_VIOLATION
         DEC HL
         DEC HL
         LD (HL),C
-NATIVE_0294:
+; Internal 0294: Return current axis byte in D, clear A after the in-bounds check.
+AXIS_RETURN_UNCHANGED:
         LD D,(HL)
         XOR A
         RET
-NATIVE_0297:
+; Internal 0297: Adjust compact axis record on range violation; branch by B direction mode.
+AXIS_HANDLE_LIMIT_VIOLATION:
         DEC HL
         DEC HL
         DEC B
-        JP NZ,$02A7
+        JP NZ,AXIS_CLEAR_OR_REVERSE_COMPONENT
         DEC HL
         XOR A
         SUB (HL)
         LD (HL),A
         INC HL
         LD A,$10
-        JP $02BA
-NATIVE_02A7:
+        JP AXIS_RETURN_STATUS
+; Internal 02A7: Zero a field and select status $60 or alternate path from direction mode.
+AXIS_CLEAR_OR_REVERSE_COMPONENT:
         DEC HL
         LD (HL),$00
         INC HL
         DEC B
-        JP NZ,$02B4
+        JP NZ,AXIS_SELECT_LIMIT_STATUS
         LD A,$60
-        JP $02BA
-NATIVE_02B4:
+        JP AXIS_RETURN_STATUS
+; Internal 02B4: Choose return status $40 when no earlier mode matches.
+AXIS_SELECT_LIMIT_STATUS:
         DEC B
-        JP NZ,$0294
+        JP NZ,AXIS_RETURN_UNCHANGED
         LD A,$40
-NATIVE_02BA:
+; Internal 02BA: Return axis value in D and status in A, with flags from AND A.
+AXIS_RETURN_STATUS:
         LD D,(HL)
         AND A
         RET
@@ -528,7 +563,8 @@ TAKE_AND_CLEAR_OBJECT_POINTER:
         OR E
         EX DE,HL
         RET
-NATIVE_02C9:
+; Internal 02C9: Construct pending object bitmap descriptor in $20AB or $20B2 and update slot flags.
+QUEUE_OBJECT_BITMAP_UPDATE:
         PUSH HL
         LD BC,$000F
         ADD HL,BC
@@ -539,9 +575,10 @@ NATIVE_02C9:
         LD A,$60
         CP D
         LD HL,$20AB
-        JP NC,$02E0
+        JP NC,STORE_PENDING_BITMAP_DESCRIPTOR
         LD HL,$20B2
-NATIVE_02E0:
+; Internal 02E0: Store source slot pointer, converted video address/phase, and object linkage.
+STORE_PENDING_BITMAP_DESCRIPTOR:
         LD (HL),C
         INC HL
         LD (HL),B
@@ -566,16 +603,17 @@ NATIVE_02E0:
         EX DE,HL
         RLA
         RLA
-        JP C,$0314
+        JP C,SELECT_CURRENT_PLAYER_FRAME
         RLA
-        JP C,$033E
+        JP C,CLEAR_PENDING_BITMAP_DESCRIPTOR
         DEC HL
         LD D,(HL)
         DEC HL
         LD E,(HL)
         LD BC,$0004
         LD A,$80
-NATIVE_030C:
+; Internal 030C: Write pending object link pointer and XOR status into source object control byte.
+WRITE_OBJECT_LINK_AND_XOR_STATE:
         ADD HL,BC
         LD (HL),E
         INC HL
@@ -584,7 +622,8 @@ NATIVE_030C:
         XOR (HL)
         LD (HL),A
         RET
-NATIVE_0314:
+; Internal 0314: Choose player-specific four-entry frame table based on object slot and $2009.
+SELECT_CURRENT_PLAYER_FRAME:
         POP HL
         LD A,$50
         CP L
@@ -593,17 +632,19 @@ NATIVE_0314:
         LD A,$2A
         CP L
         LD HL,PLAYER_ONE_FRAME_POINTERS
-        JP Z,$0326
+        JP Z,LOOKUP_PLAYER_FRAME_POINTER
         LD HL,PLAYER_TWO_FRAME_POINTERS
-NATIVE_0326:
+; Internal 0326: Scale the $2009 frame selector and index the four-entry player frame table.
+LOOKUP_PLAYER_FRAME_POINTER:
         LD A,($2009)
         AND $0C
         RRCA
         ADD A,L
         LD L,A
-        JP NC,$0332
+        JP NC,LOAD_FRAME_POINTER_AND_RESET_FLAGS
         INC H
-NATIVE_0332:
+; Internal 0332: Read frame pointer into DE; clear/change related status through shared exit.
+LOAD_FRAME_POINTER_AND_RESET_FLAGS:
         LD E,(HL)
         INC HL
         LD D,(HL)
@@ -611,8 +652,9 @@ NATIVE_0332:
         PUSH HL
         LD BC,$000D
         XOR A
-        JP $030C
-NATIVE_033E:
+        JP WRITE_OBJECT_LINK_AND_XOR_STATE
+; Internal 033E: Zero four pending-record bytes and clear source object's active control byte.
+CLEAR_PENDING_BITMAP_DESCRIPTOR:
         XOR A
         LD (HL),A
         INC HL
@@ -640,7 +682,8 @@ VIDEO_ADDRESS_FROM_PACKED_COORDINATES:
         AND $07
         LD C,A
         LD B,$03
-NATIVE_035F:
+; Internal 035F: One step of the three-bit right shift of DE, preserving carry between D/E.
+PIXEL_ADDRESS_SHIFT_RIGHT:
         XOR A
         LD A,D
         RRA
@@ -649,7 +692,7 @@ NATIVE_035F:
         RRA
         LD E,A
         DEC B
-        JP NZ,$035F
+        JP NZ,PIXEL_ADDRESS_SHIFT_RIGHT
         PUSH HL
         LD HL,$2400
         ADD HL,DE
@@ -663,13 +706,14 @@ NATIVE_035F:
 ; -----------------------------------------------------------------------------
 COPY_SCRIPT_LITERAL_BLOCK:
         DI
-NATIVE_0373:
+; Internal 0373: Inline copy loop for VM words $05/$06: copy C bytes HL to DE.
+COPY_SCRIPT_LITERAL_BYTE:
         LD A,(HL)
         INC HL
         LD (DE),A
         INC DE
         DEC C
-        JP NZ,$0373
+        JP NZ,COPY_SCRIPT_LITERAL_BYTE
         RET
 ; -----------------------------------------------------------------------------
 ; SELECT_AIM_DESCRIPTOR
@@ -708,12 +752,14 @@ INITIALIZE_GAME:
         LD A,$08
         LD HL,$2002
         LD B,$00
-NATIVE_0397:
+; Internal 0397: Initialize eight consecutive RAM state bytes at $2002.
+CLEAR_INITIAL_GAME_STATE_BYTE:
         LD (HL),B
         INC HL
         DEC A
-        JP NZ,$0397
-NATIVE_039D:
+        JP NZ,CLEAR_INITIAL_GAME_STATE_BYTE
+; Internal 039D: Clear display, install initial script $0821, enable interrupts and fall into VM.
+INSTALL_INITIAL_VM_SCRIPT:
         CALL CLEAR_BITMAP_DISPLAY
         LD HL,$0821
         LD ($2000),HL
@@ -727,9 +773,10 @@ VM_DISPATCH_NEXT:
         LD HL,($2000)
         LD A,($20C6)
         AND A
-        JP Z,$03B4
+        JP Z,VM_FETCH_AND_RESOLVE_NATIVE_WORD
         LD HL,$089B
-NATIVE_03B4:
+; Internal 03B4: Fetch indexed command, advance $2000, look up 16-bit handler at $09AE and jump.
+VM_FETCH_AND_RESOLVE_NATIVE_WORD:
         LD E,(HL)
         INC HL
         LD ($2000),HL
