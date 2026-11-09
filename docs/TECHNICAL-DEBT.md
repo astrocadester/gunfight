@@ -26,3 +26,11 @@ The maintained 8080 source is `src/gunfight.asm`. The engineering rules and veri
 - **Not executed:** zmac binary build, SHA-1 chip comparison, MAME, Windows build and physical hardware.
 
 The retained original ROM and direct native assembler verification remain the final byte-identity gate. Do not mark GF-RE-006 closed on source-layout checks alone.
+
+## v20261108-0004 — cross-repo RE checkpoint
+
+- Resolved the controller-table interpretation: each player's direction transform provides **even byte offsets**, and the zero case is rejected before the 16-bit aim-pointer lookup. Player-one last entry at `$0EF0` is also player-two's unused zero-index entry. This is a shared *entry*, not a misaligned/overlapping pointer fetch.
+- Separated shot-coordinate adjustments (`$0F00–$0F0D`) from graphics pointer tables. The `$0EFE` entry is both player-two's last active graphic pointer and the firing lookup's unused zero slot.
+- Data-byte verification performed: original 1 KB `$0C00–$0FFF` data is identical before and after typing the pointers and shot records.
+- WB PR #45 documentation/graphic aligned, with Gun Fight independent of WB-private links.
+- GF-RE-002 remains open for end-to-end collision, timing and sound execution; GF-RE-006 remains open for native zmac, device SHA-1 and emulator tests. No substitute compiler or gameplay logic has been used.
