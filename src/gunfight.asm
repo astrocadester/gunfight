@@ -740,7 +740,7 @@ NATIVE_03B4:
         LD DE,$03A6
         PUSH DE
         JP (HL)
-NATIVE_WORD_14_INPUT_EVENT_DISPATCH:
+NATIVE_WORD_14_INPUT_AND_EVENT_DISPATCH:
 ; -----------------------------------------------------------------------------
 ; VM_INPUT_EVENT_DISPATCH
 ; Sample controller inputs and dispatch input transitions via action tables.
@@ -1237,7 +1237,7 @@ NATIVE_062A:
         DEC A
         JP NZ,DRAW_FORMATTED_TEXT
         RET
-NATIVE_WORD_02_SET_RAM_2003:
+NATIVE_WORD_02_SET_2003:
 ; -----------------------------------------------------------------------------
 ; SET_SCORE_STATE_BYTE
 ; VM word $02: read one byte from the script and store it at RAM $2003; advance the script cursor.
@@ -1249,7 +1249,7 @@ SET_SCORE_STATE_BYTE:
         LD ($2000),HL
         LD ($2003),A
         RET
-NATIVE_WORD_03_SET_RAM_2015:
+NATIVE_WORD_03_SET_2015:
 ; -----------------------------------------------------------------------------
 ; SET_DELAY_STATE_BYTE
 ; VM word $03: read one byte from the script and store it at RAM $2015; advance the script cursor.
@@ -1261,7 +1261,7 @@ SET_DELAY_STATE_BYTE:
         LD ($2000),HL
         LD ($2015),A
         RET
-NATIVE_WORD_04_CLEAR_DISPLAY:
+NATIVE_WORD_04_CLEAR_DISPLAY_MEMORY:
 ; -----------------------------------------------------------------------------
 ; CLEAR_BITMAP_DISPLAY
 ; VM word $04: clear bitmap display using the 8080 stack-driven display clear.
@@ -1303,7 +1303,7 @@ CLEAR_OBJECT_CONTROL_BITS:
         XOR A
         LD (DE),A
         RET
-NATIVE_WORD_09_BRANCH_SCRIPT:
+NATIVE_WORD_09_GOTO_SCRIPT:
 ; -----------------------------------------------------------------------------
 ; JUMP_TO_SCRIPT
 ; VM word $09: read a 16-bit target from the script and replace the interpreter cursor at $2000.
@@ -1348,7 +1348,7 @@ COPY_INLINE_9_TO_RAM:
         CALL COPY_SCRIPT_LITERAL_BLOCK
         LD ($2000),HL
         RET
-NATIVE_WORD_08_TOGGLE_OBJECT_FLAGS:
+NATIVE_WORD_08_TOGGLE_OBJECT_BITS:
 ; -----------------------------------------------------------------------------
 ; TOGGLE_OBJECT_CONTROL_BITS
 ; VM word $08: read a RAM address and XOR bit mask $60 into its first byte.
@@ -1364,7 +1364,7 @@ TOGGLE_OBJECT_CONTROL_BITS:
         XOR $60
         LD (DE),A
         RET
-NATIVE_WORD_0A_GAME_DISPLAY:
+NATIVE_WORD_0A_GAME_DISPLAY_SEQUENCE:
 ; -----------------------------------------------------------------------------
 ; RUN_GAME_DISPLAY_SEQUENCE
 ; VM word $0A: use status state to select native graphic object drawing.
@@ -1441,7 +1441,7 @@ NATIVE_072D:
         POP AF
         POP HL
         RET
-NATIVE_WORD_0C_BCD_INCREMENT_INIT:
+NATIVE_WORD_0C_INCREMENT_BCD_AND_RESET:
 ; -----------------------------------------------------------------------------
 ; INCREMENT_BCD_AND_INIT
 ; VM word $0C: packed-decimal increment, then object initialization.
@@ -1459,7 +1459,7 @@ INCREMENT_BCD_AND_INIT:
         DAA
         LD (DE),A
         CALL UPDATE_SCORE_DISPLAY
-NATIVE_WORD_0B_INIT_OBJECT:
+NATIVE_WORD_0B_INITIALIZE_OBJECT:
 ; -----------------------------------------------------------------------------
 ; INITIALIZE_OBJECT_RECORD
 ; VM word $0B: initialize a game-object descriptor from inline operands.
@@ -1504,7 +1504,7 @@ INITIALIZE_OBJECT_RECORD:
         INC HL
         LD (HL),A
         RET
-NATIVE_WORD_0D_SET_OUTPUT_AND_RAM:
+NATIVE_WORD_0D_OUTPUT_AND_SET_2014:
 ; -----------------------------------------------------------------------------
 ; WRITE_OUTPUT_AND_MODE
 ; VM word $0D: read output and state bytes, OUT the first to port $01, store second at $2014.
@@ -1555,7 +1555,7 @@ NATIVE_079C:
         DEC D
         JP NZ,$079A
         RET
-NATIVE_WORD_0F_EXPAND_GRAPHICS:
+NATIVE_WORD_0F_EXPAND_GRAPHICS_TABLE:
 ; -----------------------------------------------------------------------------
 ; EXPAND_PACKED_GRAPHICS
 ; VM word $0F: transform packed ROM graphics into RAM starting at $2100.
@@ -1612,7 +1612,7 @@ NATIVE_07CC:
         DEC B
         JP NZ,$07BD
         JP $07B1
-NATIVE_WORD_11_DRAW_STATUS_A:
+NATIVE_WORD_11_DRAW_STATUS_203F:
 ; -----------------------------------------------------------------------------
 ; DRAW_SECOND_PLAYER_STATUS
 ; VM word $11: select status record at $203F and branch to the shared text drawing path.
@@ -1620,7 +1620,7 @@ NATIVE_WORD_11_DRAW_STATUS_A:
 DRAW_SECOND_PLAYER_STATUS:
         LD HL,$203F
         JP $07F2
-NATIVE_WORD_12_DRAW_STATUS_B:
+NATIVE_WORD_12_DRAW_STATUS_202C:
 ; -----------------------------------------------------------------------------
 ; DRAW_FIRST_PLAYER_STATUS
 ; VM word $12: select status record at $202C and use the shared status drawing path.
@@ -1644,7 +1644,7 @@ NATIVE_07F2:
         DB $CE,$0F
         LD A,$07
         JP DRAW_FORMATTED_TEXT
-NATIVE_WORD_10_BRANCH_IF_STATE:
+NATIVE_WORD_10_CONDITIONAL_GOTO_0882:
 ; -----------------------------------------------------------------------------
 ; BRANCH_TO_ALTERNATE_SCENE
 ; VM word $10: redirect script to $0882 when $2008 is active.
@@ -1657,7 +1657,7 @@ BRANCH_TO_ALTERNATE_SCENE:
         LD HL,$0882
         LD ($2000),HL
         RET
-NATIVE_WORD_00_WAIT_REPEAT:
+NATIVE_WORD_00_WAIT_OR_REPEAT:
 ; -----------------------------------------------------------------------------
 ; WAIT_OR_REPEAT_COMMAND
 ; VM word $00: repeat current command until its timer condition completes.
