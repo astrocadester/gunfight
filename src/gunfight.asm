@@ -832,7 +832,7 @@ PLAYER_ONE_AIM_ACTION:
         AND A
         RET Z
         LD ($201A),A
-        LD HL,$0EE2
+        LD HL,PLAYER_ONE_AIM_POINTERS
         LD DE,$202A
         JP INSTALL_AIM_DESCRIPTOR
 ; -----------------------------------------------------------------------------
@@ -849,11 +849,14 @@ PLAYER_TWO_AIM_ACTION:
         AND A
         RET Z
         LD ($201B),A
-        LD HL,$0EF0
+        LD HL,PLAYER_TWO_AIM_POINTERS
         LD DE,$203D
 ; -----------------------------------------------------------------------------
 ; INSTALL_AIM_DESCRIPTOR
-; Index the selected player's aim table and copy its 16-bit pointer into object record offset $0B.
+; Input A is a NONZERO EVEN BYTE OFFSET ($02,$04,...,$0E) into a DW table.
+; It comes from (controller & $70) rotated right three times.
+; Read the little-endian pointer and install it at object record +$0B.
+; Entry HL=table base, DE=player object base; zero index is never dispatched.
 ; -----------------------------------------------------------------------------
 INSTALL_AIM_DESCRIPTOR:
         LD C,A
@@ -970,7 +973,7 @@ NATIVE_04C1:
         LD BC,$1A08
         LD A,($201A)
 NATIVE_04DF:
-        LD HL,$0EFE
+        LD HL,SHOT_PARAMETER_BASE
         CALL SELECT_AIM_DESCRIPTOR
         POP HL
         DI
@@ -2361,9 +2364,33 @@ ROM_OBJECT_PATTERN_4BYTE_11ROWS:
         DB $E0,$FF,$07,$E0,$FF,$07,$F4,$FF,$2F,$84,$3C,$21
         DB $04,$81,$20,$04,$81,$20,$06,$81,$60,$F7,$FF,$EF
         DB $06,$81,$60,$04,$00,$20,$04,$00,$20,$04,$00,$20
-        DB $04,$00,$20,$4A,$0D,$46,$0C,$87,$0C,$C4,$0B,$09
-        DB $0D,$05,$0C,$C8,$0C,$86,$22,$82,$21,$C3,$21,$00
-        DB $21,$45,$22,$41,$21,$04,$22,$06,$1A,$FF,$08,$00
+        DB $04 ; preceding graphic/table byte at $0EE1
+
+; Player aim lookup: input bits 4..6 become byte offsets $02,$04,...,$0E.
+; Zero is rejected by both callers; every valid offset addresses a DW.
+PLAYER_ONE_AIM_POINTERS:
+        DW $2000 ; unused zero-index entry (the dispatcher rejects zero)
+        DW $0D4A ; direction offset $02
+        DW $0C46 ; direction offset $04
+        DW $0C87 ; direction offset $06
+        DW $0BC4 ; direction offset $08
+        DW $0D09 ; direction offset $0A
+        DW $0C05 ; direction offset $0C
+; The shared boundary is player one's last entry and player two's
+; unreachable zero-index entry. It is stored ONCE in the original ROM.
+PLAYER_TWO_AIM_POINTERS:
+        DW $0CC8 ; P1 offset $0E / P2 offset $00 (unused)
+        DW $2286 ; P2 direction offset $02
+        DW $2182 ; P2 direction offset $04
+        DW $21C3 ; P2 direction offset $06
+        DW $2100 ; P2 direction offset $08
+        DW $2245 ; P2 direction offset $0A
+        DW $2141 ; P2 direction offset $0C
+; This entry is also the base used for packed shot parameter byte lookups
+; at +$02,+$04,...,+$0E. Those bytes are NOT a third DW pointer table.
+SHOT_PARAMETER_BASE:
+        DW $2204 ; P2 direction offset $0E / shot-parameter base $0EFE
+        DB $06,$1A,$FF,$08,$00 ; next packed shot parameter bytes
         DB $0C,$FA,$FE,$03,$16,$FD,$02,$01,$14,$13,$28,$74
         DB $0B,$33,$36,$74,$0B,$12,$30,$74,$0B,$32,$36,$8C
         DB $0B,$12,$28,$8C,$0B,$0C,$38,$74,$0B,$0C,$2A,$74
