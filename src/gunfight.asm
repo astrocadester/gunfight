@@ -1672,269 +1672,269 @@ WAIT_OR_REPEAT_COMMAND:
         DEC HL
         LD ($2000),HL
         RET
-CMD_0821_CLEAR_VIDEO:
-        DB $04 ; word CLEAR_VIDEO ($04)
-CMD_0822_FORMAT_SCORE:
-        DB $13 ; word FORMAT_SCORE ($13)
-CMD_0823_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_0821_CLEAR_DISPLAY_MEMORY:
+        DB $04 ; word CLEAR_DISPLAY_MEMORY ($04)
+CMD_0822_UPDATE_SCORE_TEXT:
+        DB $13 ; word UPDATE_SCORE_TEXT ($13)
+CMD_0823_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $0C ; format
         DW $0F61 ; source
         DW $240A ; destination
-CMD_0829_BRANCH_IF_STATE:
-        DB $10 ; word BRANCH_IF_STATE ($10)
-CMD_082A_EXPAND_GLYPHS:
-        DB $0F ; word EXPAND_GLYPHS ($0F)
-CMD_082B_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_0829_CONDITIONAL_GOTO_0882:
+        DB $10 ; word CONDITIONAL_GOTO_0882 ($10)
+CMD_082A_EXPAND_GRAPHICS_TABLE:
+        DB $0F ; word EXPAND_GRAPHICS_TABLE ($0F)
+CMD_082B_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $5A ; state
-CMD_082D_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_082E_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_082D_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_082E_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $29 ; format
         DW $0F6D ; source
         DW $2600 ; destination
-CMD_0834_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_0834_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $5A ; state
-CMD_0836_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0837_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_0836_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0837_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $0B ; format
         DW $0F99 ; source
         DW $3D14 ; destination
-CMD_083D_COPY15_TO_RAM:
-        DB $05 ; word COPY15_TO_RAM ($05)
+CMD_083D_COPY_INLINE_15:
+        DB $05 ; word COPY_INLINE_15 ($05)
         DW $202A ; destination
         DB $C3,$01,$00,$00,$40,$00,$66,$0B,$AA,$8B,$0D,$4A,$0D,$8B,$0D ; inline RAM data
-CMD_084F_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_084F_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $5A ; state
-CMD_0851_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0852_COPY9_TO_RAM:
-        DB $06 ; word COPY9_TO_RAM ($06)
+CMD_0851_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0852_COPY_INLINE_9:
+        DB $06 ; word COPY_INLINE_9 ($06)
         DW $2063 ; destination
         DB $C6,$03,$54,$00,$FE,$02,$78,$00,$C8 ; inline RAM data
-CMD_085E_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_085E_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $4B ; state
-CMD_0860_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0861_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_0860_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0861_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $0B ; format
         DW $0FA4 ; source
         DW $3D14 ; destination
-CMD_0867_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_0867_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $3C ; state
-CMD_0869_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_086A_COPY15_TO_RAM:
-        DB $05 ; word COPY15_TO_RAM ($05)
+CMD_0869_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_086A_COPY_INLINE_15:
+        DB $05 ; word COPY_INLINE_15 ($05)
         DW $203D ; destination
         DB $C2,$FF,$40,$00,$60,$00,$66,$27,$A0,$C7,$22,$00,$21,$C7,$22 ; inline RAM data
-CMD_087C_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_087C_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $40 ; state
-CMD_087E_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_087F_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $0821 ; RAM address / target / packed dimension
-CMD_0882_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_087E_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_087F_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_0821_CLEAR_DISPLAY_MEMORY ; script destination
+CMD_0882_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $27 ; format
         DW $0FD5 ; source
         DW $2A01 ; destination
-CMD_0888_COPY15_TO_RAM:
-        DB $05 ; word COPY15_TO_RAM ($05)
+CMD_0888_COPY_INLINE_15:
+        DB $05 ; word COPY_INLINE_15 ($05)
         DW $202A ; destination
         DB $C3,$02,$00,$00,$40,$00,$A0,$0B,$AA,$8B,$0D,$4A,$0D,$8B,$0D ; inline RAM data
-CMD_089A_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_089B_CLEAR_VIDEO:
-        DB $04 ; word CLEAR_VIDEO ($04)
-CMD_089C_FORMAT_SCORE:
-        DB $13 ; word FORMAT_SCORE ($13)
-CMD_089D_EXPAND_GLYPHS:
-        DB $0F ; word EXPAND_GLYPHS ($0F)
-CMD_089E_DRAW_GAME_STATUS:
-        DB $0A ; word DRAW_GAME_STATUS ($0A)
-CMD_089F_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_089A_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_089B_CLEAR_DISPLAY_MEMORY:
+        DB $04 ; word CLEAR_DISPLAY_MEMORY ($04)
+CMD_089C_UPDATE_SCORE_TEXT:
+        DB $13 ; word UPDATE_SCORE_TEXT ($13)
+CMD_089D_EXPAND_GRAPHICS_TABLE:
+        DB $0F ; word EXPAND_GRAPHICS_TABLE ($0F)
+CMD_089E_GAME_DISPLAY_SEQUENCE:
+        DB $0A ; word GAME_DISPLAY_SEQUENCE ($0A)
+CMD_089F_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $09 ; format
         DW $0FAF ; source
         DW $2E0C ; destination
-CMD_08A5_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_08A5_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $0C ; format
         DW $0FB8 ; source
         DW $3EA2 ; destination
-CMD_08AB_COPY15_TO_RAM:
-        DB $05 ; word COPY15_TO_RAM ($05)
+CMD_08AB_COPY_INLINE_15:
+        DB $05 ; word COPY_INLINE_15 ($05)
         DW $202A ; destination
         DB $C0,$01,$00,$00,$48,$00,$66,$13,$9A,$8B,$0D,$87,$0C,$8B,$0D ; inline RAM data
-CMD_08BD_COPY15_TO_RAM:
-        DB $05 ; word COPY15_TO_RAM ($05)
+CMD_08BD_COPY_INLINE_15:
+        DB $05 ; word COPY_INLINE_15 ($05)
         DW $203D ; destination
         DB $C0,$FF,$E7,$A0,$48,$00,$66,$13,$9A,$C7,$22,$C3,$21,$C7,$22 ; inline RAM data
-CMD_08CF_COPY9_TO_RAM:
-        DB $06 ; word COPY9_TO_RAM ($06)
+CMD_08CF_COPY_INLINE_9:
+        DB $06 ; word COPY_INLINE_9 ($06)
         DW $2063 ; destination
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
-CMD_08DB_COPY9_TO_RAM:
-        DB $06 ; word COPY9_TO_RAM ($06)
+CMD_08DB_COPY_INLINE_9:
+        DB $06 ; word COPY_INLINE_9 ($06)
         DW $2075 ; destination
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
-CMD_08E7_COPY9_TO_RAM:
-        DB $06 ; word COPY9_TO_RAM ($06)
+CMD_08E7_COPY_INLINE_9:
+        DB $06 ; word COPY_INLINE_9 ($06)
         DW $2087 ; destination
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
-CMD_08F3_COPY9_TO_RAM:
-        DB $06 ; word COPY9_TO_RAM ($06)
+CMD_08F3_COPY_INLINE_9:
+        DB $06 ; word COPY_INLINE_9 ($06)
         DW $2099 ; destination
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
-CMD_08FF_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_08FF_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $1E ; state
-CMD_0901_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0902_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_0901_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0902_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $09 ; format
         DW $0FC5 ; source
         DW $2E0C ; destination
-CMD_0908_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_0908_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $0A ; state
-CMD_090A_CLEAR_OBJECT_BITS:
-        DB $07 ; word CLEAR_OBJECT_BITS ($07)
+CMD_090A_CLEAR_OBJECT_FLAGS:
+        DB $07 ; word CLEAR_OBJECT_FLAGS ($07)
         DW $202A ; RAM address / target / packed dimension
-CMD_090D_CLEAR_OBJECT_BITS:
-        DB $07 ; word CLEAR_OBJECT_BITS ($07)
+CMD_090D_CLEAR_OBJECT_FLAGS:
+        DB $07 ; word CLEAR_OBJECT_FLAGS ($07)
         DW $203D ; RAM address / target / packed dimension
-CMD_0910_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0911_DRAW_FORMATTED:
-        DB $01 ; word DRAW_FORMATTED ($01)
+CMD_0910_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0911_DRAW_FORMATTED_DATA:
+        DB $01 ; word DRAW_FORMATTED_DATA ($01)
         DB $05 ; format
         DW $0FA4 ; source
         DW $2E0E ; destination
-CMD_0917_READ_INPUT_EVENTS:
-        DB $14 ; word READ_INPUT_EVENTS ($14)
-CMD_0918_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $089B ; RAM address / target / packed dimension
-CMD_091B_BCD_INCREMENT_SETUP:
-        DB $0C ; word BCD_INCREMENT_SETUP ($0C)
+CMD_0917_INPUT_AND_EVENT_DISPATCH:
+        DB $14 ; word INPUT_AND_EVENT_DISPATCH ($14)
+CMD_0918_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_089B_CLEAR_DISPLAY_MEMORY ; script destination
+CMD_091B_INCREMENT_BCD_AND_RESET:
+        DB $0C ; word INCREMENT_BCD_AND_RESET ($0C)
         DW $2005 ; BCD counter
         DW $202A ; descriptor address
         DB $20 ; flags
         DW $0DFD ; link pointer
-CMD_0923_SET_OUTPUT_MODE:
-        DB $0D ; word SET_OUTPUT_MODE ($0D)
+CMD_0923_OUTPUT_AND_SET_2014:
+        DB $0D ; word OUTPUT_AND_SET_2014 ($0D)
         DB $C2 ; output
         DB $02 ; state
-CMD_0926_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_0926_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $0F ; state
-CMD_0928_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0929_SETUP_OBJECT:
-        DB $0B ; word SETUP_OBJECT ($0B)
+CMD_0928_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0929_INITIALIZE_OBJECT:
+        DB $0B ; word INITIALIZE_OBJECT ($0B)
         DW $202A ; descriptor address
         DB $10 ; flags
         DW $0E5F ; link pointer
-CMD_092F_DRAW_STATUS_B:
-        DB $12 ; word DRAW_STATUS_B ($12)
-CMD_0930_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_092F_DRAW_STATUS_202C:
+        DB $12 ; word DRAW_STATUS_202C ($12)
+CMD_0930_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $2D ; state
-CMD_0932_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0933_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $089B ; RAM address / target / packed dimension
-CMD_0936_FILL_VIDEO_RECT:
-        DB $0E ; word FILL_VIDEO_RECT ($0E)
+CMD_0932_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0933_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_089B_CLEAR_DISPLAY_MEMORY ; script destination
+CMD_0936_FILL_RECTANGLE:
+        DB $0E ; word FILL_RECTANGLE ($0E)
         DW $1060 ; RAM address / target / packed dimension
-CMD_0939_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $095D ; RAM address / target / packed dimension
-CMD_093C_FILL_VIDEO_RECT:
-        DB $0E ; word FILL_VIDEO_RECT ($0E)
+CMD_0939_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_095D_OUTPUT_AND_SET_2014 ; script destination
+CMD_093C_FILL_RECTANGLE:
+        DB $0E ; word FILL_RECTANGLE ($0E)
         DW $5060 ; RAM address / target / packed dimension
-CMD_093F_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $095D ; RAM address / target / packed dimension
-CMD_0942_FILL_VIDEO_RECT:
-        DB $0E ; word FILL_VIDEO_RECT ($0E)
+CMD_093F_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_095D_OUTPUT_AND_SET_2014 ; script destination
+CMD_0942_FILL_RECTANGLE:
+        DB $0E ; word FILL_RECTANGLE ($0E)
         DW $9060 ; RAM address / target / packed dimension
-CMD_0945_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $095D ; RAM address / target / packed dimension
-CMD_0948_FILL_VIDEO_RECT:
-        DB $0E ; word FILL_VIDEO_RECT ($0E)
+CMD_0945_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_095D_OUTPUT_AND_SET_2014 ; script destination
+CMD_0948_FILL_RECTANGLE:
+        DB $0E ; word FILL_RECTANGLE ($0E)
         DW $1078 ; RAM address / target / packed dimension
-CMD_094B_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $095D ; RAM address / target / packed dimension
-CMD_094E_FILL_VIDEO_RECT:
-        DB $0E ; word FILL_VIDEO_RECT ($0E)
+CMD_094B_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_095D_OUTPUT_AND_SET_2014 ; script destination
+CMD_094E_FILL_RECTANGLE:
+        DB $0E ; word FILL_RECTANGLE ($0E)
         DW $1090 ; RAM address / target / packed dimension
-CMD_0951_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $095D ; RAM address / target / packed dimension
-CMD_0954_FILL_VIDEO_RECT:
-        DB $0E ; word FILL_VIDEO_RECT ($0E)
+CMD_0951_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_095D_OUTPUT_AND_SET_2014 ; script destination
+CMD_0954_FILL_RECTANGLE:
+        DB $0E ; word FILL_RECTANGLE ($0E)
         DW $5090 ; RAM address / target / packed dimension
-CMD_0957_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $095D ; RAM address / target / packed dimension
-CMD_095A_FILL_VIDEO_RECT:
-        DB $0E ; word FILL_VIDEO_RECT ($0E)
+CMD_0957_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_095D_OUTPUT_AND_SET_2014 ; script destination
+CMD_095A_FILL_RECTANGLE:
+        DB $0E ; word FILL_RECTANGLE ($0E)
         DW $9090 ; RAM address / target / packed dimension
-CMD_095D_SET_OUTPUT_MODE:
-        DB $0D ; word SET_OUTPUT_MODE ($0D)
+CMD_095D_OUTPUT_AND_SET_2014:
+        DB $0D ; word OUTPUT_AND_SET_2014 ($0D)
         DB $B2 ; output
         DB $02 ; state
-CMD_0960_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $0917 ; RAM address / target / packed dimension
-CMD_0963_BCD_INCREMENT_SETUP:
-        DB $0C ; word BCD_INCREMENT_SETUP ($0C)
+CMD_0960_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_0917_INPUT_AND_EVENT_DISPATCH ; script destination
+CMD_0963_INCREMENT_BCD_AND_RESET:
+        DB $0C ; word INCREMENT_BCD_AND_RESET ($0C)
         DW $2002 ; BCD counter
         DW $203D ; descriptor address
         DB $D0 ; flags
         DW $2339 ; link pointer
-CMD_096B_SET_OUTPUT_MODE:
-        DB $0D ; word SET_OUTPUT_MODE ($0D)
+CMD_096B_OUTPUT_AND_SET_2014:
+        DB $0D ; word OUTPUT_AND_SET_2014 ($0D)
         DB $B2 ; output
         DB $02 ; state
-CMD_096E_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_096E_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $0A ; state
-CMD_0970_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_0971_SETUP_OBJECT:
-        DB $0B ; word SETUP_OBJECT ($0B)
+CMD_0970_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_0971_INITIALIZE_OBJECT:
+        DB $0B ; word INITIALIZE_OBJECT ($0B)
         DW $203D ; descriptor address
         DB $D0 ; flags
         DW $239B ; link pointer
-CMD_0977_DRAW_STATUS_A:
-        DB $11 ; word DRAW_STATUS_A ($11)
-CMD_0978_SET_DELAY:
-        DB $03 ; word SET_DELAY ($03)
+CMD_0977_DRAW_STATUS_203F:
+        DB $11 ; word DRAW_STATUS_203F ($11)
+CMD_0978_SET_2015:
+        DB $03 ; word SET_2015 ($03)
         DB $2D ; state
-CMD_097A_WAIT_REPEAT:
-        DB $00 ; word WAIT_REPEAT ($00)
-CMD_097B_SCRIPT_JUMP:
-        DB $09 ; word SCRIPT_JUMP ($09)
-        DW $089B ; RAM address / target / packed dimension
+CMD_097A_WAIT_OR_REPEAT:
+        DB $00 ; word WAIT_OR_REPEAT ($00)
+CMD_097B_GOTO_SCRIPT:
+        DB $09 ; word GOTO_SCRIPT ($09)
+        DW CMD_089B_CLEAR_DISPLAY_MEMORY ; script destination
 ROM_NATIVE_EVENT_ACTION_00:
         DW PLAYER_ONE_AXIS5_NEGATIVE ; NATIVE_EVENT_ACTION pointer from ROM $097E
 ROM_NATIVE_EVENT_ACTION_01:
