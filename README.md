@@ -6,7 +6,7 @@ Gun Fight (1975) is Midway's two-player western shoot-out, developed by Dave Nut
 
 Gun Fight was among the first commercially released microprocessor-based video games. The two players move and aim their cowboys, fire a limited supply of shots, and compete over successive timed duels. Different screens introduce obstacles into the line of fire.
 
-![Gun Fight original Midway advertisement](images/December_1975_advertisement_for_Gun_Fight_by_Midway.jpg)
+![Gun Fight gameplay screenshot](images/gun-fight-27737.jpg)
 
 ## Project layout
 
