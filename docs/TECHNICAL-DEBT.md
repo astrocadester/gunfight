@@ -6,7 +6,7 @@ The maintained 8080 source is `src/gunfight.asm`. The engineering rules and veri
 
 | ID | Status | Work remaining / exit evidence |
 | --- | --- | --- |
-| GF-RE-001 | In progress | Interpreter, word handlers, all eight directional input actions, no-op action vectors, text, sprite, shot and object helpers are named; additional internal native blocks still use address labels. Complete their cross-reference and register contracts. |
+| GF-RE-001 | Source-label and static-flow pass complete; behavioral confirmation open | All 92 former `NATIVE_xxxx` block labels now carry function-specific branch/loop names with original addresses and direct-branch xrefs; entry-point contracts are documented. Some object/collision relationships require runtime confirmation; do not interpret all 92 as independent functions. See [native control flow](NATIVE-CONTROL-FLOW.md) and [block inventory](NATIVE-BLOCK-INVENTORY.md). |
 | GF-RE-002 | In progress | Both player aim, fire, shot counters, sprite/bitmap writer, score and event paths traced. Trace collision outcomes, full timer transitions, object lifetime and sound/cabinet outputs end to end. |
 | GF-RE-003 | In progress | Ten 8×10 font glyphs and five width/height-prefixed patterns are now decoded inline. Resolve remaining graphics streams, animation names, hardware shift/orientation and object frame identities. |
 | GF-RE-004 | Closed — static scope | Old bounded-prefix report reconciled with 82 statically decoded command sites; exact operand sizes and 21+9 vector split aligned across source, word catalog, interpreter JSON and ROM ownership. Dynamic native-installed scripts remain GF-RE-008. |
@@ -34,3 +34,12 @@ The retained original ROM and direct native assembler verification remain the fi
 - Data-byte verification performed: original 1 KB `$0C00–$0FFF` data is identical before and after typing the pointers and shot records.
 - WB PR #45 documentation/graphic aligned, with Gun Fight independent of WB-private links.
 - GF-RE-002 remains open for end-to-end collision, timing and sound execution; GF-RE-006 remains open for native zmac, device SHA-1 and emulator tests. No substitute compiler or gameplay logic has been used.
+
+## v20261108-0009 — native function and internal-block RE
+
+- Investigated each of the **92** remaining `NATIVE_xxxx` labels in the maintained source. The resulting names identify internal loops, conditionals, shared tails and branch targets; they do **not** promote every block to an independently callable routine. All original addresses are retained.
+- Added register, flag, RAM, port and entry/exit contracts for primary callable/interrupt paths: two IRQ vectors and common exit, object axis update, pointer consumer, bitmap job queue, pixel-address translation, packed graphics drawing, script literal copy, native input dispatch, shot state, score/font renderer and graphics expansion.
+- Recovered source-based relationships between IRQ projectile scan, event selector at $201C, object/bitmap job queues, timing and BCD state, player input vectors, firing/direction data and game display. Exact collision outcomes, sprite appearance, sound effects and full interrupt timing remain for emulator/hardware verification.
+- Created [NATIVE-CONTROL-FLOW.md](NATIVE-CONTROL-FLOW.md) and a 92-entry [NATIVE-BLOCK-INVENTORY.md](NATIVE-BLOCK-INVENTORY.md) with direct-branch reference counts.
+- **Static verification executed:** source has zero generic `NATIVE_xxxx` labels, 314 total defined labels, contiguous 1 KB `ORG` regions ending $1000, no undefined symbolic operands, and **zero canonical instruction/operand differences among 1,808 assembly statements** when compared against the prior PR checkpoint (after resolving renamed symbols back to their addresses).
+- **Not executed:** zmac native build, four original ROM chip SHA-1 checks, MAME, Windows or real hardware. Byte-identical assembler output is not claimed by the static source comparison. GF-RE-006 remains open.
