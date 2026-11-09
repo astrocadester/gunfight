@@ -17,3 +17,12 @@ The original 4 KB ROM set is authoritative. Maintain real Intel 8080 source. Fol
 Maintained ASM has an initial semantic-label/header pass and raw inline graphics bit visualization; source comments no longer duplicate every ROM address. Original build invocation has been replaced by direct zmac + native host verification. Word $05/$06 and vector ownership documentation are reconciled. The remaining deep gameplay tracing and graphics decoding are future RE stages, not claimed complete.
 
 **Verification status:** GitHub edits are committed; no local assembler run, emulator run or physical hardware test has been performed in this session.
+
+## v20261108-0002 — additional native RE
+
+- Updated README using **Sea Wolf II** rather than Sea Wolf / Missile; condensed mobile layout and removed repeated engineering-policy prose.
+- Replaced the provisional memory-map SVG with original four ROM chip assignments, script/vector locations, RAM state, expanded graphics and display addressing.
+- Traced packed-pixel address calculation at $0359, native drawing at $022D, score/font renderer at $05FB, input action table paths, player firing, and object-pointer helpers.
+- Recovered ten 8×10 digit glyphs at ROM $09F8 directly in ASM with inline pixel rows; their bytes and order are preserved.
+- Further native names/headers added; remaining generic branches and non-font sprite data are future hard RE work.
+- Native build and MAME verification remain distinct unexecuted gates.
