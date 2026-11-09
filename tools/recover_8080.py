@@ -149,7 +149,7 @@ def main():
         if mem[i:i+len(dispatch_tail)]==dispatch_tail:
             base=(mem[i-2]|mem[i-1]<<8) if mem[i-3]==0x21 else None
             signatures.append({"tail":i,"vector_base":base})
-    (ROOT/"src").mkdir(exist_ok=True);(ROOT/"docs").mkdir(exist_ok=True)
+    (ROOT/"src"/"zout").mkdir(parents=True,exist_ok=True);(ROOT/"docs"/"generated").mkdir(parents=True,exist_ok=True)
     asm=["; Original "+game+" Intel 8080 ROM, source reconstructed from original bytes.",
          "; Native instruction mnemonics are executable; uncertain regions retain DB.",
          "; Original byte offsets are preserved; zmac v1.3 must rebuild exactly."]
@@ -227,14 +227,14 @@ def main():
                           "unclassified")
                 asm.append("        DB "+",".join(f"${b:02X}" for b in raw)+f" ; ROM ${pc:04X} {category}")
                 pc=stop
-    (ROOT/"src"/(game+".asm")).write_text("\n".join(asm)+"\n")
+    (ROOT/"src"/"zout"/(game+"-recovered.asm")).write_text("\n".join(asm)+"\n")
     report={"game":game,"cpu":"Intel 8080","rom_size":len(mem),"sha256":digest,
             "devices":[{"name":n,"base":i*size,"size":size,"sha1":hashlib.sha1(p).hexdigest()}
                        for i,(n,p) in enumerate(zip(names,parts))],
             "native_instruction_count":len(code),"native_byte_count":len(owned),
             "edges":edges,"indexed_dispatch_signatures":signatures}
     report.update({"script_pointer_ram":0x2000,"dispatcher":935,"vector_table":2478,"vector_count":21,"vectors":vectors,"initial_script":2081,"decoded_script_sites":word_scan["distinct_packet_count"],"native_event_actions":event_actions})
-    (ROOT/"docs"/"recovery.json").write_text(json.dumps(report,indent=2)+"\n")
+    (ROOT/"docs"/"generated"/"recovery.json").write_text(json.dumps(report,indent=2)+"\n")
     print(game,"native 8080 instructions",len(code),"code bytes",len(owned),
           "indexed dispatches",signatures)
 if __name__=="__main__":main()
