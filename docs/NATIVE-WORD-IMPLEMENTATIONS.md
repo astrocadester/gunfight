@@ -392,3 +392,9 @@ CP B  ; ROM $03E0: B8
 ## RE boundary
 
 Remaining raw `DB` sections include graphics, vector tables, command packets, native-unreached data, and potentially code copied into RAM. Do not call them 'unknown interpreter words' merely because their bytes resemble opcodes. Source-generation provenance and unresolved ranges are recorded in [DB-PROVENANCE.md](DB-PROVENANCE.md). Regenerating the source must preserve the original chip SHA-1s.
+
+## Controller pointer lookup versus projectile coordinate lookup — v20261108-0004
+
+The two controller actions at `$042A` / `$043E` calculate `(input & $70) >> 3`. Because the controller field is aligned to bits 4–6, this becomes one of the **even offsets `$02..$0E`** after zero has been rejected. `INSTALL_AIM_DESCRIPTOR` at `$044F` reads an ordinary little-endian 16-bit aim pointer from a player-specific table (`$0EE2` / `$0EF0`) and stores it at object record `+$0B`. The tables share the two bytes `$0EF0–$0EF1`: player one's final pointer and player two's unused zero index. This is an intentional-looking packed layout, not an overlapping unaligned pointer read.
+
+The separate firing helper `SELECT_AIM_DESCRIPTOR` at `$037C` uses the same even direction index but a **different record format**: it loads two coordinate-adjustment bytes at `$0EFE + index`, adds them to the player's object coordinates, and returns the adjusted shot position in DE. Those seven records run from `$0F00–$0F0D`. They are not 16-bit aim pointers. Full instruction flow, literal data and table indices: [Aim and fire](AIM-AND-FIRE.md).
