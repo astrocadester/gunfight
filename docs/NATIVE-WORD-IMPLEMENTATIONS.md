@@ -389,6 +389,8 @@ IN A,($01)  ; ROM $03DE: DB 01
 CP B  ; ROM $03E0: B8
 ```
 
+For the fully annotated source-level control-flow and actual callable ABI, see [Native control flow](NATIVE-CONTROL-FLOW.md). The [internal native block inventory](NATIVE-BLOCK-INVENTORY.md) distinguishes branch targets and loops from separate callable routines.
+
 ## RE boundary
 
 Remaining raw `DB` sections include graphics, vector tables, command packets, native-unreached data, and potentially code copied into RAM. Do not call them 'unknown interpreter words' merely because their bytes resemble opcodes. Source-generation provenance and unresolved ranges are recorded in [DB-PROVENANCE.md](DB-PROVENANCE.md). Regenerating the source must preserve the original chip SHA-1s.
