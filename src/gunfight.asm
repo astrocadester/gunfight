@@ -673,7 +673,11 @@ NATIVE_0373:
         RET
 ; -----------------------------------------------------------------------------
 ; SELECT_AIM_DESCRIPTOR
-; Resolve the selected aim/shot descriptor from a table and active object fields; DE and HL are modified.
+; Fetch a two-byte relative shot adjustment at SHOT_PARAMETER_BASE + A.
+; A is the previously saved nonzero even controller direction offset.
+; B receives the first byte; D the second. Combine the offset with
+; object bytes +0 and +4 and return adjusted DE for projectile placement.
+; This is NOT a pointer lookup; unlike INSTALL_AIM_DESCRIPTOR.
 ; -----------------------------------------------------------------------------
 SELECT_AIM_DESCRIPTOR:
         PUSH DE
@@ -2390,8 +2394,18 @@ PLAYER_TWO_AIM_POINTERS:
 ; at +$02,+$04,...,+$0E. Those bytes are NOT a third DW pointer table.
 SHOT_PARAMETER_BASE:
         DW $2204 ; P2 direction offset $0E / shot-parameter base $0EFE
-        DB $06,$1A,$FF,$08,$00 ; next packed shot parameter bytes
-        DB $0C,$FA,$FE,$03,$16,$FD,$02,$01,$14,$13,$28,$74
+; This seven-entry table is indexed from SHOT_PARAMETER_BASE by the
+; same nonzero even $02..$0E direction offsets. Unlike the aim tables,
+; its entries are relative coordinate byte pairs, NOT pointers.
+SHOT_DIRECTION_DELTAS:
+        DB $06,$1A ; offset $02: low and high coordinate adjustments
+        DB $FF,$08 ; offset $04
+        DB $00,$0C ; offset $06
+        DB $FA,$FE ; offset $08
+        DB $03,$16 ; offset $0A
+        DB $FD,$02 ; offset $0C
+        DB $01,$14 ; offset $0E
+        DB $13,$28,$74 ; following unrelated game data
         DB $0B,$33,$36,$74,$0B,$12,$30,$74,$0B,$32,$36,$8C
         DB $0B,$12,$28,$8C,$0B,$0C,$38,$74,$0B,$0C,$2A,$74
         DB $0B,$0D,$30,$74,$0B,$0C,$2A,$8C,$0B,$0C,$38,$8C
