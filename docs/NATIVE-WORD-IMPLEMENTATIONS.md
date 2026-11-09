@@ -1,5 +1,61 @@
 # Gun Fight — native implementation of the indexed game words
 
+## Native hard RE — v20261108-0002
+
+These details come from tracing native 8080 instructions in `src/gunfight.asm`, including dispatch operands, ROM pointer tables, and RAM writes. The original 8080 logic and ROM data remain unchanged.
+
+### Interpreter and input selection
+
+`VM_DISPATCH_NEXT` at `$03A7` loads the script cursor from `$2000` and conditionally substitutes `$089B` when `$20C6` is active. It fetches one byte into E, advances `$2000`, doubles the word index into `$09AE`, loads the little-endian native address, pushes the interpreter continuation `$03A6`, and transfers through `JP (HL)`. The unusual hand-built continuation means ordinary handlers use `RET` to re-enter the interpreter.
+
+`VM_INPUT_EVENT_DISPATCH` at `$03C9` samples ports `$00` and `$01` twice to detect stable values, then calls the shared `DISPATCH_INPUT_TRANSITION` at `$040D` with RAM input state and an action table. The two tables start at `$097E` and `$098E`. The action helper selects a changed control bit and jumps indirectly to its native address. The first player's firing vector points at `$04B0`; the second player's at `$0517`. The two paths each check projectile availability, update the shot counter through `$04FA`, write port `$01`, and load a player-specific object record.
+
+### Player-specific native routines
+
+| First player | Second player | Purpose |
+| --- | --- | --- |
+| `$042A` | `$043E` | Select input-dependent aim data from the ROM tables at `$0EE2` and `$0EF0`, then update `$202A` or `$203D` |
+| `$04B0` | `$0517` | Validate shot state, start fire/update work, and populate player projectile state |
+| `$202A` | `$203D` | Player object record bases |
+| `$2063` | `$2087` | Projectile/state flags read on the firing paths |
+| `$2012` | `$2013` | Fire guard counters checked before launching |
+| `$3EA2` | `$3EB8` | Display-related destination addresses passed to the common shot update |
+
+These are recovered operand and control-flow relationships; further screen-level tracing is needed to establish every visual and collision consequence.
+
+### Bitmap coordinate and drawing mechanics
+
+`VIDEO_ADDRESS_FROM_PACKED_COORDINATES` at `$0359` separates E's low three bits as bit-phase C and shifts the remaining 16-bit DE coordinate three places to the right, then adds the display base `$2400`. The result is a packed-pixel byte address in DE plus a bit-phase in C. The native sprite copier at `$022D` reads its shape source through DE, uses port `$04` to supply function/shift data and port `$03` for the returned pixel value, writes into video memory, and advances each row by `$20` bytes.
+
+`DRAW_FORMATTED_TEXT` at `$05FB` is a separate character renderer. It takes A as the number of characters and reads a byte stream through HL. Bytes below `$30` are positioning controls; nonnegative character indexes after subtracting `$30` select 10-byte glyph records from ROM `$09F8`. The routine copies each glyph as 10 rows into display memory using a `$20` stride. `UPDATE_SCORE_DISPLAY` at `$05A3` converts packed score digits into the byte stream before entering that renderer.
+
+### Inline graphics recovery
+
+The numeric font begins at `$09F8` and the first ten records are the glyphs for digits `0–9`. The source now expresses each record as ten individual byte rows with the corresponding eight-pixel on/off pattern as an inline comment. For example, digit zero is:
+
+```asm
+FONT_SCORE_DIGITS:
+        ; digit 0 — 8 pixels wide by 10 rows
+        DB $3C ; ..####..
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+```
+
+This is inline ROM graphics, rather than an external replacement image. Additional non-font graphics remain available as packed source data and require object-format tracing before naming every shape.
+
+### Compact object pointer helper
+
+The helper at `$02BD` reads a two-byte pointer from the RAM address in HL, clears those pointer bytes, advances HL, returns the saved pointer in DE, and leaves the zero/nonzero state observable through A/flags. The timer/interrupt engine repeatedly calls it while walking object pools. The object-coordinate updater at `$025E` uses the axis-step logic at `$0280`, tracks active-state flags, and may clear an object's activity bit when its motion ends.
+
+
+
 This report is generated from the original-ROM-reconstructed assembly at this PR's head. It distinguishes **native vector slots**, their **ROM command packet occurrences**, and the **initial native instructions** at each entry. Names are descriptive reconstructed identifiers, not original DNA spellings.
 
 - Original ROM image size: 4096 bytes.
