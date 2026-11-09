@@ -18,8 +18,10 @@ RESET_ENTRY:
         JP INITIALIZE_GAME
 ; -----------------------------------------------------------------------------
 ; INTERRUPT_VECTOR_08
-; Interrupt entry; preserves HL, DE, BC and AF before the shared path.
-; Entry: RST $08. Exit: common path at $0087.
+; Entry: interrupt at $0008. Save HL/DE/BC/AF before entering common
+; pending-video-job service at IRQ_RESUME_COMMON_FRAME_PATH.
+; The common exit at IRQ_SAMPLE_PORT2_AND_RESTORE pops all four registers,
+; enables interrupts and returns to interrupted execution.
 ; -----------------------------------------------------------------------------
 INTERRUPT_VECTOR_08:
         PUSH HL
@@ -30,8 +32,11 @@ INTERRUPT_VECTOR_08:
         DB $00
 ; -----------------------------------------------------------------------------
 ; INTERRUPT_VECTOR_10
-; Interrupt entry; preserves registers and updates alternating video-state paths.
-; Entry: RST $10. Uses flag at $20B9 and video object state.
+; Entry: interrupt at $0010; save HL/DE/BC/AF.
+; Complement $20B9 to alternate service phases. One phase traverses two
+; pending bitmap queues ($206F.. and $20A2..); the other scans projectile
+; slots at $2063, updates moving objects and round/frame counters.
+; Both phases converge at IRQ_SAMPLE_PORT2_AND_RESTORE.
 ; -----------------------------------------------------------------------------
 INTERRUPT_VECTOR_10:
         PUSH HL
@@ -45,12 +50,12 @@ INTERRUPT_VECTOR_10:
         AND A
         JP M,IRQ_SCAN_PROJECTILE_RECORDS
         LD HL,$206F
-; Internal 0021: Shared IRQ loop: extract next nonzero list pointer from a 0x12-byte slot at $206F.
+; Internal block: Shared IRQ loop: extract next nonzero list pointer from a 0x12-byte slot at $206F.
 IRQ_COPY_OBJECT_LIST_ENTRY:
         PUSH HL
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
         JP Z,IRQ_ADVANCE_FIRST_LIST_SLOT
-; Internal 0028: Copy a pair of source bytes to a destination row, advance by $20, repeat using B.
+; Internal block: Copy a pair of source bytes to a destination row, advance by $20, repeat using B.
 IRQ_COPY_OBJECT_LIST_ROW:
         LD A,(DE)
         INC DE
@@ -65,7 +70,7 @@ IRQ_COPY_OBJECT_LIST_ROW:
         DEC B
         AND A
         JP Z,IRQ_COPY_OBJECT_LIST_ROW
-; Internal 0038: Restore list slot address and advance $12 until low byte reaches $B7.
+; Internal block: Restore list slot address and advance $12 until low byte reaches $B7.
 IRQ_ADVANCE_FIRST_LIST_SLOT:
         POP HL
         LD DE,$0012
@@ -74,7 +79,7 @@ IRQ_ADVANCE_FIRST_LIST_SLOT:
         CP $B7
         JP NZ,IRQ_COPY_OBJECT_LIST_ENTRY
         LD HL,$20A2
-; Internal 0046: Process the $20A2-list slots, setting bitmap pointer and the port-$02 mode.
+; Internal block: Process the $20A2-list slots, setting bitmap pointer and the port-$02 mode.
 IRQ_COMPOSITE_SECOND_LIST_ENTRY:
         PUSH HL
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
@@ -88,7 +93,7 @@ IRQ_COMPOSITE_SECOND_LIST_ENTRY:
         INC HL
         EX DE,HL
         OUT ($02),A
-; Internal 0057: Merge two source bytes through graphics ports $04/$03 with OR into bitmap row.
+; Internal block: Merge two source bytes through graphics ports $04/$03 with OR into bitmap row.
 IRQ_COMPOSITE_SECOND_LIST_ROW:
         LD A,(HL)
         LD (DE),A
@@ -113,7 +118,7 @@ IRQ_COMPOSITE_SECOND_LIST_ROW:
         DEC B
         AND A
         JP Z,IRQ_COMPOSITE_SECOND_LIST_ROW
-; Internal 0076: Restore list slot and step backward by $12 until low byte reaches $5A.
+; Internal block: Restore list slot and step backward by $12 until low byte reaches $5A.
 IRQ_ADVANCE_SECOND_LIST_SLOT:
         POP HL
         LD DE,$FFEE
@@ -123,13 +128,13 @@ IRQ_ADVANCE_SECOND_LIST_SLOT:
         JP NZ,IRQ_COMPOSITE_SECOND_LIST_ENTRY
         LD HL,$20B2
         JP IRQ_CONSUME_BITMAP_JOB
-; Internal 0087: Shared continuation of RST $08/$10: choose pending bitmap operations or input sampling.
+; Internal block: Shared continuation of RST $08/$10: choose pending bitmap operations or input sampling.
 IRQ_RESUME_COMMON_FRAME_PATH:
         LD A,($20B9)
         AND A
         JP M,IRQ_SAMPLE_PORT2_AND_RESTORE
         LD HL,$20AB
-; Internal 0091: Consume pointer fields from pending draw/clear descriptor at HL.
+; Internal block: Consume pointer fields from pending draw/clear descriptor at HL.
 IRQ_CONSUME_BITMAP_JOB:
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
         PUSH DE
@@ -140,11 +145,11 @@ IRQ_CONSUME_BITMAP_JOB:
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
         POP DE
         JP Z,IRQ_RENDER_PENDING_SPRITE_JOB
-; Internal 00A4: Use B as fill value to clear C bytes per row for D rows.
+; Internal block: Use B as fill value to clear C bytes per row for D rows.
 IRQ_CLEAR_BITMAP_ROW_GROUP:
         PUSH HL
         LD C,E
-; Internal 00A6: Inner fill loop: write B to (HL), advance until C expires.
+; Internal block: Inner fill loop: write B to (HL), advance until C expires.
 IRQ_CLEAR_BITMAP_ROW_BYTES:
         LD (HL),B
         INC HL
@@ -155,7 +160,7 @@ IRQ_CLEAR_BITMAP_ROW_BYTES:
         ADD HL,BC
         DEC D
         JP NZ,IRQ_CLEAR_BITMAP_ROW_GROUP
-; Internal 00B4: Restore pending descriptor, select video mode and draw two object-pattern sources.
+; Internal block: Restore pending descriptor, select video mode and draw two object-pattern sources.
 IRQ_RENDER_PENDING_SPRITE_JOB:
         POP HL
         CALL TAKE_AND_CLEAR_OBJECT_POINTER
@@ -193,10 +198,10 @@ IRQ_RENDER_PENDING_SPRITE_JOB:
         INC HL
         LD (HL),D
         JP IRQ_SAMPLE_PORT2_AND_RESTORE
-; Internal 00EA: Begin pass over projectile/object records at $2063.
+; Internal block: Begin pass over projectile/object records at $2063.
 IRQ_SCAN_PROJECTILE_RECORDS:
         LD HL,$2063
-; Internal 00ED: Check active flag and coordinate window for one $12-byte projectile slot.
+; Internal block: Check active flag and coordinate window for one $12-byte projectile slot.
 IRQ_CHECK_PROJECTILE_SLOT:
         LD A,(HL)
         AND A
@@ -211,11 +216,11 @@ IRQ_CHECK_PROJECTILE_SLOT:
         CP $70
         JP NC,IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS
         JP IRQ_NEXT_PROJECTILE_SLOT
-; Internal 0103: Apply upper limit $90 to signed/alternate projectile coordinate path.
+; Internal block: Apply upper limit $90 to signed/alternate projectile coordinate path.
 IRQ_CHECK_PROJECTILE_UPPER_WINDOW:
         CP $90
         JP NC,IRQ_NEXT_PROJECTILE_SLOT
-; Internal 0108: Check additional record field and lower bound before reporting collision code.
+; Internal block: Check additional record field and lower bound before reporting collision code.
 IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         LD DE,$000C
         ADD HL,DE
@@ -259,16 +264,16 @@ IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         LD A,C
         RRA
         LD A,(HL)
-        JP NC,IRQ_STORE_COLLISION_SELECTOR
+        JP NC,IRQ_STORE_EVENT_SELECTOR
         RRA
         RRA
         RRA
         RRA
-; Internal 014C: Extract low nibble of ROM table value into RAM $201C (event selector).
+; Internal block: Extract low nibble of ROM table value into RAM $201C (event selector).
 IRQ_STORE_COLLISION_SELECTOR:
         AND $0F
         LD ($201C),A
-; Internal 0151: Advance by $12 through projectile records until low byte is $AB.
+; Internal block: Advance by $12 through projectile records until low byte is $AB.
 IRQ_NEXT_PROJECTILE_SLOT:
         POP HL
         LD DE,$0012
@@ -277,7 +282,7 @@ IRQ_NEXT_PROJECTILE_SLOT:
         CP L
         JP NZ,IRQ_CHECK_PROJECTILE_SLOT
         LD HL,$2063
-; Internal 015F: Update an active object and calculate its bitmap address and bit phase.
+; Internal block: Update an active object and calculate its bitmap address and bit phase.
 IRQ_UPDATE_VISIBLE_OBJECT_SLOT:
         LD A,(HL)
         AND A
@@ -301,7 +306,7 @@ IRQ_UPDATE_VISIBLE_OBJECT_SLOT:
         INC HL
         LD (HL),C
         POP HL
-; Internal 0183: Advance active object record by $12; after final slot, examine $20BE.
+; Internal block: Advance active object record by $12; after final slot, examine $20BE.
 IRQ_NEXT_VISIBLE_OBJECT_SLOT:
         LD BC,$0012
         ADD HL,BC
@@ -313,12 +318,12 @@ IRQ_NEXT_VISIBLE_OBJECT_SLOT:
         OR H
         JP NZ,IRQ_BEGIN_OBJECT_CYCLE
         LD HL,$202A
-; Internal 0198: Save initial walker address to $20C0 and clear cycle activity byte $20BD.
+; Internal block: Save initial walker address to $20C0 and clear cycle activity byte $20BD.
 IRQ_BEGIN_OBJECT_CYCLE:
         LD ($20C0),HL
         XOR A
         LD ($20BD),A
-; Internal 019F: Update active object, optionally prepare drawing job, persist current pointer.
+; Internal block: Update active object, optionally prepare drawing job, persist current pointer.
 IRQ_STEP_OBJECT_CYCLE:
         LD A,(HL)
         AND A
@@ -328,7 +333,7 @@ IRQ_STEP_OBJECT_CYCLE:
         AND A
         CALL Z,QUEUE_OBJECT_BITMAP_UPDATE
         LD ($20BE),HL
-; Internal 01B1: Advance the object walker by $13, wrapping at $2063 to $202A.
+; Internal block: Advance the object walker by $13, wrapping at $2063 to $202A.
 IRQ_ADVANCE_OBJECT_CYCLE:
         LD DE,$0013
         ADD HL,DE
@@ -336,7 +341,7 @@ IRQ_ADVANCE_OBJECT_CYCLE:
         CP L
         JP NZ,IRQ_CHECK_OBJECT_CYCLE_COMPLETE
         LD HL,$202A
-; Internal 01BE: Compare walker against starting slot and update output/timing after a full pass.
+; Internal block: Compare walker against starting slot and update output/timing after a full pass.
 IRQ_CHECK_OBJECT_CYCLE_COMPLETE:
         LD A,($20C0)
         CP L
@@ -349,7 +354,7 @@ IRQ_CHECK_OBJECT_CYCLE_COMPLETE:
         JP NZ,IRQ_ADVANCE_ROUND_TIMERS
         XOR A
         OUT ($01),A
-; Internal 01D4: Decrease round timer at $2009 and update BCD game-state counters on rollover.
+; Internal block: Decrease round timer at $2009 and update BCD game-state counters on rollover.
 IRQ_ADVANCE_ROUND_TIMERS:
         LD HL,$2009
         DEC (HL)
@@ -369,7 +374,7 @@ IRQ_ADVANCE_ROUND_TIMERS:
         JP NZ,INSTALL_INITIAL_VM_SCRIPT
         EX DE,HL
         INC (HL)
-; Internal 01F6: Update BCD timer at $2003; on expiry transition to wait counter.
+; Internal block: Update BCD timer at $2003; on expiry transition to wait counter.
 IRQ_UPDATE_SECOND_BCD_TIMER:
         LD HL,$2003
         LD A,(HL)
@@ -380,7 +385,7 @@ IRQ_UPDATE_SECOND_BCD_TIMER:
         LD (HL),A
         JP NZ,IRQ_SAMPLE_PORT2_AND_RESTORE
         JP IRQ_DECREMENT_WAIT_COUNTER
-; Internal 0208: Decrement $2015 and branch to frame end until the delay expires.
+; Internal block: Decrement $2015 and branch to frame end until the delay expires.
 IRQ_DECREMENT_FRAME_DELAY:
         LD HL,$2015
         LD A,(HL)
@@ -388,11 +393,11 @@ IRQ_DECREMENT_FRAME_DELAY:
         JP Z,IRQ_SAMPLE_PORT2_AND_RESTORE
         DEC (HL)
         JP NZ,IRQ_SAMPLE_PORT2_AND_RESTORE
-; Internal 0214: Decrement waiting/repeat counter at $20C5.
+; Internal block: Decrement waiting/repeat counter at $20C5.
 IRQ_DECREMENT_WAIT_COUNTER:
         LD HL,$20C5
         DEC (HL)
-; Internal 0218: Double-sample input port $02; dispatch stable changes, restore saved registers.
+; Internal block: Double-sample input port $02; dispatch stable changes, restore saved registers.
 IRQ_SAMPLE_PORT2_AND_RESTORE:
         IN A,($02)
         LD B,A
@@ -409,8 +414,13 @@ IRQ_SAMPLE_PORT2_AND_RESTORE:
         RET
 ; -----------------------------------------------------------------------------
 ; DRAW_NATIVE_OBJECT_DATA
-; Render packed object pattern rows through the board shift/readback ports.
-; Entry DE=pattern bytes, HL=bitmap destination, B=vertical bias; uses $04 output / $03 input.
+; Called by IRQ_RENDER_PENDING_SPRITE_JOB and RUN_GAME_DISPLAY_SEQUENCE.
+; Entry DE=pattern record (width8, height8, row data), HL=bitmap output,
+; B=height bias. If DE=0, return without drawing.
+; For each of height rows, transfer width bytes via OUT $04 / IN $03,
+; append the zero-latch result, and advance output by $20 bytes per row.
+; Exit B=original height+entry bias (saved via $20BC); DE/HL advanced;
+; A,C,flags changed. I/O: graphics ports $04/$03; RAM $20BC.
 ; -----------------------------------------------------------------------------
 DRAW_NATIVE_OBJECT_DATA:
         LD A,D
@@ -425,11 +435,11 @@ DRAW_NATIVE_OBJECT_DATA:
         LD A,(DE)
         INC DE
         LD B,A
-; Internal 023B: Save source dimensions and destination, start another 32-byte-spaced bitmap row.
+; Internal block: Save source dimensions and destination, start another 32-byte-spaced bitmap row.
 DRAW_OBJECT_NEXT_ROW:
         PUSH BC
         PUSH HL
-; Internal 023D: Feed a pattern byte to port $04, read pixel result at port $03, and store.
+; Internal block: Feed a pattern byte to port $04, read pixel result at port $03, and store.
 DRAW_OBJECT_ROW_BYTES:
         LD A,(DE)
         INC DE
@@ -454,8 +464,12 @@ DRAW_OBJECT_ROW_BYTES:
         RET
 ; -----------------------------------------------------------------------------
 ; UPDATE_ACTIVE_OBJECT_COORDINATES
-; Update object-state fields and clear active flag when both trajectory components become zero.
-; Called by the frame/interrupt update path; helper at $0280 applies per-axis bounds.
+; Called in the interrupt-driven visible-object and general-object walks.
+; Entry HL=object record base, A=object control flags.
+; Calls STEP_OBJECT_AXIS for two axes, writes revised control/motion state,
+; and clears bit 6 when both velocity fields reach zero.
+; Exit HL restored to original object base; A,B,C,D,E and flags modified.
+; RAM: object record fields; no direct I/O.
 ; -----------------------------------------------------------------------------
 UPDATE_ACTIVE_OBJECT_COORDINATES:
         PUSH HL
@@ -489,8 +503,12 @@ UPDATE_ACTIVE_OBJECT_COORDINATES:
         RET
 ; -----------------------------------------------------------------------------
 ; STEP_OBJECT_AXIS
-; Advance a compact object-axis record using its speed, direction and limit fields.
-; Used by UPDATE_ACTIVE_OBJECT_COORDINATES; handles boundary response.
+; Called twice by UPDATE_ACTIVE_OBJECT_COORDINATES for the two axes.
+; Entry A=object control bits, HL=current axis descriptor fields.
+; Accumulate axis position and test against both limits; on crossing a
+; limit, clear/reverse the component and select a status code.
+; Return D=selected axis-position byte; A=status code ($00/$10/$40/$60)
+; with flags from AND A in the status exits. HL/B/C may be altered.
 ; -----------------------------------------------------------------------------
 STEP_OBJECT_AXIS:
         AND $03
@@ -508,12 +526,12 @@ STEP_OBJECT_AXIS:
         DEC HL
         DEC HL
         LD (HL),C
-; Internal 0294: Return current axis byte in D, clear A after the in-bounds check.
+; Internal block: Return current axis byte in D, clear A after the in-bounds check.
 AXIS_RETURN_UNCHANGED:
         LD D,(HL)
         XOR A
         RET
-; Internal 0297: Adjust compact axis record on range violation; branch by B direction mode.
+; Internal block: Adjust compact axis record on range violation; branch by B direction mode.
 AXIS_HANDLE_LIMIT_VIOLATION:
         DEC HL
         DEC HL
@@ -526,7 +544,7 @@ AXIS_HANDLE_LIMIT_VIOLATION:
         INC HL
         LD A,$10
         JP AXIS_RETURN_STATUS
-; Internal 02A7: Zero a field and select status $60 or alternate path from direction mode.
+; Internal block: Zero a field and select status $60 or alternate path from direction mode.
 AXIS_CLEAR_OR_REVERSE_COMPONENT:
         DEC HL
         LD (HL),$00
@@ -535,12 +553,12 @@ AXIS_CLEAR_OR_REVERSE_COMPONENT:
         JP NZ,AXIS_SELECT_LIMIT_STATUS
         LD A,$60
         JP AXIS_RETURN_STATUS
-; Internal 02B4: Choose return status $40 when no earlier mode matches.
+; Internal block: Choose return status $40 when no earlier mode matches.
 AXIS_SELECT_LIMIT_STATUS:
         DEC B
         JP NZ,AXIS_RETURN_UNCHANGED
         LD A,$40
-; Internal 02BA: Return axis value in D and status in A, with flags from AND A.
+; Internal block: Return axis value in D and status in A, with flags from AND A.
 AXIS_RETURN_STATUS:
         LD D,(HL)
         AND A
@@ -563,7 +581,16 @@ TAKE_AND_CLEAR_OBJECT_POINTER:
         OR E
         EX DE,HL
         RET
-; Internal 02C9: Construct pending object bitmap descriptor in $20AB or $20B2 and update slot flags.
+; -----------------------------------------------------------------------------
+; QUEUE_OBJECT_BITMAP_UPDATE — callable helper reached from object walk
+; Entry HL=current object record, D=coordinate selected by axis update.
+; Save object link and converted bitmap address in one pending-job slot,
+; $20AB or $20B2 depending on D relative to $60. Store status in $20BD;
+; select a frame pointer from the $0349/$0351 tables when required.
+; Some branches clear a pending job instead of drawing it. Return to
+; caller at IRQ_STEP_OBJECT_CYCLE; modifies A/B/C/D/E/HL and RAM state.
+; -----------------------------------------------------------------------------
+; Internal block: Construct pending object bitmap descriptor in $20AB or $20B2 and update slot flags.
 QUEUE_OBJECT_BITMAP_UPDATE:
         PUSH HL
         LD BC,$000F
@@ -577,7 +604,7 @@ QUEUE_OBJECT_BITMAP_UPDATE:
         LD HL,$20AB
         JP NC,STORE_PENDING_BITMAP_DESCRIPTOR
         LD HL,$20B2
-; Internal 02E0: Store source slot pointer, converted video address/phase, and object linkage.
+; Internal block: Store source slot pointer, converted video address/phase, and object linkage.
 STORE_PENDING_BITMAP_DESCRIPTOR:
         LD (HL),C
         INC HL
@@ -612,7 +639,7 @@ STORE_PENDING_BITMAP_DESCRIPTOR:
         LD E,(HL)
         LD BC,$0004
         LD A,$80
-; Internal 030C: Write pending object link pointer and XOR status into source object control byte.
+; Internal block: Write pending object link pointer and XOR status into source object control byte.
 WRITE_OBJECT_LINK_AND_XOR_STATE:
         ADD HL,BC
         LD (HL),E
@@ -622,7 +649,7 @@ WRITE_OBJECT_LINK_AND_XOR_STATE:
         XOR (HL)
         LD (HL),A
         RET
-; Internal 0314: Choose player-specific four-entry frame table based on object slot and $2009.
+; Internal block: Choose player-specific four-entry frame table based on object slot and $2009.
 SELECT_CURRENT_PLAYER_FRAME:
         POP HL
         LD A,$50
@@ -634,7 +661,7 @@ SELECT_CURRENT_PLAYER_FRAME:
         LD HL,PLAYER_ONE_FRAME_POINTERS
         JP Z,LOOKUP_PLAYER_FRAME_POINTER
         LD HL,PLAYER_TWO_FRAME_POINTERS
-; Internal 0326: Scale the $2009 frame selector and index the four-entry player frame table.
+; Internal block: Scale the $2009 frame selector and index the four-entry player frame table.
 LOOKUP_PLAYER_FRAME_POINTER:
         LD A,($2009)
         AND $0C
@@ -643,7 +670,7 @@ LOOKUP_PLAYER_FRAME_POINTER:
         LD L,A
         JP NC,LOAD_FRAME_POINTER_AND_RESET_FLAGS
         INC H
-; Internal 0332: Read frame pointer into DE; clear/change related status through shared exit.
+; Internal block: Read frame pointer into DE; clear/change related status through shared exit.
 LOAD_FRAME_POINTER_AND_RESET_FLAGS:
         LD E,(HL)
         INC HL
@@ -653,7 +680,7 @@ LOAD_FRAME_POINTER_AND_RESET_FLAGS:
         LD BC,$000D
         XOR A
         JP WRITE_OBJECT_LINK_AND_XOR_STATE
-; Internal 033E: Zero four pending-record bytes and clear source object's active control byte.
+; Internal block: Zero four pending-record bytes and clear source object's active control byte.
 CLEAR_PENDING_BITMAP_DESCRIPTOR:
         XOR A
         LD (HL),A
@@ -682,7 +709,7 @@ VIDEO_ADDRESS_FROM_PACKED_COORDINATES:
         AND $07
         LD C,A
         LD B,$03
-; Internal 035F: One step of the three-bit right shift of DE, preserving carry between D/E.
+; Internal block: One step of the three-bit right shift of DE, preserving carry between D/E.
 PIXEL_ADDRESS_SHIFT_RIGHT:
         XOR A
         LD A,D
@@ -701,12 +728,15 @@ PIXEL_ADDRESS_SHIFT_RIGHT:
         RET
 ; -----------------------------------------------------------------------------
 ; COPY_SCRIPT_LITERAL_BLOCK
-; Common copy helper for indexed words $05 and $06.
-; Entry HL=inline source; DE=RAM destination; C=byte count; exit HL past literals, DE past destination.
+; Used by VM words $05/$06 and the special-object initializer.
+; Entry HL=source byte stream; DE=destination RAM; C=byte count.
+; Copies exactly C bytes; exit HL/DE at following addresses, C=0.
+; I/O: none. DI is executed here; caller controls interrupt restoration.
+; The VM callers separately store the advanced HL back in $2000.
 ; -----------------------------------------------------------------------------
 COPY_SCRIPT_LITERAL_BLOCK:
         DI
-; Internal 0373: Inline copy loop for VM words $05/$06: copy C bytes HL to DE.
+; Internal block: Inline copy loop for VM words $05/$06: copy C bytes HL to DE.
 COPY_SCRIPT_LITERAL_BYTE:
         LD A,(HL)
         INC HL
@@ -752,13 +782,13 @@ INITIALIZE_GAME:
         LD A,$08
         LD HL,$2002
         LD B,$00
-; Internal 0397: Initialize eight consecutive RAM state bytes at $2002.
+; Internal block: Initialize eight consecutive RAM state bytes at $2002.
 CLEAR_INITIAL_GAME_STATE_BYTE:
         LD (HL),B
         INC HL
         DEC A
         JP NZ,CLEAR_INITIAL_GAME_STATE_BYTE
-; Internal 039D: Clear display, install initial script $0821, enable interrupts and fall into VM.
+; Internal block: Clear display, install initial script $0821, enable interrupts and fall into VM.
 INSTALL_INITIAL_VM_SCRIPT:
         CALL CLEAR_BITMAP_DISPLAY
         LD HL,$0821
@@ -766,8 +796,11 @@ INSTALL_INITIAL_VM_SCRIPT:
         EI
 ; -----------------------------------------------------------------------------
 ; VM_DISPATCH_NEXT
-; Fetch indexed command, advance script pointer, and select native vector.
-; RAM $2000: script cursor; $20C6: alternative-script selector; table $09AE.
+; Entry from initialization or native-word RET through continuation $03A6.
+; Script PC is RAM $2000; nonzero $20C6 selects alternate root $089B.
+; Fetch token into E, increment/save $2000, double it to index the 21
+; little-endian native pointers at ROM $09AE, push continuation $03A6,
+; then JP (HL) to handler. No bounds check is performed by the dispatcher.
 ; -----------------------------------------------------------------------------
 VM_DISPATCH_NEXT:
         LD HL,($2000)
@@ -775,7 +808,7 @@ VM_DISPATCH_NEXT:
         AND A
         JP Z,VM_FETCH_AND_RESOLVE_NATIVE_WORD
         LD HL,$089B
-; Internal 03B4: Fetch indexed command, advance $2000, look up 16-bit handler at $09AE and jump.
+; Internal block: Fetch indexed command, advance $2000, look up 16-bit handler at $09AE and jump.
 VM_FETCH_AND_RESOLVE_NATIVE_WORD:
         LD E,(HL)
         INC HL
@@ -832,7 +865,7 @@ VM_INPUT_EVENT_DISPATCH:
 ; Device 7609g.bin, SHA1 c177e3f72db9af17ab99b2481448ca26318184b9
         LD ($2000),HL
         RET
-; Internal 0404: At VM input/event word exit, refresh score when round state $2009 is below $22.
+; Internal block: At VM input/event word exit, refresh score when round state $2009 is below $22.
 VM_REFRESH_SCORE_IF_NEEDED:
         LD A,($2009)
         CP $22
@@ -840,15 +873,21 @@ VM_REFRESH_SCORE_IF_NEEDED:
         RET
 ; -----------------------------------------------------------------------------
 ; DISPATCH_INPUT_TRANSITION
-; Dispatch a selected native input action using the player input tables.
-; Called from VM_INPUT_EVENT_DISPATCH; verify exact register contract in next pass.
+; Entry A=new stable input sample, HL=stored input-state byte,
+; DE=16-bit action-vector table for that input port.
+; Compute changed bits A XOR (HL); return immediately if none changed.
+; Scan low-to-high for the first changed bit using masks in B/C, update
+; that stored bit, leave A=(changed bit AND new state), exchange HL/DE,
+; and JP (HL) through the selected vector. The native action RET returns
+; to the original caller of this helper; DE then points to input state.
+; Effects: one bit of stored input state and action-dependent RAM/I/O.
 ; -----------------------------------------------------------------------------
 DISPATCH_INPUT_TRANSITION:
         XOR (HL)
         RET Z
         LD C,A
         LD B,$01
-; Internal 0412: Rotate change mask C and shift bit mask B until first changed input bit.
+; Internal block: Rotate change mask C and shift bit mask B until first changed input bit.
 INPUT_SCAN_FOR_CHANGED_BIT:
         LD A,C
         RRCA
@@ -860,7 +899,7 @@ INPUT_SCAN_FOR_CHANGED_BIT:
         INC DE
         INC DE
         JP INPUT_SCAN_FOR_CHANGED_BIT
-; Internal 0420: Update stored input state at HL; load native action address from DE and JP (HL).
+; Internal block: Update stored input state at HL; load native action address from DE and JP (HL).
 INPUT_UPDATE_BIT_AND_TAIL_CALL:
         LD A,B
         XOR (HL)
@@ -931,14 +970,14 @@ INSTALL_AIM_DESCRIPTOR:
 ; Player-one input action: write $FE (or zero when input inactive) to object field at $202A+5.
 PLAYER_ONE_AXIS5_NEGATIVE:
         LD B,$FE
-; Internal 0463: If transition flags indicate release, zero B before storing axis5 velocity.
+; Internal block: If transition flags indicate release, zero B before storing axis5 velocity.
 P1_AXIS5_APPLY_PRESS_FLAG:
         JP NZ,P1_AXIS5_SELECT_OBJECT
         LD B,$00
-; Internal 0468: Select player-one object base $202A; shared store begins at next label.
+; Internal block: Select player-one object base $202A; shared store begins at next label.
 P1_AXIS5_SELECT_OBJECT:
         LD HL,$202A
-; Internal 046B: Shared player-axis helper: mark object $C0 and write signed velocity at offset +5.
+; Internal block: Shared player-axis helper: mark object $C0 and write signed velocity at offset +5.
 STORE_AXIS5_COMPONENT:
         LD (HL),$C0
         LD DE,$0005
@@ -954,14 +993,14 @@ PLAYER_ONE_AXIS5_POSITIVE:
 ; Player-one input action: write $FF (or zero when input inactive) to object field at $202A+1.
 PLAYER_ONE_AXIS1_NEGATIVE:
         LD B,$FF
-; Internal 047A: If transition flags indicate release, zero B before storing axis1 velocity.
+; Internal block: If transition flags indicate release, zero B before storing axis1 velocity.
 P1_AXIS1_APPLY_PRESS_FLAG:
         JP NZ,P1_AXIS1_SELECT_OBJECT
         LD B,$00
-; Internal 047F: Select player-one object base $202A for axis1 update.
+; Internal block: Select player-one object base $202A for axis1 update.
 P1_AXIS1_SELECT_OBJECT:
         LD HL,$202A
-; Internal 0482: Shared axis helper: mark object $C0 and write signed velocity to byte +1.
+; Internal block: Shared axis helper: mark object $C0 and write signed velocity to byte +1.
 STORE_AXIS1_COMPONENT:
         LD (HL),$C0
         INC HL
@@ -976,11 +1015,11 @@ PLAYER_ONE_AXIS1_POSITIVE:
 ; Player-two input action: write $FE (or zero when input inactive) to object field at $203D+5.
 PLAYER_TWO_AXIS5_NEGATIVE:
         LD B,$FE
-; Internal 048E: Player-two axis5 press/release gating before shared velocity store.
+; Internal block: Player-two axis5 press/release gating before shared velocity store.
 P2_AXIS5_APPLY_PRESS_FLAG:
         JP NZ,P2_AXIS5_SELECT_OBJECT
         LD B,$00
-; Internal 0493: Select player-two object base $203D and jump to shared +5 velocity store.
+; Internal block: Select player-two object base $203D and jump to shared +5 velocity store.
 P2_AXIS5_SELECT_OBJECT:
         LD HL,$203D
         JP STORE_AXIS5_COMPONENT
@@ -993,11 +1032,11 @@ PLAYER_TWO_AXIS5_POSITIVE:
 ; Player-two input action: write $FF (or zero when input inactive) to object field at $203D+1.
 PLAYER_TWO_AXIS1_NEGATIVE:
         LD B,$FF
-; Internal 04A0: Player-two axis1 press/release gating before shared velocity store.
+; Internal block: Player-two axis1 press/release gating before shared velocity store.
 P2_AXIS1_APPLY_PRESS_FLAG:
         JP NZ,P2_AXIS1_SELECT_OBJECT
         LD B,$00
-; Internal 04A5: Select player-two object base $203D and jump to shared +1 velocity store.
+; Internal block: Select player-two object base $203D and jump to shared +1 velocity store.
 P2_AXIS1_SELECT_OBJECT:
         LD HL,$203D
         JP STORE_AXIS1_COMPONENT
@@ -1021,7 +1060,7 @@ PLAYER_ONE_FIRE_ACTION:
         LD A,(HL)
         AND $80
         RET NZ
-; Internal 04C1: Reject fire when $2012 nonzero; otherwise update count and configure projectile.
+; Internal block: Reject fire when $2012 nonzero; otherwise update count and configure projectile.
 FIRE_P1_CHECK_GUARD_AND_LAUNCH:
         LD DE,$2012
         LD A,(DE)
@@ -1037,7 +1076,7 @@ FIRE_P1_CHECK_GUARD_AND_LAUNCH:
         LD DE,$202C
         LD BC,$1A08
         LD A,($201A)
-; Internal 04DF: Shared firing tail: apply direction-based shot position; atomically write projectile fields.
+; Internal block: Shared firing tail: apply direction-based shot position; atomically write projectile fields.
 FIRE_INSTALL_PROJECTILE_FROM_DIRECTION:
         LD HL,SHOT_PARAMETER_BASE
         CALL SELECT_AIM_DESCRIPTOR
@@ -1060,8 +1099,13 @@ FIRE_INSTALL_PROJECTILE_FROM_DIRECTION:
         RET
 ; -----------------------------------------------------------------------------
 ; UPDATE_SHOT_STATE
-; Increment the active player's shot count, select the scoreboard number and draw it.
-; Entry BC=shot counter address, HL=fire guard address, DE=scoreboard destination; uses $0FA4 character stream.
+; Called by both player firing handlers.
+; Entry BC=player shot-counter address, HL=guard/delay state address,
+; DE=scoreboard output destination. Increment (BC), compare with six;
+; when reaching threshold, update guard and round-state byte $2003.
+; Then tail-call DRAW_FORMATTED_TEXT with A=shot-count character and
+; HL=$0FA4. Caller is responsible for output-port fire command and
+; projectile initialization. B,A,HL/flags modified.
 ; -----------------------------------------------------------------------------
 UPDATE_SHOT_STATE:
         LD A,(BC)
@@ -1077,10 +1121,10 @@ UPDATE_SHOT_STATE:
         AND A
         JP Z,SHOT_RESTORE_DISPLAY_DIGIT
         LD (HL),$02
-; Internal 0510: Restore A from B after updating round state, before drawing ammunition indicator.
+; Internal block: Restore A from B after updating round state, before drawing ammunition indicator.
 SHOT_RESTORE_DISPLAY_DIGIT:
         LD A,B
-; Internal 0511: Tail-call formatted text with character stream $0FA4.
+; Internal block: Tail-call formatted text with character stream $0FA4.
 SHOT_DRAW_AMMO_INDICATOR:
         LD HL,$0FA4
         JP DRAW_FORMATTED_TEXT
@@ -1099,7 +1143,7 @@ PLAYER_TWO_FIRE_ACTION:
         LD A,(HL)
         AND $80
         RET NZ
-; Internal 0528: Reject fire when $2013 nonzero; otherwise update count and configure projectile.
+; Internal block: Reject fire when $2013 nonzero; otherwise update count and configure projectile.
 FIRE_P2_CHECK_GUARD_AND_LAUNCH:
         LD DE,$2013
         LD A,(DE)
@@ -1162,7 +1206,7 @@ UPDATE_ROUND_STATE:
         LD A,($2006)
         AND $30
         JP Z,ROUND_RESET_SCORE_AND_MODE
-; Internal 0585: Adjust B in $10 increments using $2006 upper mode bits.
+; Internal block: Adjust B in $10 increments using $2006 upper mode bits.
 ROUND_SELECT_SPEED_FROM_SETTINGS:
         LD C,A
         LD A,B
@@ -1171,7 +1215,7 @@ ROUND_SELECT_SPEED_FROM_SETTINGS:
         LD A,C
         SUB $10
         JP NZ,ROUND_SELECT_SPEED_FROM_SETTINGS
-; Internal 0590: Store resulting round mode, decrement $20C6 and clear selected score bytes.
+; Internal block: Store resulting round mode, decrement $20C6 and clear selected score bytes.
 ROUND_RESET_SCORE_AND_MODE:
         LD A,B
         LD ($2004),A
@@ -1195,12 +1239,12 @@ NATIVE_WORD_13_UPDATE_SCORE_TEXT:
 UPDATE_SCORE_DISPLAY:
         XOR A
         LD ($2003),A
-; Internal 05A7: Begin four-field BCD score-to-text formatting at RAM $201E.
+; Internal block: Begin four-field BCD score-to-text formatting at RAM $201E.
 SCORE_FORMAT_FOUR_FIELDS:
         LD C,$04
         LD HL,$201E
         LD DE,$2002
-; Internal 05AF: Extract high nibble from RAM source, choosing placeholder $10 for leading zero.
+; Internal block: Extract high nibble from RAM source, choosing placeholder $10 for leading zero.
 SCORE_DECODE_HIGH_BCD_DIGIT:
         LD A,(DE)
         RRA
@@ -1210,7 +1254,7 @@ SCORE_DECODE_HIGH_BCD_DIGIT:
         AND $0F
         JP NZ,SCORE_WRITE_BCD_DIGITS
         LD A,$10
-; Internal 05BB: Emit ASCII high/low score digits into formatted text buffer.
+; Internal block: Emit ASCII high/low score digits into formatted text buffer.
 SCORE_WRITE_BCD_DIGITS:
         ADD A,$30
         LD (HL),A
@@ -1228,7 +1272,7 @@ SCORE_WRITE_BCD_DIGITS:
         AND A
         JP NZ,SCORE_NEXT_FIELD_AND_RENDER
         LD (HL),$40
-; Internal 05D6: Advance source/output pointers; render after four fields.
+; Internal block: Advance source/output pointers; render after four fields.
 SCORE_NEXT_FIELD_AND_RENDER:
         INC DE
         INC HL
@@ -1263,19 +1307,23 @@ DRAW_FORMATTED_DATA:
         POP HL
 ; -----------------------------------------------------------------------------
 ; DRAW_FORMATTED_TEXT
-; Render A characters from source HL to display address DE; characters below $30 move the destination.
-; Character patterns are read at ROM $09F8, ten scanline bytes per glyph; bitmap row stride is $20.
+; Entry A=source character count, HL=formatted source stream,
+; DE=bitmap destination. Source bytes < $30 advance display position;
+; bytes >= $30 select glyph (character-$30) from 10-byte font at $09F8.
+; Copy 10 rows per glyph with $20-byte video line stride, then advance
+; destination one character byte. A/B/C/DE/flags changed; I/O: bitmap RAM.
+; Called by VM word $01, score formatter and player-status display words.
 ; -----------------------------------------------------------------------------
 DRAW_FORMATTED_TEXT:
         PUSH AF
-; Internal 05FC: Fetch source char; values under $30 act as horizontal destination advances.
+; Internal block: Fetch source char; values under $30 act as horizontal destination advances.
 TEXT_FETCH_CHARACTER_OR_ADVANCE:
         LD A,(HL)
         INC HL
         SUB $30
         JP P,TEXT_LOOKUP_FONT_GLYPH
         LD B,A
-; Internal 0604: Advance bitmap byte address and handle 32-byte scanline boundary.
+; Internal block: Advance bitmap byte address and handle 32-byte scanline boundary.
 TEXT_ADVANCE_DISPLAY_COLUMN:
         INC E
         LD A,E
@@ -1283,29 +1331,29 @@ TEXT_ADVANCE_DISPLAY_COLUMN:
         JP NZ,TEXT_CONTINUE_COLUMN_ADVANCE
         INC D
         INC D
-; Internal 060D: Loop B column increments, then fetch next source byte.
+; Internal block: Loop B column increments, then fetch next source byte.
 TEXT_CONTINUE_COLUMN_ADVANCE:
         INC B
         JP NZ,TEXT_ADVANCE_DISPLAY_COLUMN
         JP TEXT_FETCH_CHARACTER_OR_ADVANCE
-; Internal 0614: Use character minus $30 as index into 10-byte digit glyph records.
+; Internal block: Use character minus $30 as index into 10-byte digit glyph records.
 TEXT_LOOKUP_FONT_GLYPH:
         PUSH HL
         PUSH DE
         LD HL,FONT_SCORE_DIGITS
         JP Z,TEXT_SETUP_TEN_SCANLINES
         LD BC,$000A
-; Internal 061F: Advance font pointer by 10 bytes until glyph index exhausted.
+; Internal block: Advance font pointer by 10 bytes until glyph index exhausted.
 TEXT_SKIP_TO_NEXT_DIGIT_GLYPH:
         ADD HL,BC
         DEC A
         JP NZ,TEXT_SKIP_TO_NEXT_DIGIT_GLYPH
-; Internal 0624: Exchange source/destination and initialize ten glyph rows with $20 stride.
+; Internal block: Exchange source/destination and initialize ten glyph rows with $20 stride.
 TEXT_SETUP_TEN_SCANLINES:
         EX DE,HL
         LD BC,$0020
         LD A,$0A
-; Internal 062A: Write one glyph byte to bitmap, step one scanline and repeat ten times.
+; Internal block: Write one glyph byte to bitmap, step one scanline and repeat ten times.
 TEXT_COPY_NEXT_GLYPH_ROW:
         PUSH AF
         LD A,(DE)
@@ -1359,7 +1407,7 @@ CLEAR_BITMAP_DISPLAY:
         LD DE,$0000
         LD A,$10
         LD SP,$400F
-; Internal 0662: Zero-fill video using PUSH BC from temporary stack pointer $400F.
+; Internal block: Zero-fill video using PUSH BC from temporary stack pointer $400F.
 CLEAR_DISPLAY_PUSH_WORD_LOOP:
         PUSH BC
         INC DE
@@ -1461,7 +1509,7 @@ RUN_GAME_DISPLAY_SEQUENCE:
         XOR A
         OUT ($02),A
         LD A,($2002)
-; Internal 06C5: Reduce display state and determine whether the next pattern needs frame setup.
+; Internal block: Reduce display state and determine whether the next pattern needs frame setup.
 GAME_SELECT_NEXT_PATTERN:
         DEC A
         JP M,GAME_SELECT_SECOND_PATTERN_SET
@@ -1470,7 +1518,7 @@ GAME_SELECT_NEXT_PATTERN:
         CP $05
         JP M,GAME_DRAW_PATTERN_FROM_TABLE
         LD A,$04
-; Internal 06D5: Read graphic pointer and destination from table; draw current pattern.
+; Internal block: Read graphic pointer and destination from table; draw current pattern.
 GAME_DRAW_PATTERN_FROM_TABLE:
         LD E,(HL)
         INC HL
@@ -1489,7 +1537,7 @@ GAME_DRAW_PATTERN_FROM_TABLE:
         POP HL
         DEC A
         JP P,GAME_DRAW_PATTERN_FROM_TABLE
-; Internal 06EB: Select secondary graphics set once bit7 of $2016 permits.
+; Internal block: Select secondary graphics set once bit7 of $2016 permits.
 GAME_SELECT_SECOND_PATTERN_SET:
         LD A,($2016)
         LD B,A
@@ -1501,7 +1549,7 @@ GAME_SELECT_SECOND_PATTERN_SET:
         LD HL,$0F22
         LD A,($2005)
         JP GAME_SELECT_NEXT_PATTERN
-; Internal 0703: If bit6 of $2016 not set, set it, select port-$02 mode and draw last group.
+; Internal block: If bit6 of $2016 not set, set it, select port-$02 mode and draw last group.
 GAME_DRAW_FINAL_PATTERN_GROUP:
         LD A,($2016)
         AND $40
@@ -1513,7 +1561,7 @@ GAME_DRAW_FINAL_PATTERN_GROUP:
         XOR A
         LD HL,$0F36
         JP GAME_DRAW_PATTERN_FROM_TABLE
-; Internal 0719: Check object at $2050 and copy a 15-byte initialization record when inactive.
+; Internal block: Check object at $2050 and copy a 15-byte initialization record when inactive.
 GAME_PREPARE_SPECIAL_OBJECT:
         PUSH HL
         PUSH AF
@@ -1525,7 +1573,7 @@ GAME_PREPARE_SPECIAL_OBJECT:
         LD C,$0F
         LD HL,$0F52
         CALL COPY_SCRIPT_LITERAL_BLOCK
-; Internal 072D: Set bit6 in $2016; restore caller AF/HL saved by special-object helper.
+; Internal block: Set bit6 in $2016; restore caller AF/HL saved by special-object helper.
 GAME_SET_PATTERN_READY_FLAG:
         LD A,($2016)
         OR $40
@@ -1633,11 +1681,11 @@ FILL_DISPLAY_RECTANGLE:
         LD H,A
         CALL VIDEO_ADDRESS_FROM_PACKED_COORDINATES
         EX DE,HL
-; Internal 079A: Save row destination and fill another horizontal span using 32-byte stride.
+; Internal block: Save row destination and fill another horizontal span using 32-byte stride.
 RECTANGLE_NEXT_SCANLINE:
         PUSH HL
         LD C,E
-; Internal 079C: Fill C consecutive video bytes with B.
+; Internal block: Fill C consecutive video bytes with B.
 RECTANGLE_FILL_ROW_BYTES:
         LD (HL),B
         INC HL
@@ -1652,13 +1700,17 @@ RECTANGLE_FILL_ROW_BYTES:
 NATIVE_WORD_0F_EXPAND_GRAPHICS_TABLE:
 ; -----------------------------------------------------------------------------
 ; EXPAND_PACKED_GRAPHICS
-; VM word $0F: transform packed ROM graphics into RAM starting at $2100.
-; Source table begins at $0BC4.
+; VM word $0F: unpack original RAM-resident graphic patterns.
+; Entry: no inline VM operands. Begin at ROM $0BC4, output RAM $2100.
+; Records contain dimension/stride bytes followed by packed bitstreams.
+; Nested column and byte loops rotate each source byte through D/E eight
+; times and write expanded graphic bytes to RAM; terminate at zero marker.
+; Clobbers A/B/C/D/E/HL, flags. No replacement graphics are generated.
 ; -----------------------------------------------------------------------------
 EXPAND_PACKED_GRAPHICS:
         LD HL,$2100
         LD DE,$0BC4
-; Internal 07B1: Read next packed graphics record from ROM $0BC4; zero byte ends stream.
+; Internal block: Read next packed graphics record from ROM $0BC4; zero byte ends stream.
 EXPAND_GRAPHICS_NEXT_BLOCK:
         LD A,(DE)
         AND A
@@ -1672,14 +1724,14 @@ EXPAND_GRAPHICS_NEXT_BLOCK:
         LD B,A
         LD (HL),A
         INC HL
-; Internal 07BD: Compute destination offset from record width for the next packed column.
+; Internal block: Compute destination offset from record width for the next packed column.
 EXPAND_GRAPHICS_NEXT_COLUMN:
         PUSH BC
         LD A,B
         LD B,$00
         ADD HL,BC
         LD B,A
-; Internal 07C3: Read next source byte and prepare eight-bit rotation into display orientation.
+; Internal block: Read next source byte and prepare eight-bit rotation into display orientation.
 EXPAND_GRAPHICS_READ_PACKED_COLUMN:
         DEC HL
         LD A,(DE)
@@ -1688,7 +1740,7 @@ EXPAND_GRAPHICS_READ_PACKED_COLUMN:
         LD D,A
         LD E,$00
         LD B,$08
-; Internal 07CC: Rotate source bits into the expanded byte through D/E shift registers.
+; Internal block: Rotate source bits into the expanded byte through D/E shift registers.
 EXPAND_GRAPHICS_ROTATE_EIGHT_BITS:
         LD A,D
         RRA
@@ -1725,7 +1777,7 @@ NATIVE_WORD_12_DRAW_STATUS_202C:
 ; -----------------------------------------------------------------------------
 DRAW_FIRST_PLAYER_STATUS:
         LD HL,$202C
-; Internal 07F2: Read packed object coordinates and derive display destination for 7 chars.
+; Internal block: Read packed object coordinates and derive display destination for 7 chars.
 DRAW_STATUS_GET_BITMAP_DESTINATION:
         LD E,(HL)
         LD BC,$0004
