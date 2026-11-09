@@ -381,8 +381,8 @@ NATIVE_0218:
         RET
 ; -----------------------------------------------------------------------------
 ; DRAW_NATIVE_OBJECT_DATA
-; Native display-data transfer; reads formatted source bytes and writes display data.
-; Inputs: DE source, HL destination; B/C used as row/column counts. I/O: ports $03/$04.
+; Render packed object pattern rows through the board shift/readback ports.
+; Entry DE=pattern bytes, HL=bitmap destination, B=vertical bias; uses $04 output / $03 input.
 ; -----------------------------------------------------------------------------
 DRAW_NATIVE_OBJECT_DATA:
         LD A,D
@@ -512,8 +512,8 @@ NATIVE_02BA:
         RET
 ; -----------------------------------------------------------------------------
 ; TAKE_AND_CLEAR_OBJECT_POINTER
-; Read a little-endian pointer through HL, clear its two bytes, and return the old pointer in DE.
-; Input HL points to pointer storage; output HL advances two bytes; A and B are modified.
+; Remove a little-endian pointer from the field at entry HL, zeroing both bytes.
+; Exit HL=old pointer, DE=address immediately after the cleared field; B=0; Z set if pointer was zero.
 ; -----------------------------------------------------------------------------
 TAKE_AND_CLEAR_OBJECT_POINTER:
         XOR A
@@ -629,7 +629,7 @@ NATIVE_033E:
 ; -----------------------------------------------------------------------------
 ; VIDEO_ADDRESS_FROM_PACKED_COORDINATES
 ; Convert packed pixel coordinates in DE to a bitmap byte address relative to $2400.
-; Output DE is bitmap address and C is the low three bits of original E (pixel phase); modifies A, B and HL temporarily.
+; Exit DE=$2400+(entry DE>>3), C=entry E&7; preserves HL, destroys A/B and flags.
 ; -----------------------------------------------------------------------------
 VIDEO_ADDRESS_FROM_PACKED_COORDINATES:
         LD A,E
@@ -655,7 +655,7 @@ NATIVE_035F:
 ; -----------------------------------------------------------------------------
 ; COPY_SCRIPT_LITERAL_BLOCK
 ; Common copy helper for indexed words $05 and $06.
-; C: literal byte count; source and destination supplied by calling word.
+; Entry HL=inline source; DE=RAM destination; C=byte count; exit HL past literals, DE past destination.
 ; -----------------------------------------------------------------------------
 COPY_SCRIPT_LITERAL_BLOCK:
         DI
@@ -963,8 +963,8 @@ NATIVE_04DF:
         RET
 ; -----------------------------------------------------------------------------
 ; UPDATE_SHOT_STATE
-; Common firing-state update shared by player action paths.
-; Verify exact graphics and collision effects before further renaming.
+; Increment the active player's shot count, select the scoreboard number and draw it.
+; Entry BC=shot counter address, HL=fire guard address, DE=scoreboard destination; uses $0FA4 character stream.
 ; -----------------------------------------------------------------------------
 UPDATE_SHOT_STATE:
         LD A,(BC)
@@ -1018,7 +1018,7 @@ NATIVE_0528:
         JP $04DF
 ; -----------------------------------------------------------------------------
 ; ADVANCE_ROUND_EVENT_COUNTER
-; Native input-event action: update output port $01, advance event counters and choose state at $2008.
+; Handle a native event trigger: set output $01 to $04, advance $2007 and update $2008.
 ; Uses $2006/$2007 as state/count inputs; alternate exit at $056C.
 ; -----------------------------------------------------------------------------
 ADVANCE_ROUND_EVENT_COUNTER:
