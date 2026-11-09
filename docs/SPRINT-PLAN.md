@@ -40,3 +40,12 @@ Maintained ASM has an initial semantic-label/header pass and raw inline graphics
 - Ran independent static source-layout inspection: 4 KB; four contiguous original ROM divisions; all expected key offsets and 310 defined labels resolved. Native assembler, ROM hashes, and MAME have not been executed in this session.
 
 The next gate is native zmac compilation plus four-chip SHA-1 verification. Further RE focuses on full object/collision lifecycles, remaining non-font sprite boundaries, and interrupt scheduling.
+
+## v20261108-0004 — WB / Gun Fight implementation cross-review
+
+- Traced `PLAYER_ONE_AIM_ACTION`, `PLAYER_TWO_AIM_ACTION`, and `INSTALL_AIM_DESCRIPTOR`: `(input & $70)` rotated right three times yields **even byte offsets** `$02–$0E`; the seven effective entries are ordinary 16-bit pointers, not unaligned overlapping reads.
+- Typed the player-one and player-two aim pointer tables at `$0EE2` and `$0EF0` using original `DW` values, including their single shared boundary entry.
+- Identified `SHOT_PARAMETER_BASE=$0EFE` and seven non-pointer coordinate-adjustment byte pairs `$0F00–$0F0D`, used by `SELECT_AIM_DESCRIPTOR` at `$037C`. Corrected routine headers and source relationships. See [AIM-AND-FIRE.md](AIM-AND-FIRE.md).
+- Updated README, native implementation notes and graphics documentation. The Gun Fight repo retains **no dependency/link to WB**; the introductory architecture establishes the 1975 starting point without asserting identical later machine-code reuse.
+- Updated WB PR #45's 8080 chapter to explain the native input/table details, sprite/font recovery and Gun Fight's different dispatcher, with a compact local memory-map SVG. WB's outward source links remain to the Gun Fight repo's regular `main` paths, not to this development PR branch.
+- **Verification:** Independent static comparison confirms all 1,024 bytes of data in `$0C00–$0FFF` are unchanged from the previous PR #4 checkpoint. Existing static script and word aliases remain 82/21. Native assembler, chip hashes, MAME and hardware remain unexecuted in this pass.
