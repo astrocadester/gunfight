@@ -7,7 +7,7 @@ Source: original gunfight.zip, SHA256 b1dee22902ce8b8ebd3b5c85293cc350ed789c1088
 - Script-pointer RAM: `$2000`
 - Native command dispatcher: `$3A7`
 - Vector table: `$9AE`
-- Indexed native entries: 30
+- Established native handler entries: 21 (tokens $00–$14)
 - Initial ROM command stream: `$821`
 
 The dispatcher fetches a bytecode from its saved program counter, advances the pointer, indexes 16-bit native handler entries, and transfers control indirectly. Entry count does not imply each command has identical operands.
@@ -35,15 +35,9 @@ The dispatcher fetches a bytecode from its saved program counter, advances the p
 | `$12` | `$07EF` | `21 2C 20 5E 01 04 00 09` |
 | `$13` | `$05A3` | `AF 32 03 20 0E 04 21 1E` |
 | `$14` | `$03C9` | `CD 13 08 DB 00 47 DB 00` |
-| `$15` | `$091B` | `0C 05 20 2A 20 20 FD 0D` |
-| `$16` | `$0936` | `0E 60 10 09 5D 09 0E 60` |
-| `$17` | `$093C` | `0E 60 50 09 5D 09 0E 60` |
-| `$18` | `$0942` | `0E 60 90 09 5D 09 0E 78` |
-| `$19` | `$0948` | `0E 78 10 09 5D 09 0E 90` |
-| `$1A` | `$094E` | `0E 90 10 09 5D 09 0E 90` |
-| `$1B` | `$0954` | `0E 90 50 09 5D 09 0E 90` |
-| `$1C` | `$095A` | `0E 90 90 0D B2 02 09 17` |
-| `$1D` | `$0963` | `0C 02 20 3D 20 D0 39 23` |
+
+
+The remaining pointer-shaped values at `$09D8–$09E9` are nine **event-script destinations**, not native words. The `$09D6` word `$14` entry is also reused as the first input/event selection pointer. The input-action table at `$097E–$09AD` has 24 native entries. See [ROM vector ownership](ROM-VECTOR-OWNERSHIP.md).
 
 ## Historical interpretation
 
@@ -51,4 +45,4 @@ Gun Fight (1975) directly demonstrates DNA's early indexed native-command interp
 
 ## Verification boundaries
 
-This table is read directly from the original ROM. Native handler semantics, script operand sizes, interrupt cadence, and full address ownership require instruction- and data-flow analysis.
+This table is read directly from the original ROM. Native handler semantics and script operand widths are documented in the [reconciled word catalog](8080-WORD-SEMANTICS.md); interrupt cadence and remaining data formats still need instruction- and data-flow tracing.
