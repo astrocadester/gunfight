@@ -21,7 +21,13 @@
     2025,
     2031,
     1443,
-    969,
+    969
+  ],
+  "dispatcher": 935,
+  "pointer_ram": 8192,
+  "vector_base": 2478,
+  "first_stream": 2081,
+  "event_scripts": [
     2331,
     2358,
     2364,
@@ -32,8 +38,7 @@
     2394,
     2403
   ],
-  "dispatcher": 935,
-  "pointer_ram": 8192,
-  "vector_base": 2478,
-  "first_stream": 2081
+  "native_handler_count": 21,
+  "input_action_count": 24,
+  "event_selector_base": 2518
 }
