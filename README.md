@@ -87,7 +87,7 @@ The complete reconstructed commands and native effects are in [8080 word semanti
 
 The Intel 8080 reset path initializes game state and enters the VM. Input handling samples ports `$00` and `$01`; a 24-entry table at `$097E` selects native movement, aim and firing actions. The two firing paths at `$04B0` and `$0517` share the shot-state service at `$04FA`. The aim handlers use even-byte offsets into separate 16-bit graphic-pointer tables; a related firing lookup uses direction-indexed coordinate adjustments. See [Aiming and firing](docs/AIM-AND-FIRE.md). Score conversion and formatted display are implemented by separate native services.
 
-The source carries function headings, descriptive labels and explanatory comments at meaningful operations. See [native implementation analysis](docs/NATIVE-WORD-IMPLEMENTATIONS.md) and [interpreter dispatch](docs/interpreter.md).
+The native source separates interrupt entries, callable services, VM handlers and internal branch/loop blocks. See [native control flow and register contracts](docs/NATIVE-CONTROL-FLOW.md), [internal block cross-references](docs/NATIVE-BLOCK-INVENTORY.md), [word implementations](docs/NATIVE-WORD-IMPLEMENTATIONS.md), and [interpreter dispatch](docs/interpreter.md).
 
 ## Graphics and game data
 
