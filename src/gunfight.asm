@@ -270,7 +270,7 @@ IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         RRA
         RRA
 ; Internal block: Extract low nibble of ROM table value into RAM $201C (event selector).
-IRQ_STORE_COLLISION_SELECTOR:
+IRQ_STORE_EVENT_SELECTOR:
         AND $0F
         LD ($201C),A
 ; Internal block: Advance by $12 through projectile records until low byte is $AB.
