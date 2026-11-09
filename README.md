@@ -67,6 +67,8 @@ The memory map identifies original ROM regions separately from working RAM, bitm
 
 Gun Fight contains an early indexed VM at `$03A7`. Its script pointer is stored at RAM `$2000`, and its native command vector table starts at ROM `$09AE`. There are **21 native command handlers** (tokens `$00–$14`), with separate native input-action and event-script pointer tables.
 
+This 1975 indexed command architecture establishes an early foundation for DNA's later 8080 game-programming systems. Later titles retained and evolved the indexed-native-dispatch idea while changing their command vocabularies and scheduling; common architecture alone does not establish identical source or code.
+
 The main program starts interpreting at `$0821`; gameplay initialization also uses `$089B`. Commands carry inline operands: for example, `$05` copies 15 literal bytes into a game-object record, and `$06` copies nine bytes. Other handlers draw score text, fill video regions, initialize objects, wait on timers, or redirect game-script execution.
 
 ```asm
@@ -83,7 +85,7 @@ The complete reconstructed commands and native effects are in [8080 word semanti
 
 ## Native code and input
 
-The Intel 8080 reset path initializes game state and enters the VM. Input handling samples ports `$00` and `$01`; a 24-entry table at `$097E` selects native movement, aim and firing actions. The two firing paths at `$04B0` and `$0517` share the shot-state service at `$04FA`. Score conversion and formatted display are implemented by separate native services.
+The Intel 8080 reset path initializes game state and enters the VM. Input handling samples ports `$00` and `$01`; a 24-entry table at `$097E` selects native movement, aim and firing actions. The two firing paths at `$04B0` and `$0517` share the shot-state service at `$04FA`. The aim handlers use even-byte offsets into separate 16-bit graphic-pointer tables; a related firing lookup uses direction-indexed coordinate adjustments. See [Aiming and firing](docs/AIM-AND-FIRE.md). Score conversion and formatted display are implemented by separate native services.
 
 The source carries function headings, descriptive labels and explanatory comments at meaningful operations. See [native implementation analysis](docs/NATIVE-WORD-IMPLEMENTATIONS.md) and [interpreter dispatch](docs/interpreter.md).
 
