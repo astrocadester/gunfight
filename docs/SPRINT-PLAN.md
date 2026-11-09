@@ -57,3 +57,13 @@ The next gate is native zmac compilation plus four-chip SHA-1 verification. Furt
 - Replaced the two gray memory-range headings with "Other address space" (`$4000–$FFFF`) and "No identified ROM or RAM" (`$1000–$1FFF`), retaining the relevant `$400F` screen-clear stack detail.
 - Verified the referenced screenshot exists in `images/`, the README no longer points to the flyer, and SVG element tags are structurally balanced.
 - This was a documentation/artwork-only update; no native build, ROM hash or MAME execution was performed.
+
+## v20261108-0009 — full generic native-label RE pass
+
+1. Recovered **all 92** remaining `NATIVE_xxxx` sites as descriptive named internal blocks within the original 8080 interrupt, object, VM, input, firing, score and graphics control paths. Kept callable routines distinct from loops, conditional targets, entry vectors and shared exits. Every block is indexed with its ROM address, observed local behavior and direct incoming branch count in [NATIVE-BLOCK-INVENTORY.md](NATIVE-BLOCK-INVENTORY.md).
+2. Extended the source headers with entry/exit register, flag, RAM, I/O port and return conventions on real callable functions and interrupt vectors. Full connected flows are in [NATIVE-CONTROL-FLOW.md](NATIVE-CONTROL-FLOW.md).
+3. Source-inspected the native IRQ phases from $0010 through $0218: bitmap job queue at $206F/$20A2, projectile/object-record scans at $2063, pending renderer slots $20AB/$20B2, event selector $201C, object movement, score/timer counters and input polling. Linked player control/shot paths to their existing native source records; unresolved physical effects remain explicitly open.
+4. Renamed branch and call operands symbolically without changing original code, data or graphics. **Source structural comparison executed**: four contiguous ROM sections ending $1000, 314 defined symbols, no unresolved symbolic operands, 1,808 instruction/data statements canonicalized to **zero textual instruction/operand differences** against PR checkpoint preceding this pass. No claim of actual assembler byte equality.
+5. Native bundled zmac compilation, original device SHA-1 checks, MAME gameplay, Windows build and physical board execution remain separately pending. No substitute language, compiler, interpreted gameplay or alternative hardware implementation was introduced.
+
+Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB original device hashes. Continue deeper dynamic object/collision, sound, and graphics hardware behavior RE only after the static findings have been checked against a running game.
