@@ -91,7 +91,7 @@ The source carries function headings, descriptive labels and explanatory comment
 
 Display-memory writes begin at `$2400`. The ROM contains character shapes, bit patterns, graphics tables, and object descriptors. The score/text renderer at `$05FB` uses ten scanline bytes per glyph with a 32-byte screen-line stride; the packed graphics expander at `$07AB` writes unpacked data into RAM beginning at `$2100`.
 
-The assembly keeps the original data inline. [Data classification](docs/DB-PROVENANCE.md) distinguishes script operands, native code, graphics, tables, and bytes whose specific function remains under analysis.
+The source includes inline 8×10 digit glyphs and five width/height-prefixed object patterns (24×12, 24×32, and 32×11 stored bits). Their layouts and native rendering paths are documented in [graphics and display formats](docs/GRAPHICS.md). [Data classification](docs/DB-PROVENANCE.md) distinguishes scripts, code, pointers, and remaining packed data.
 
 ## Research and references
 
