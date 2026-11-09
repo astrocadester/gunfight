@@ -48,11 +48,11 @@ FONT_SCORE_DIGITS:
         DB $3C ; ..####..
 ```
 
-This is inline ROM graphics, rather than an external replacement image. Additional non-font graphics remain available as packed source data and require object-format tracing before naming every shape.
+This is inline ROM graphics rather than an external replacement image. Five further width/height-prefixed ROM patterns, including three 24×12 frames, are now decoded in the source. See [graphics and display formats](GRAPHICS.md) for boundaries and native renderer evidence.
 
 ### Compact object pointer helper
 
-The helper at `$02BD` reads a two-byte pointer from the RAM address in HL, clears those pointer bytes, advances HL, returns the saved pointer in DE, and leaves the zero/nonzero state observable through A/flags. The timer/interrupt engine repeatedly calls it while walking object pools. The object-coordinate updater at `$025E` uses the axis-step logic at `$0280`, tracks active-state flags, and may clear an object's activity bit when its motion ends.
+The helper at `$02BD` reads a two-byte pointer from RAM address HL and clears those pointer bytes. Its final `EX DE,HL` returns the **old pointer in HL** and the **address after the cleared field in DE**. B is zero and Z reflects whether the old pointer was zero. The timer/interrupt engine repeatedly calls it while walking object pools. The object-coordinate updater at `$025E` uses the axis-step logic at `$0280`, tracks active-state flags, and may clear an object's activity bit when its motion ends.
 
 
 
@@ -93,7 +93,7 @@ This report is generated from the original-ROM-reconstructed assembly at this PR
 
 Each section shows the first native instructions at a handler entry, stopping at an unconditional `RET` or `JP` or after twelve instructions. This is a *bounded entry trace*, not a claim that all conditional paths or called services are semantically resolved. Detailed argument analysis is in [8080-WORD-SEMANTICS.md](8080-WORD-SEMANTICS.md).
 
-### $00 — WAIT_REPEAT ($0813)
+### $00 — WAIT_OR_REPEAT ($0813)
 
 13 known ROM command packet site(s). Native entry:
 
@@ -122,7 +122,7 @@ LD D,(HL)  ; ROM $05F5: 56
 INC HL  ; ROM $05F6: 23
 ```
 
-### $02 — SET_RAM_2003 ($063D)
+### $02 — SET_2003 ($063D)
 
 0 known ROM command packet site(s). Native entry:
 
@@ -135,7 +135,7 @@ LD ($2003),A  ; ROM $0645: 32 03 20
 RET  ; ROM $0648: C9
 ```
 
-### $03 — SET_RAM_2015 ($0649)
+### $03 — SET_2015 ($0649)
 
 12 known ROM command packet site(s). Native entry:
 
@@ -148,7 +148,7 @@ LD ($2015),A  ; ROM $0651: 32 15 20
 RET  ; ROM $0654: C9
 ```
 
-### $04 — CLEAR_DISPLAY ($0655)
+### $04 — CLEAR_DISPLAY_MEMORY ($0655)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -212,7 +212,7 @@ XOR A  ; ROM $067F: AF
 LD (DE),A  ; ROM $0680: 12
 ```
 
-### $08 — TOGGLE_OBJECT_FLAGS ($06AD)
+### $08 — TOGGLE_OBJECT_BITS ($06AD)
 
 0 known ROM command packet site(s). Native entry:
 
@@ -229,7 +229,7 @@ LD (DE),A  ; ROM $06BA: 12
 RET  ; ROM $06BB: C9
 ```
 
-### $09 — BRANCH_SCRIPT ($0682)
+### $09 — GOTO_SCRIPT ($0682)
 
 11 known ROM command packet site(s). Native entry:
 
@@ -243,7 +243,7 @@ LD ($2000),HL  ; ROM $0689: 22 00 20
 RET  ; ROM $068C: C9
 ```
 
-### $0A — GAME_DISPLAY ($06BC)
+### $0A — GAME_DISPLAY_SEQUENCE ($06BC)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -254,7 +254,7 @@ OUT ($02),A  ; ROM $06C0: D3 02
 LD A,($2002)  ; ROM $06C2: 3A 02 20
 ```
 
-### $0B — INIT_OBJECT ($0749)
+### $0B — INITIALIZE_OBJECT ($0749)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -273,7 +273,7 @@ LD A,(HL)  ; ROM $0756: 7E
 INC HL  ; ROM $0757: 23
 ```
 
-### $0C — BCD_INCREMENT_INIT ($0738)
+### $0C — INCREMENT_BCD_AND_RESET ($0738)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -291,7 +291,7 @@ LD (DE),A  ; ROM $0745: 12
 CALL $05A3  ; ROM $0746: CD A3 05
 ```
 
-### $0D — SET_OUTPUT_AND_RAM ($0775)
+### $0D — OUTPUT_AND_SET_2014 ($0775)
 
 3 known ROM command packet site(s). Native entry:
 
@@ -325,7 +325,7 @@ CALL $0359  ; ROM $0796: CD 59 03
 EX DE,HL  ; ROM $0799: EB
 ```
 
-### $0F — EXPAND_GRAPHICS ($07AB)
+### $0F — EXPAND_GRAPHICS_TABLE ($07AB)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -334,7 +334,7 @@ LD HL,$2100  ; ROM $07AB: 21 00 21
 LD DE,$0BC4  ; ROM $07AE: 11 C4 0B
 ```
 
-### $10 — BRANCH_IF_STATE ($0807)
+### $10 — CONDITIONAL_GOTO_0882 ($0807)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -344,7 +344,7 @@ AND A  ; ROM $080A: A7
 RET Z  ; ROM $080B: C8
 ```
 
-### $11 — DRAW_STATUS_A ($07E9)
+### $11 — DRAW_STATUS_203F ($07E9)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -353,7 +353,7 @@ LD HL,$203F  ; ROM $07E9: 21 3F 20
 JP $07F2  ; ROM $07EC: C3 F2 07
 ```
 
-### $12 — DRAW_STATUS_B ($07EF)
+### $12 — DRAW_STATUS_202C ($07EF)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -370,7 +370,7 @@ XOR A  ; ROM $05A3: AF
 LD ($2003),A  ; ROM $05A4: 32 03 20
 ```
 
-### $14 — INPUT_EVENT_DISPATCH ($03C9)
+### $14 — INPUT_AND_EVENT_DISPATCH ($03C9)
 
 1 known ROM command packet site(s). Native entry:
 
