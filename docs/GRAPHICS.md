@@ -1,6 +1,6 @@
 # Gun Fight — graphics and native display-data formats
 
-The original 8080 rendering routines support two distinct data paths: a ten-row character renderer and a width/height-prefixed object pattern renderer. The source preserves their byte streams in assembly, with inline `#` / `.` bit previews.
+The original 8080 rendering routines support two distinct data paths: a ten-row character renderer and a width/height-prefixed object pattern renderer. The source preserves their byte streams in assembly, with inline `#` / `.` bit previews. Controller-directed graphics selection and shot-position data are recovered separately in [Aim and fire](AIM-AND-FIRE.md).
 
 ## Bitmap pixel addressing
 
@@ -22,7 +22,7 @@ The following records are now expressed as typed inline byte rows in [`src/gunfi
 
 The first three record boundaries are proven by the consecutive `$0D8B/$0DB1/$0DD7` native frame pointers at `$0349`, the two-byte dimensions, and the 38-byte separation. The following `$0DFD` and `$0E5F` boundaries follow the same packed record convention and sizes (98 and 46 bytes). Pattern identity (cowboy, obstacle, animation frame, etc.) is deliberately not assigned until graphics call sites establish it.
 
-The pointer tables at `$0349` and `$0351` each have four little-endian entries selected by `$2009` state bits. The first uses ROM frame patterns A, B, C, B; the second references RAM-based pattern/animation records. These are typed `DW` entries in the assembly.
+The animation/frame-pointer tables at `$0349` and `$0351` each have four little-endian entries selected by `$2009` state bits. These are distinct from the controller aim-pointer tables at `$0EE2` and `$0EF0`. The first uses ROM frame patterns A, B, C, B; the second references RAM-based pattern/animation records. These are typed `DW` entries in the assembly.
 
 ### Inline pixel representation
 
@@ -46,7 +46,7 @@ The source displays each digit's ten literal bytes and eight-bit pixel row. No g
 
 - Determine which in-game objects and animation frames use each recovered ROM pattern, using caller and drawing-state trace.
 - Separate the later compressed graphics section and the expanded RAM patterns at `$2100` according to the native `$07AB` algorithm.
-- Resolve any overlapping table/data roles at the boundary between the packed graphics and player aim-pointer tables.
+- The two player aim-pointer tables at `$0EE2/$0EF0` are now decoded as even-byte-offset `DW` vectors, with one shared boundary entry. The adjoining shot-position records at `$0F00` are byte pairs, not pointers. See [Aim and fire](AIM-AND-FIRE.md).
 - Confirm on-screen orientation, left/right shifts, and hardware-specific pixel composition against the original board or MAME.
 
 This analysis is limited to original code/data relationships and does not imply an executed emulator trace.
