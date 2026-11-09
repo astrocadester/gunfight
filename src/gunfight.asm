@@ -870,7 +870,9 @@ INSTALL_AIM_DESCRIPTOR:
         INC HL
         LD (HL),B
         RET
-NATIVE_0461:
+; PLAYER_ONE_AXIS5_NEGATIVE
+; Player-one input action: write $FE (or zero when input inactive) to object field at $202A+5.
+PLAYER_ONE_AXIS5_NEGATIVE:
         LD B,$FE
 NATIVE_0463:
         JP NZ,$0468
@@ -883,10 +885,14 @@ NATIVE_046B:
         ADD HL,DE
         LD (HL),B
         RET
-NATIVE_0473:
+; PLAYER_ONE_AXIS5_POSITIVE
+; Player-one input action: write $02 (or zero when input inactive) to object field at $202A+5.
+PLAYER_ONE_AXIS5_POSITIVE:
         LD B,$02
         JP $0463
-NATIVE_0478:
+; PLAYER_ONE_AXIS1_NEGATIVE
+; Player-one input action: write $FF (or zero when input inactive) to object field at $202A+1.
+PLAYER_ONE_AXIS1_NEGATIVE:
         LD B,$FF
 NATIVE_047A:
         JP NZ,$047F
@@ -898,10 +904,14 @@ NATIVE_0482:
         INC HL
         LD (HL),B
         RET
-NATIVE_0487:
+; PLAYER_ONE_AXIS1_POSITIVE
+; Player-one input action: write $01 (or zero when input inactive) to object field at $202A+1.
+PLAYER_ONE_AXIS1_POSITIVE:
         LD B,$01
         JP $047A
-NATIVE_048C:
+; PLAYER_TWO_AXIS5_NEGATIVE
+; Player-two input action: write $FE (or zero when input inactive) to object field at $203D+5.
+PLAYER_TWO_AXIS5_NEGATIVE:
         LD B,$FE
 NATIVE_048E:
         JP NZ,$0493
@@ -909,10 +919,14 @@ NATIVE_048E:
 NATIVE_0493:
         LD HL,$203D
         JP $046B
-NATIVE_0499:
+; PLAYER_TWO_AXIS5_POSITIVE
+; Player-two input action: write $02 (or zero when input inactive) to object field at $203D+5.
+PLAYER_TWO_AXIS5_POSITIVE:
         LD B,$02
         JP $048E
-NATIVE_049E:
+; PLAYER_TWO_AXIS1_NEGATIVE
+; Player-two input action: write $FF (or zero when input inactive) to object field at $203D+1.
+PLAYER_TWO_AXIS1_NEGATIVE:
         LD B,$FF
 NATIVE_04A0:
         JP NZ,$04A5
@@ -920,7 +934,9 @@ NATIVE_04A0:
 NATIVE_04A5:
         LD HL,$203D
         JP $0482
-NATIVE_04AB:
+; PLAYER_TWO_AXIS1_POSITIVE
+; Player-two input action: write $01 (or zero when input inactive) to object field at $203D+1.
+PLAYER_TWO_AXIS1_POSITIVE:
         LD B,$01
         JP $04A0
 ; -----------------------------------------------------------------------------
@@ -1502,7 +1518,9 @@ WRITE_OUTPUT_AND_MODE:
         INC HL
         LD ($2000),HL
         LD ($2014),A
-NATIVE_0784:
+; NO_OP_INPUT_ACTION
+; One-byte RET used by six native input action-table positions; also the fall-through exit of VM word $0D.
+NO_OP_INPUT_ACTION:
         RET
 NATIVE_WORD_0E_FILL_RECTANGLE:
 ; -----------------------------------------------------------------------------
@@ -1918,13 +1936,13 @@ CMD_097B_SCRIPT_JUMP:
         DB $09 ; word SCRIPT_JUMP ($09)
         DW $089B ; RAM address / target / packed dimension
 ROM_NATIVE_EVENT_ACTION_00:
-        DW $0461 ; NATIVE_EVENT_ACTION pointer from ROM $097E
+        DW PLAYER_ONE_AXIS5_NEGATIVE ; NATIVE_EVENT_ACTION pointer from ROM $097E
 ROM_NATIVE_EVENT_ACTION_01:
-        DW $0473 ; NATIVE_EVENT_ACTION pointer from ROM $0980
+        DW PLAYER_ONE_AXIS5_POSITIVE ; NATIVE_EVENT_ACTION pointer from ROM $0980
 ROM_NATIVE_EVENT_ACTION_02:
-        DW $0478 ; NATIVE_EVENT_ACTION pointer from ROM $0982
+        DW PLAYER_ONE_AXIS1_NEGATIVE ; NATIVE_EVENT_ACTION pointer from ROM $0982
 ROM_NATIVE_EVENT_ACTION_03:
-        DW $0487 ; NATIVE_EVENT_ACTION pointer from ROM $0984
+        DW PLAYER_ONE_AXIS1_POSITIVE ; NATIVE_EVENT_ACTION pointer from ROM $0984
 ROM_NATIVE_EVENT_ACTION_04:
         DW $042A ; NATIVE_EVENT_ACTION pointer from ROM $0986
 ROM_NATIVE_EVENT_ACTION_05:
@@ -1934,13 +1952,13 @@ ROM_NATIVE_EVENT_ACTION_06:
 ROM_NATIVE_EVENT_ACTION_07:
         DW PLAYER_ONE_FIRE_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $098C
 ROM_NATIVE_EVENT_ACTION_08:
-        DW $048C ; NATIVE_EVENT_ACTION pointer from ROM $098E
+        DW PLAYER_TWO_AXIS5_NEGATIVE ; NATIVE_EVENT_ACTION pointer from ROM $098E
 ROM_NATIVE_EVENT_ACTION_09:
-        DW $0499 ; NATIVE_EVENT_ACTION pointer from ROM $0990
+        DW PLAYER_TWO_AXIS5_POSITIVE ; NATIVE_EVENT_ACTION pointer from ROM $0990
 ROM_NATIVE_EVENT_ACTION_0A:
-        DW $049E ; NATIVE_EVENT_ACTION pointer from ROM $0992
+        DW PLAYER_TWO_AXIS1_NEGATIVE ; NATIVE_EVENT_ACTION pointer from ROM $0992
 ROM_NATIVE_EVENT_ACTION_0B:
-        DW $04AB ; NATIVE_EVENT_ACTION pointer from ROM $0994
+        DW PLAYER_TWO_AXIS1_POSITIVE ; NATIVE_EVENT_ACTION pointer from ROM $0994
 ROM_NATIVE_EVENT_ACTION_0C:
         DW $043E ; NATIVE_EVENT_ACTION pointer from ROM $0996
 ROM_NATIVE_EVENT_ACTION_0D:
@@ -1950,17 +1968,17 @@ ROM_NATIVE_EVENT_ACTION_0E:
 ROM_NATIVE_EVENT_ACTION_0F:
         DW PLAYER_TWO_FIRE_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $099C
 ROM_NATIVE_EVENT_ACTION_10:
-        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $099E
+        DW NO_OP_INPUT_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $099E
 ROM_NATIVE_EVENT_ACTION_11:
-        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A0
+        DW NO_OP_INPUT_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $09A0
 ROM_NATIVE_EVENT_ACTION_12:
-        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A2
+        DW NO_OP_INPUT_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $09A2
 ROM_NATIVE_EVENT_ACTION_13:
-        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A4
+        DW NO_OP_INPUT_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $09A4
 ROM_NATIVE_EVENT_ACTION_14:
-        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A6
+        DW NO_OP_INPUT_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $09A6
 ROM_NATIVE_EVENT_ACTION_15:
-        DW $0784 ; NATIVE_EVENT_ACTION pointer from ROM $09A8
+        DW NO_OP_INPUT_ACTION ; NATIVE_EVENT_ACTION pointer from ROM $09A8
 ROM_NATIVE_EVENT_ACTION_16:
         DW $0549 ; NATIVE_EVENT_ACTION pointer from ROM $09AA
 ROM_NATIVE_EVENT_ACTION_17:
