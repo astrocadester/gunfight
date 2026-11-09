@@ -592,9 +592,9 @@ NATIVE_0314:
         PUSH HL
         LD A,$2A
         CP L
-        LD HL,$0349
+        LD HL,PLAYER_ONE_FRAME_POINTERS
         JP Z,$0326
-        LD HL,$0351
+        LD HL,PLAYER_TWO_FRAME_POINTERS
 NATIVE_0326:
         LD A,($2009)
         AND $0C
@@ -624,8 +624,12 @@ NATIVE_033E:
         POP HL
         LD (HL),A
         RET
-        DB $8B,$0D,$B1,$0D,$D7,$0D,$B1,$0D,$C7,$22,$ED,$22
-        DB $13,$23,$ED,$22
+; Four 16-bit drawing/animation source pointers for each player.
+; The state bits at $2009 select one of four entries (index 0,2,4,6).
+PLAYER_ONE_FRAME_POINTERS:
+        DW $0D8B,$0DB1,$0DD7,$0DB1
+PLAYER_TWO_FRAME_POINTERS:
+        DW $22C7,$22ED,$2313,$22ED
 ; -----------------------------------------------------------------------------
 ; VIDEO_ADDRESS_FROM_PACKED_COORDINATES
 ; Convert packed pixel coordinates in DE to a bitmap byte address relative to $2400.
@@ -667,7 +671,11 @@ NATIVE_0373:
         DEC C
         JP NZ,$0373
         RET
-NATIVE_037C:
+; -----------------------------------------------------------------------------
+; SELECT_AIM_DESCRIPTOR
+; Resolve the selected aim/shot descriptor from a table and active object fields; DE and HL are modified.
+; -----------------------------------------------------------------------------
+SELECT_AIM_DESCRIPTOR:
         PUSH DE
         LD E,A
         LD D,$00
@@ -826,7 +834,7 @@ PLAYER_ONE_AIM_ACTION:
         LD ($201A),A
         LD HL,$0EE2
         LD DE,$202A
-        JP $044F
+        JP INSTALL_AIM_DESCRIPTOR
 ; -----------------------------------------------------------------------------
 ; PLAYER_TWO_AIM_ACTION
 ; Extract player-two input direction from DE and use table $0EF0 to update the object record at $203D.
@@ -843,7 +851,11 @@ PLAYER_TWO_AIM_ACTION:
         LD ($201B),A
         LD HL,$0EF0
         LD DE,$203D
-NATIVE_044F:
+; -----------------------------------------------------------------------------
+; INSTALL_AIM_DESCRIPTOR
+; Index the selected player's aim table and copy its 16-bit pointer into object record offset $0B.
+; -----------------------------------------------------------------------------
+INSTALL_AIM_DESCRIPTOR:
         LD C,A
         LD B,$00
         ADD HL,BC
@@ -943,7 +955,7 @@ NATIVE_04C1:
         LD A,($201A)
 NATIVE_04DF:
         LD HL,$0EFE
-        CALL $037C
+        CALL SELECT_AIM_DESCRIPTOR
         POP HL
         DI
         LD (HL),$C6
@@ -1210,7 +1222,11 @@ NATIVE_062A:
         JP NZ,DRAW_FORMATTED_TEXT
         RET
 NATIVE_WORD_02_SET_RAM_2003:
-NATIVE_063D:
+; -----------------------------------------------------------------------------
+; SET_SCORE_STATE_BYTE
+; VM word $02: read one byte from the script and store it at RAM $2003; advance the script cursor.
+; -----------------------------------------------------------------------------
+SET_SCORE_STATE_BYTE:
         LD HL,($2000)
         LD A,(HL)
         INC HL
@@ -1218,7 +1234,11 @@ NATIVE_063D:
         LD ($2003),A
         RET
 NATIVE_WORD_03_SET_RAM_2015:
-NATIVE_0649:
+; -----------------------------------------------------------------------------
+; SET_DELAY_STATE_BYTE
+; VM word $03: read one byte from the script and store it at RAM $2015; advance the script cursor.
+; -----------------------------------------------------------------------------
+SET_DELAY_STATE_BYTE:
         LD HL,($2000)
         LD A,(HL)
         INC HL
@@ -1249,7 +1269,11 @@ NATIVE_0662:
         EI
         JP (HL)
 NATIVE_WORD_07_CLEAR_OBJECT_FLAGS:
-NATIVE_0670:
+; -----------------------------------------------------------------------------
+; CLEAR_OBJECT_CONTROL_BITS
+; VM word $07: read a RAM address from the script, clear bit 6 at that byte, and zero its following byte.
+; -----------------------------------------------------------------------------
+CLEAR_OBJECT_CONTROL_BITS:
         LD HL,($2000)
         LD E,(HL)
         INC HL
@@ -1264,7 +1288,11 @@ NATIVE_0670:
         LD (DE),A
         RET
 NATIVE_WORD_09_BRANCH_SCRIPT:
-NATIVE_0682:
+; -----------------------------------------------------------------------------
+; JUMP_TO_SCRIPT
+; VM word $09: read a 16-bit target from the script and replace the interpreter cursor at $2000.
+; -----------------------------------------------------------------------------
+JUMP_TO_SCRIPT:
         LD HL,($2000)
         LD E,(HL)
         INC HL
@@ -1305,7 +1333,11 @@ COPY_INLINE_9_TO_RAM:
         LD ($2000),HL
         RET
 NATIVE_WORD_08_TOGGLE_OBJECT_FLAGS:
-NATIVE_06AD:
+; -----------------------------------------------------------------------------
+; TOGGLE_OBJECT_CONTROL_BITS
+; VM word $08: read a RAM address and XOR bit mask $60 into its first byte.
+; -----------------------------------------------------------------------------
+TOGGLE_OBJECT_CONTROL_BITS:
         LD HL,($2000)
         LD E,(HL)
         INC HL
@@ -1457,7 +1489,11 @@ INITIALIZE_OBJECT_RECORD:
         LD (HL),A
         RET
 NATIVE_WORD_0D_SET_OUTPUT_AND_RAM:
-NATIVE_0775:
+; -----------------------------------------------------------------------------
+; WRITE_OUTPUT_AND_MODE
+; VM word $0D: read output and state bytes, OUT the first to port $01, store second at $2014.
+; -----------------------------------------------------------------------------
+WRITE_OUTPUT_AND_MODE:
         LD HL,($2000)
         LD A,(HL)
         OUT ($01),A
@@ -1559,11 +1595,19 @@ NATIVE_07CC:
         JP NZ,$07BD
         JP $07B1
 NATIVE_WORD_11_DRAW_STATUS_A:
-NATIVE_07E9:
+; -----------------------------------------------------------------------------
+; DRAW_SECOND_PLAYER_STATUS
+; VM word $11: select status record at $203F and branch to the shared text drawing path.
+; -----------------------------------------------------------------------------
+DRAW_SECOND_PLAYER_STATUS:
         LD HL,$203F
         JP $07F2
 NATIVE_WORD_12_DRAW_STATUS_B:
-NATIVE_07EF:
+; -----------------------------------------------------------------------------
+; DRAW_FIRST_PLAYER_STATUS
+; VM word $12: select status record at $202C and use the shared status drawing path.
+; -----------------------------------------------------------------------------
+DRAW_FIRST_PLAYER_STATUS:
         LD HL,$202C
 NATIVE_07F2:
         LD E,(HL)
@@ -1926,9 +1970,9 @@ ROM_GAME_WORD_00:
 ROM_GAME_WORD_01:
         DW DRAW_FORMATTED_DATA ; GAME_WORD pointer from ROM $09B0
 ROM_GAME_WORD_02:
-        DW $063D ; GAME_WORD pointer from ROM $09B2
+        DW SET_SCORE_STATE_BYTE ; GAME_WORD pointer from ROM $09B2
 ROM_GAME_WORD_03:
-        DW $0649 ; GAME_WORD pointer from ROM $09B4
+        DW SET_DELAY_STATE_BYTE ; GAME_WORD pointer from ROM $09B4
 ROM_GAME_WORD_04:
         DW CLEAR_BITMAP_DISPLAY ; GAME_WORD pointer from ROM $09B6
 ROM_GAME_WORD_05:
@@ -1936,11 +1980,11 @@ ROM_GAME_WORD_05:
 ROM_GAME_WORD_06:
         DW COPY_INLINE_9_TO_RAM ; GAME_WORD pointer from ROM $09BA
 ROM_GAME_WORD_07:
-        DW $0670 ; GAME_WORD pointer from ROM $09BC
+        DW CLEAR_OBJECT_CONTROL_BITS ; GAME_WORD pointer from ROM $09BC
 ROM_GAME_WORD_08:
-        DW $06AD ; GAME_WORD pointer from ROM $09BE
+        DW TOGGLE_OBJECT_CONTROL_BITS ; GAME_WORD pointer from ROM $09BE
 ROM_GAME_WORD_09:
-        DW $0682 ; GAME_WORD pointer from ROM $09C0
+        DW JUMP_TO_SCRIPT ; GAME_WORD pointer from ROM $09C0
 ROM_GAME_WORD_0A:
         DW $06BC ; GAME_WORD pointer from ROM $09C2
 ROM_GAME_WORD_0B:
@@ -1948,7 +1992,7 @@ ROM_GAME_WORD_0B:
 ROM_GAME_WORD_0C:
         DW INCREMENT_BCD_AND_INIT ; GAME_WORD pointer from ROM $09C6
 ROM_GAME_WORD_0D:
-        DW $0775 ; GAME_WORD pointer from ROM $09C8
+        DW WRITE_OUTPUT_AND_MODE ; GAME_WORD pointer from ROM $09C8
 ROM_GAME_WORD_0E:
         DW $0785 ; GAME_WORD pointer from ROM $09CA
 ROM_GAME_WORD_0F:
@@ -1956,9 +2000,9 @@ ROM_GAME_WORD_0F:
 ROM_GAME_WORD_10:
         DW BRANCH_TO_ALTERNATE_SCENE ; GAME_WORD pointer from ROM $09CE
 ROM_GAME_WORD_11:
-        DW $07E9 ; GAME_WORD pointer from ROM $09D0
+        DW DRAW_SECOND_PLAYER_STATUS ; GAME_WORD pointer from ROM $09D0
 ROM_GAME_WORD_12:
-        DW $07EF ; GAME_WORD pointer from ROM $09D2
+        DW DRAW_FIRST_PLAYER_STATUS ; GAME_WORD pointer from ROM $09D2
 ROM_GAME_WORD_13:
         DW UPDATE_SCORE_DISPLAY ; GAME_WORD pointer from ROM $09D4
 ROM_GAME_WORD_14:
