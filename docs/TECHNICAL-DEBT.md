@@ -64,3 +64,9 @@ The retained original ROM and direct native assembler verification remain the fi
 - Seven 3x21 aim frames, two smaller scene shapes, 28 font slots, and a special 3x28 object pattern are now expressed as structured source data.
 - Event object records and first/second-player frame sources have role-based names based on native caller paths. Exact appearance/obstacle identification remains open until visible draw-state verification.
 - Source data reconstruction includes explicit original byte-preservation checks for the transformed sections. All original code bytes outside those data sections remain unchanged; assembly and MAME execution are not yet performed after this pass.
+
+## v20261121-0006 — text RE and verification status
+
+- Decoded byte-to-glyph mapping in game-message area, linked all original text source pointers to their VM $01 glyph counts, and corrected the terminology from generic format byte to glyph count.
+- Updated ROM device roles in the memory map; the $0BC4-$0D8A aim records span the 7609f/7609e boundary and encoded text belongs to 7609e.
+- User's native Linux build, original four-chip equality check and MAME playback PASSED on v20261121-0005. Latest symbol/annotation changes need a fresh check; Windows and physical hardware remain untested.

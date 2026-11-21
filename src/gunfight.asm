@@ -1456,8 +1456,8 @@ SCORE_NEXT_FIELD_AND_RENDER:
 VM_WORD_01_DRAW_FORMATTED_DATA:
 ; -----------------------------------------------------------------------------
 ; DRAW_FORMATTED_DATA
-; VM word $01: consume inline format and two little-endian addresses.
-; Script operand: format8, source16, destination16.
+; VM word $01: read glyph count, source pointer and display destination.
+; Script operands: glyph_count8, source16, destination16.
 ; -----------------------------------------------------------------------------
 DRAW_FORMATTED_DATA:
         LD HL,($2000)
@@ -1477,7 +1477,7 @@ DRAW_FORMATTED_DATA:
 
 ; -----------------------------------------------------------------------------
 ; DRAW_FORMATTED_TEXT
-; Entry A=source character count, HL=formatted source stream,
+; Entry A=number of glyphs to draw, HL=encoded source stream,
 ; DE=bitmap destination. Source bytes < $30 advance display position;
 ; bytes >= $30 select glyph (character-$30) from 10-byte font at $09F8.
 ; Copy 10 rows per glyph with $20-byte video line stride, then advance
@@ -2065,8 +2065,8 @@ CMD_0822_UPDATE_SCORE_TEXT:
 ; $0823: Draw a formatted text or graphic record into display memory.
 CMD_0823_DRAW_FORMATTED_DATA:
         DB $01
-        DB $0C ; Format selector
-        DW $0F61 ; ROM data source
+        DB $0C ; Glyph count
+        DW TEXT_GAME_OVER ; Encoded display source
         DW $240A ; Display RAM destination
 
 ; $0829: Branch to the alternate $0882 script if game state permits.
@@ -2089,8 +2089,8 @@ CMD_082D_WAIT_OR_REPEAT:
 ; $082E: Draw a formatted text or graphic record into display memory.
 CMD_082E_DRAW_FORMATTED_DATA:
         DB $01
-        DB $29 ; Format selector
-        DW $0F6D ; ROM data source
+        DB $29 ; Glyph count
+        DW TEXT_TITLE_BLANKS ; Encoded display source
         DW $2600 ; Display RAM destination
 
 ; $0834: Store the next countdown or mode value at RAM $2015.
@@ -2105,8 +2105,8 @@ CMD_0836_WAIT_OR_REPEAT:
 ; $0837: Draw a formatted text or graphic record into display memory.
 CMD_0837_DRAW_FORMATTED_DATA:
         DB $01
-        DB $0B ; Format selector
-        DW $0F99 ; ROM data source
+        DB $0B ; Glyph count
+        DW TEXT_INSERT_COIN ; Encoded display source
         DW $3D14 ; Display RAM destination
 
 ; $083D: Copy 15 literal bytes from the script into a RAM object record.
@@ -2142,8 +2142,8 @@ CMD_0860_WAIT_OR_REPEAT:
 ; $0861: Draw a formatted text or graphic record into display memory.
 CMD_0861_DRAW_FORMATTED_DATA:
         DB $01
-        DB $0B ; Format selector
-        DW $0FA4 ; ROM data source
+        DB $0B ; Glyph count
+        DW TEXT_CLEAR_MESSAGE_FIELD ; Encoded display source
         DW $3D14 ; Display RAM destination
 
 ; $0867: Store the next countdown or mode value at RAM $2015.
@@ -2211,15 +2211,15 @@ CMD_089E_GAME_DISPLAY_SEQUENCE:
 ; $089F: Draw a formatted text or graphic record into display memory.
 CMD_089F_DRAW_FORMATTED_DATA:
         DB $01
-        DB $09 ; Format selector
-        DW $0FAF ; ROM data source
+        DB $09 ; Glyph count
+        DW TEXT_READY_AND_DIALOGUE ; Encoded display source
         DW $2E0C ; Display RAM destination
 
 ; $08A5: Draw a formatted text or graphic record into display memory.
 CMD_08A5_DRAW_FORMATTED_DATA:
         DB $01
-        DB $0C ; Format selector
-        DW $0FB8 ; ROM data source
+        DB $0C ; Glyph count
+        DW TEXT_READY_SEPARATOR ; Encoded display source
         DW $3EA2 ; Display RAM destination
 
 ; $08AB: Copy 15 literal bytes from the script into a RAM object record.
@@ -2270,8 +2270,8 @@ CMD_0901_WAIT_OR_REPEAT:
 ; $0902: Draw a formatted text or graphic record into display memory.
 CMD_0902_DRAW_FORMATTED_DATA:
         DB $01
-        DB $09 ; Format selector
-        DW $0FC5 ; ROM data source
+        DB $09 ; Glyph count
+        DW TEXT_DRAW_AND_DIALOGUE ; Encoded display source
         DW $2E0C ; Display RAM destination
 
 ; $0908: Store the next countdown or mode value at RAM $2015.
@@ -2296,8 +2296,8 @@ CMD_0910_WAIT_OR_REPEAT:
 ; $0911: Draw a formatted text or graphic record into display memory.
 CMD_0911_DRAW_FORMATTED_DATA:
         DB $01
-        DB $05 ; Format selector
-        DW $0FA4 ; ROM data source
+        DB $05 ; Glyph count
+        DW TEXT_CLEAR_MESSAGE_FIELD ; Encoded display source
         DW $2E0E ; Display RAM destination
 
 ; $0917: Read player inputs and choose the next event action.
@@ -3725,30 +3725,55 @@ SCENE_STATE_SETUP_RECORDS:
 SPECIAL_OBJECT_INITIALIZATION_BYTES:
         DB $C4,$00,$74,$70,$20,$FF,$A0,$0A,$B4,$00,$00,$8E,$0E,$00,$00
 
-; Encoded game text/format records ($0F61-$0FFF). Referenced by
-; interpreted DRAW_FORMATTED_DATA packets, not raw 8080 opcodes.
-; Keep native encoding and leading record bytes unchanged.
+; -----------------------------------------------------------------------------
+; Encoded game display text ($0F61-$0FFF).
+; Each byte >= $30 indexes a 10-row glyph from FONT_SCORE_DIGITS; these
+; codes are not necessarily ASCII (e.g. $4B draws M, $4F draws R).
+; Codes below $30 advance the display cursor rather than drawing glyphs.
+; The VM $01 operand preceding a source pointer counts rendered glyphs,
+; not a conventional NUL-terminated string length. Source pointers may
+; begin inside a longer continuous display-text stream.
+; -----------------------------------------------------------------------------
 
-GAME_TEXT_RECORD_F61:
-        DB $47,$41,$4B,$45,$40,$40,$40,$40,$4D,$53,$45,$4F
+; GAME    OVER (12 glyph bytes).
+TEXT_GAME_OVER:
+        DB $47,$41,$4B,$45,$40,$40,$40,$40,$4D,$53
+        DB $45,$4F
 
-GAME_TEXT_RECORD_F6D:
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$00,$00,$25,$47
-        DB $52,$4C,$40,$46,$49,$47,$48,$51
+; Thirty-two blank glyphs, two zero-position codes and a $25
+; column advance, then GUN FIGHT. A source stream, not a C string.
+TEXT_TITLE_BLANKS:
+        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
+        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
+        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
+        DB $40,$40,$00,$00,$25,$47,$52,$4C,$40,$46
+        DB $49,$47,$48,$51
 
-GAME_TEXT_RECORD_F99:
-        DB $49,$4C,$50,$45,$4F,$51,$40,$43,$4D,$49,$4C
+; INSERT COIN (11 glyph bytes).
+TEXT_INSERT_COIN:
+        DB $49,$4C,$50,$45,$4F,$51,$40,$43,$4D,$49
+        DB $4C
 
-GAME_TEXT_RECORD_FA4:
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
+; Eleven blank glyphs, used to erase an existing message.
+TEXT_CLEAR_MESSAGE_FIELD:
+        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
+        DB $40
 
-GAME_TEXT_RECORD_FAF:
-        DB $47,$45,$51,$40,$4F,$45,$41,$44,$55,$3A,$3A,$3A
-        DB $3A,$3A,$3A,$20,$3A,$3A,$3A,$3A,$3A,$3A,$40,$40
-        DB $44,$4F,$41,$54,$3B,$40,$40,$47,$4D,$51,$40,$4B
-        DB $45,$3B,$48,$45,$55,$40,$4E,$41,$4F,$44,$4C,$45
-        DB $4F,$3B,$2E,$55,$4D,$52,$40,$48,$41,$53,$45,$40
-        DB $43,$4F,$45,$44,$49,$51,$3C,$00,$00,$1A,$4E,$52
+; GET READY; subsequent $3A glyphs form vertical separators.
+TEXT_READY_AND_DIALOGUE:
+        DB $47,$45,$51,$40,$4F,$45,$41,$44,$55
+
+; Separator glyphs and positioning; begins after GET READY.
+TEXT_READY_SEPARATOR:
+        DB $3A,$3A,$3A,$3A,$3A,$3A,$20,$3A,$3A,$3A
+        DB $3A,$3A,$3A
+
+; DRAW prompt, hit/taunt strings, and credit/button prompts.
+; $20, $2E, $1A and $00 are positioning bytes (below $30).
+TEXT_DRAW_AND_DIALOGUE:
+        DB $40,$40,$44,$4F,$41,$54,$3B,$40,$40,$47
+        DB $4D,$51,$40,$4B,$45,$3B,$48,$45,$55,$40
+        DB $4E,$41,$4F,$44,$4C,$45,$4F,$3B,$2E,$55
+        DB $4D,$52,$40,$48,$41,$53,$45,$40,$43,$4F
+        DB $45,$44,$49,$51,$3C,$00,$00,$1A,$4E,$52
         DB $50,$48,$40,$42,$52,$51,$51,$4D,$4C

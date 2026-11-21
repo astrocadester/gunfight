@@ -67,3 +67,11 @@ The original drawing and VM expansion code now identifies these additional data 
 - `$0F3A/$0F52/$0F61`: state setup, special-object initialization and encoded display text records.
 
 These names document code-proven ownership and dimensions, rather than guessing historical DNA symbols or assigning unverified pictured-object identities.
+
+## Encoded game messages
+
+The display-message bytes at ROM `$0F61–$0FFF` have been divided into their actual source-pointer entry positions, not treated as independent zero-terminated ASCII strings. `TEXT_GAME_OVER` begins at `$0F61`, `TEXT_TITLE_BLANKS` at `$0F6D`, `TEXT_INSERT_COIN` at `$0F99`, and the ready/draw dialogue begins at `$0FAF`.
+
+The `DRAW_FORMATTED_TEXT` routine handles codes `$30` and above by indexing the 10-byte glyph records from `$09F8`. Values below `$30` advance the bitmap position. The glyph codes are not a direct ASCII text encoding; for example, `$4B` is drawn as M and `$4F` as R in the ROM font. Consequently `$47,$41,$4B,$45` displays GAME. The indexed VM text word `$01` carries a glyph count, a 16-bit source pointer and a 16-bit display destination.
+
+Decoded phrases include GAME OVER, GUN FIGHT, INSERT COIN, GET READY, DRAW, GOT ME, HEY PARDNER, YOU HAVE CREDIT and PUSH BUTTON. Positioning values and separator glyphs remain numeric in the byte-preserving ASM.
