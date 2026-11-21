@@ -77,3 +77,9 @@ The retained original ROM and direct native assembler verification remain the fi
 - Added targeted explanatory source comments; compared the full original instruction and data directive stream before/after and confirmed it is identical in order and operands. No native code/data changed.
 - Remaining GF-RE-002 work is executable gameplay/hardware confirmation; do not close it on source inspection alone. GF-RE-008 retains distinct interrupt cadence and RAM-installed execution analysis.
 - No assembler or MAME run performed in this change. Current PR #5 has separate user-reported Linux/MAME passes on an earlier source commit; verify current revision before merge.
+
+## v20261121-0002 — GF-RE-002 original ASM source reconciliation
+
+- Incorporated source-grounded gameplay findings directly into `src/gunfight.asm`: projectile RAM record names, per-player guard/counter state, event lookup ownership and the correctly named projectile-origin calculation.
+- Original instruction/data directives remain unchanged after static symbol resolution. Current branch has not yet been rebuilt/tested in MAME.
+- GF-RE-002 remains open for verified selector-to-screen outcomes, slot reuse, shot/collision behavior and original hardware output meaning; GF-RE-008 separately tracks interrupt cadence.
