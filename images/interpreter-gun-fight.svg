@@ -93,7 +93,6 @@
 <path d="M785 292 V327" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
 <path d="M785 432 V467" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
 <path d="M785 572 V607" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
-<path d="M1068 664 H1120 V413" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M1120 355 V246 H1080" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
-<path d="M1068 385 H1227" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1068 664 H1120 V246 H1080" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1068 385 H1102 Q1120 361 1138 385 H1227" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
 </svg>
