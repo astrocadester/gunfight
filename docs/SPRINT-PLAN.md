@@ -106,3 +106,10 @@ Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB or
 - Reorganized $0F61–$0FFF as encoded display source entry points, labeling GAME OVER, GUN FIGHT, INSERT COIN, GET READY, DRAW and other prompts without changing the original byte values.
 - Updated device map and detailed memory document to show $09F8–$0B73 font, $0B74–$0BC3 scene shapes, $0BC4–$0D8A aim patterns spanning ROM devices, and the source-pointer table and display strings in device 7609e.bin.
 - **Verification supplied by user for prior commit v20261121-0005:** Linux zmac v1.3 build, all four original chip SHA-1 comparisons, and MAME gameplay PASS (average speed ~100%). This latest source-symbol/comment change still requires the ROM equality and emulator gate after pull.
+
+## v20261121-0007 — Gun Fight interpreter diagram and readable ROM text
+
+- Add transparent native SVG interpreter schematic using the 1975 Gun Fight script, $03A7 dispatcher, and correct representative $00-$14 word-number associations.
+- Embed diagram in README interpreter section.
+- Represent $0F61-$0FFF encoded display text as quoted DB byte strings, preserving nonprintable cursor controls as $xx. The quoted text is the stored glyph encoding, not conventional ASCII, so comments supply actual on-screen phrases.
+- Checked all 159 original encoded text bytes against the transformed literals; native zmac and MAME verification remain to be executed after this source edit.

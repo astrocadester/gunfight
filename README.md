@@ -68,6 +68,8 @@ The memory map identifies original ROM regions separately from working RAM, bitm
 
 ## Indexed game-command interpreter
 
+![Gun Fight command-stream interpreter](images/interpreter-gun-fight.svg)
+
 Gun Fight contains an early indexed VM at `$03A7`. Its script pointer is stored at RAM `$2000`, and its native command vector table starts at ROM `$09AE`. There are **21 native command handlers** (tokens `$00–$14`), with separate native input-action and event-script pointer tables.
 
 This 1975 indexed command architecture establishes an early foundation for DNA's later 8080 game-programming systems. Later titles retained and evolved the indexed-native-dispatch idea while changing their command vocabularies and scheduling; common architecture alone does not establish identical source or code.
@@ -96,7 +98,7 @@ The native source separates interrupt entries, callable services, VM handlers an
 
 Display-memory writes begin at `$2400`. The ROM contains character shapes, bit patterns, graphics tables, and object descriptors. The score/text renderer at `$05FB` uses ten scanline bytes per glyph with a 32-byte screen-line stride; the packed graphics expander at `$07AB` writes unpacked data into RAM beginning at `$2100`.
 
-The source includes inline 8×10 digit glyphs and five width/height-prefixed object patterns (24×12, 24×32, and 32×11 stored bits). Their layouts and native rendering paths are documented in [graphics and display formats](docs/GRAPHICS.md). [Data classification](docs/DB-PROVENANCE.md) distinguishes scripts, code, pointers, and remaining packed data.
+The source includes the original ten-row display font, the player aiming and animation patterns, and native width/height-prefixed object graphics. Their layouts and native rendering paths are documented in [graphics and display formats](docs/GRAPHICS.md). [Data classification](docs/DB-PROVENANCE.md) distinguishes scripts, code, pointers, and remaining packed data.
 
 ## Research and references
 

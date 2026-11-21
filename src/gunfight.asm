@@ -3726,54 +3726,42 @@ SPECIAL_OBJECT_INITIALIZATION_BYTES:
         DB $C4,$00,$74,$70,$20,$FF,$A0,$0A,$B4,$00,$00,$8E,$0E,$00,$00
 
 ; -----------------------------------------------------------------------------
-; Encoded game display text ($0F61-$0FFF).
-; Each byte >= $30 indexes a 10-row glyph from FONT_SCORE_DIGITS; these
-; codes are not necessarily ASCII (e.g. $4B draws M, $4F draws R).
-; Codes below $30 advance the display cursor rather than drawing glyphs.
-; The VM $01 operand preceding a source pointer counts rendered glyphs,
-; not a conventional NUL-terminated string length. Source pointers may
-; begin inside a longer continuous display-text stream.
+; -----------------------------------------------------------------------------
+; Original game-message glyph codes ($0F61-$0FFF).
+; Quoted DB strings represent the actual encoded ROM bytes, NOT ASCII
+; transcriptions of what appears on the screen. For example, the first
+; displayed "GAME" is stored as "GAKE" because glyph code $4B is M.
+; $40 is the blank glyph; $30+ codes use the ROM font at $09F8.
+; Values below $30 are display-cursor controls and remain numeric.
+; The decoded screen wording is described above each source entry.
 ; -----------------------------------------------------------------------------
 
-; GAME    OVER (12 glyph bytes).
+; Displayed: GAME    OVER
 TEXT_GAME_OVER:
-        DB $47,$41,$4B,$45,$40,$40,$40,$40,$4D,$53
-        DB $45,$4F
+        DB "GAKE@@@@MSEO"
 
-; Thirty-two blank glyphs, two zero-position codes and a $25
-; column advance, then GUN FIGHT. A source stream, not a C string.
+; Displayed: Blank title area, then GUN FIGHT
 TEXT_TITLE_BLANKS:
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$00,$00,$25,$47,$52,$4C,$40,$46
-        DB $49,$47,$48,$51
+        DB "@@@@@@@@@@@@@@@@@@@@@@@@@","@@@@@@@",$00,$00,$25
+        DB "GRL@FIGHQ"
 
-; INSERT COIN (11 glyph bytes).
+; Displayed: INSERT COIN
 TEXT_INSERT_COIN:
-        DB $49,$4C,$50,$45,$4F,$51,$40,$43,$4D,$49
-        DB $4C
+        DB "ILPEOQ@CMIL"
 
-; Eleven blank glyphs, used to erase an existing message.
+; Displayed: Blank message field
 TEXT_CLEAR_MESSAGE_FIELD:
-        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40
+        DB "@@@@@@@@@@@"
 
-; GET READY; subsequent $3A glyphs form vertical separators.
+; Displayed: GET READY
 TEXT_READY_AND_DIALOGUE:
-        DB $47,$45,$51,$40,$4F,$45,$41,$44,$55
+        DB "GEQ@OEADU"
 
-; Separator glyphs and positioning; begins after GET READY.
+; Displayed: Separators and cursor advancement
 TEXT_READY_SEPARATOR:
-        DB $3A,$3A,$3A,$3A,$3A,$3A,$20,$3A,$3A,$3A
-        DB $3A,$3A,$3A
+        DB "::::::",$20,"::::::"
 
-; DRAW prompt, hit/taunt strings, and credit/button prompts.
-; $20, $2E, $1A and $00 are positioning bytes (below $30).
+; Displayed: DRAW, GOT ME, HEY PARDNER, YOU HAVE CREDIT, PUSH BUTTON
 TEXT_DRAW_AND_DIALOGUE:
-        DB $40,$40,$44,$4F,$41,$54,$3B,$40,$40,$47
-        DB $4D,$51,$40,$4B,$45,$3B,$48,$45,$55,$40
-        DB $4E,$41,$4F,$44,$4C,$45,$4F,$3B,$2E,$55
-        DB $4D,$52,$40,$48,$41,$53,$45,$40,$43,$4F
-        DB $45,$44,$49,$51,$3C,$00,$00,$1A,$4E,$52
-        DB $50,$48,$40,$42,$52,$51,$51,$4D,$4C
+        DB "@@DOAT;@@GMQ@KE;HEU@NAODL","EO;",$2E,"UMR@HASE@COEDIQ<"
+        DB $00,$00,$1A,"NRPH@BRQQML"
