@@ -51,7 +51,8 @@ if __name__=="__main__":
  root=pathlib.Path(__file__).resolve().parents[1]
  name="desertgun" if root.name=="desert-gun" else "gunfight"
  result=audit(root,name)
- output=root/"docs"/"word-audit.json"
+ (root/"docs"/"generated").mkdir(parents=True,exist_ok=True)
+ output=root/"docs"/"generated"/"word-audit.json"
  output.write_text(json.dumps(result,indent=2)+"\n")
  for x in result["streams"]:print(x["root"],len(x["packets"]),x["stop_pc"],x["stop_reason"])
  # A human-readable packet inventory is generated from the same decoded ROM bytes.
@@ -69,5 +70,5 @@ if __name__=="__main__":
   for i,addr in enumerate(result["event_vectors"]):md.append("- "+str(i)+": $"+addr+(" (native service)" if i==0 else " (bytecode stream)"))
  md+=["","Opcode $05 (Gun Fight) copies 15 inline bytes after a 16-bit destination; opcode $06 copies nine. They are not two-byte-only operands.","",
       "This is static rooted decoding; it is not a complete emulation of interrupt-driven execution.",""]
- (root/"docs"/"decoded-scripts.md").write_text("\n".join(md)+"\n")
+ (root/"docs"/"generated"/"decoded-scripts.md").write_text("\n".join(md)+"\n")
  print(output)

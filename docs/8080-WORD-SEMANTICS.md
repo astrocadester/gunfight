@@ -11,8 +11,8 @@ Source: original 4 KB 8080 image and native handler trace; vector base `$09AE`, 
 | 02 | 063D | SET_2003 | Reads 1 immediate byte, writes `$2003` | H |
 | 03 | 0649 | SET_2015 | Reads 1 immediate byte, writes `$2015` | H |
 | 04 | 0655 | CLEAR_DISPLAY_MEMORY | Disables interrupts, changes SP to `$400F`, pushes zeros across screen-address region, resets output port `$01`, restores `$2400` stack and resumes by saved PC | H |
-| 05 | 068D | TEST_BRANCH_F | Consumes little-endian 16-bit argument and invokes common helper `$0372` with `C=$0F` | M |
-| 06 | 069D | TEST_BRANCH_9 | Same operand and helper, but `C=$09` | M |
+| 05 | 068D | COPY_INLINE_15 | Reads destination16 and copies 15 following literal script bytes to RAM using helper `$0372` (`C=$0F`) | H |
+| 06 | 069D | COPY_INLINE_9 | Reads destination16 and copies 9 following literal script bytes to RAM using helper `$0372` (`C=$09`) | H |
 | 07 | 0670 | CLEAR_OBJECT_FLAGS | Reads address16; masks pointed byte with `$BF` and zeroes following byte | H |
 | 08 | 06AD | TOGGLE_OBJECT_BITS | Reads address16; XORs pointed byte with `$60` | H |
 | 09 | 0682 | GOTO_SCRIPT | Reads address16 and stores that address into `$2000` | H |
@@ -28,7 +28,7 @@ Source: original 4 KB 8080 image and native handler trace; vector base `$09AE`, 
 | 13 | 05A3 | UPDATE_SCORE_TEXT | Refreshes digit characters from state starting `$2002` into RAM around `$201E`, then proceeds via `$05FB` | M |
 | 14 | 03C9 | INPUT_AND_EVENT_DISPATCH | Executes wait helper, samples input ports `$00/$01`, uses state `$2017/$2018/$201C`, and may redirect `$2000` through table `$09D6` | M |
 
-**Widths** refer to bytes after the opcode, not total packet size. For mixed graphics words (`01`, `0A`, `0B`, `0E`), additional source-level record structure is not yet completely established. The table does not claim original historical word spellings.
+**Widths** refer to bytes after the opcode, not total packet size. For words `$05/$06`, the width is respectively 17 and 11 bytes **after the command** (destination16 plus literal payload). For mixed graphics words (`01`, `0A`, `0B`, `0E`), additional source-level record structure is not yet completely established. The table does not claim original historical word spellings.
 
 ## Important control-flow evidence
 

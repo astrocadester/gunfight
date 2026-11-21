@@ -3,6 +3,7 @@ from pathlib import Path
 from zipfile import ZipFile
 import hashlib,html
 ROOT=Path(__file__).resolve().parents[1];game="gunfight"
+(ROOT/"docs"/"generated").mkdir(parents=True,exist_ok=True)
 config={"gunfight":("gunfight.zip",("7609h.bin","7609g.bin","7609f.bin","7609e.bin"),1024)}
 archive,names,size=config[game]
 with ZipFile(ROOT/"roms"/"original"/archive) as z:rom=[z.read(n) for n in names]
@@ -23,5 +24,5 @@ for i,(name,lo,hi,sha) in enumerate(blocks):
           '<text x="41" y="{}" fill="#a5bfcd" font-family="monospace" font-size="13">{}</text>'.format(y+53,html.escape(sha[:50]))]
     md.append("| ${:04X}–${:04X} | {} | {} |".format(lo,hi,name,sha))
 svg.append("</svg>")
-(ROOT/"docs"/"memory-map.svg").write_text("\n".join(svg)+"\n")
-(ROOT/"docs"/"memory-map.md").write_text("\n".join(md)+"\n")
+(ROOT/"docs"/"generated"/"memory-map.svg").write_text("\n".join(svg)+"\n")
+(ROOT/"docs"/"generated"/"memory-map.md").write_text("\n".join(md)+"\n")

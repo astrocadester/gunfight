@@ -1,40 +1,41 @@
-# Gun Fight — third-pass ROM data and word audit
+# Gun Fight — native code, script and data ownership
 
-This is a byte-preserving classification of the original 4,096-byte ROM source, not a blanket conversion of every `DB` to a purported machine instruction. The assembler remains authoritative for output identity.
+The 4 KB ROM is organized as executable Intel 8080 code, indexed interpreter streams, native and event-vector tables, character patterns, and packed graphics. Sections below use the currently traced native entry points and the root-traversed command inventory.
 
-## Static interpreter facts
-- 8080 dispatch: `$03A7–$03C8`; saved script pointer `$2000`; initial root `$0821`.
-- Byte at `$20C6` selects alternate stream `$089B`.
-- Little-endian vector addresses begin at `$09AE`; **21 defensible native handlers**, opcodes `$00–$14` (42 vector bytes through `$09D7`).
-- Extra pair-shaped bytes at `$09D8` onward are not confirmed callable words, despite the old report counting 30.
-- Handler `$0682` can replace script pointer with an inline 16-bit target (opcode `$09`); handler `$0807` redirects conditionally to `$0882`.
+## Dispatch and vectors
 
-## Raw DB provenance
+- Dispatcher `$03A7–$03C8`; saved 16-bit script cursor at RAM `$2000`.
+- Native words: 21 entries at `$09AE–$09D7`, command bytes `$00–$14`.
+- Native input actions: 24 entries at `$097E–$09AD`, including repeated entries and no-op returns.
+- Event selector: ten entries from `$09D6–$09E9`. Slot zero shares the native input/event word at `$09D6`; nine following entries at `$09D8–$09E9` point to bytecode scripts, not native words.
+- The current [interpreter JSON](interpreter.json), [native vector ownership](ROM-VECTOR-OWNERSHIP.md), and [ASM](../src/gunfight.asm) now use the same count.
 
-From `src/gunfight.asm`, 2,395 original ROM bytes remain `DB` (208 grouped directives before this annotation pass). The largest contiguous spans are:
+## Native code versus script payloads
 
-| ROM interval | DB bytes | Interpretation |
-| --- | ---: | --- |
-| `$042A–$05A2` | 377 | Native-unreached data area; contents still require individual table/reference decoding. Not evidence of an interpreter. |
-| `$0821–$091A` | 250 | Script-bearing interval: bytecode, immediate operands, and nearby packed data. Do not linear-disassemble whole span. |
-| `$091D–$0935` | 25 | Data immediately following a script-bearing region; opcodes not verified. |
-| `$0965–$0FFF` | 1,691 | Mixed data: 21-entry vector table at `$09AE–$09D7`, multiple game tables and graphics. The portion `$0B00–$0FFF` has repeating bitmap/glyph patterns. |
-| other isolated spans | 52 | Padding, gaps, and untraced small data blocks; needs xrefs rather than arbitrary native conversion. |
+The old third-pass audit described a raw `DB` region at `$042A–$05A2`. The newer native trace identifies this region as **executable controller and projectile routines**, including input actions at `$042A/$043E` and firing handlers at `$04B0/$0517`. It is not a 377-byte unresolved data block.
 
-Data that contain numerically valid 8080 opcodes are **not** automatically executable code. A raw vector pair is **not** automatically a game word.
+The script-root traversal now identifies **82 distinct statically decoded packet locations**, including the initial `$0821` sequence, alternative `$089B` setup, conditional scene `$0882`, and the event scripts from `$091B` through `$0963`. The previous early-prefix audit stopped at `$0840/$08AE/$088B` because copied literal bytes looked like native opcodes. The corrected command widths are:
 
-## Rooted packet audit (deterministic)
+- `$01`: 5 operand bytes (format8, source16, destination16).
+- `$05`: 17 operand bytes (RAM destination16 plus 15 literal bytes).
+- `$06`: 11 operand bytes (RAM destination16 plus 9 literal bytes).
+- `$0B`: 5 operand bytes (destination16, flags8, pointer16).
+- `$0C`: 7 operand bytes (BCD counter16 followed by the `$0B` payload).
+- `$09`: target16, with execution resuming at that destination rather than the following ROM byte.
 
-Run `python3 tools/audit_words.py` from either OS (standard Python 3; no third-party libraries). It reads the checked-in original ROM ZIP, emits `docs/word-audit.json`, and *stops* at unknown boundaries:
+The 82 sites are a **static rooted inventory**, not a count of executed commands or proof that every possible RAM-installed script path has been observed. [Decoded scripts](decoded-scripts.md) provides per-site details.
 
-| Start | Safely parsed packets | Stop | Explanation |
-| --- | ---: | --- | --- |
-| `$0821` | 12 | `$0840` (`C3`) | 8080 jump-like byte; more source/control analysis required before treating it as a command. |
-| `$089B` | 7 | `$08AE` (`C0`) | Beyond confirmed word indexes; possible embedded packed record or unresolved handler packet size. |
-| `$0882` | 2 | `$088B` (`C3`) | Unknown boundary, not proof of opcode `C3`. |
+## Structured native data
 
-The audit refuses to treat these raw bytes as game words. Counts are **only bounded-prefix evidence**, not whole-program usage frequencies.
+- `$0349–$0358`: two four-entry, little-endian frame-pointer tables. The handler at `$0326` extracts two bits of `$2009` to choose one of the four words. The first table points to ROM graphic data; the other points to RAM-expanded objects.
+- `$09F8`: ten score-digit glyphs, each 8 pixels wide by 10 rows. The source now represents all 100 glyph bytes individually with inline pixel rows.
+- `$0BC4`: packed graphics input read by VM word `$0F`, which transforms data into RAM beginning at `$2100`.
+- `$0EE2` and `$0EF0`: two player-specific aim/graphics pointer sources used by native actions at `$042A` and `$043E`.
 
-## Remaining high-value RE
+Only sections with established structure are promoted from anonymous `DB` groups to typed `DW` or named glyph records. The remaining packed bitstream previews are stored-bit views, not verified sprite silhouettes.
 
-Trace `$0372` (words `$05/$06`) and `$05E9` (formatted draw `$01`) to their final pointer updates; resolve word `$0B/$0C` variable descriptors and every branch that replaces `$2000`. Only then is full script demarcation and word-frequency recovery defensible. Existing per-handler meaning and confidence remain in [8080-WORD-SEMANTICS.md](8080-WORD-SEMANTICS.md).
+## RE tools
+
+Ordinary builds assemble the maintained source and perform chip checks. RE tools are optional and write generated drafts to `src/zout/` or `docs/generated/`, without replacing reviewed assembly, memory-map artwork, or command documentation.
+
+Recommended independent investigations: trace other packed graphics to object dimensions and draw calls; enumerate native interrupts and object-table cycles; run actual zmac and MAME verification. Source-level findings should be reconciled with native output before merge.

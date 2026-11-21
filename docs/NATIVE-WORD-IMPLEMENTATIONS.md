@@ -1,5 +1,61 @@
 # Gun Fight — native implementation of the indexed game words
 
+## Native hard RE — v20261108-0002
+
+These details come from tracing native 8080 instructions in `src/gunfight.asm`, including dispatch operands, ROM pointer tables, and RAM writes. The original 8080 logic and ROM data remain unchanged.
+
+### Interpreter and input selection
+
+`VM_DISPATCH_NEXT` at `$03A7` loads the script cursor from `$2000` and conditionally substitutes `$089B` when `$20C6` is active. It fetches one byte into E, advances `$2000`, doubles the word index into `$09AE`, loads the little-endian native address, pushes the interpreter continuation `$03A6`, and transfers through `JP (HL)`. The unusual hand-built continuation means ordinary handlers use `RET` to re-enter the interpreter.
+
+`VM_INPUT_EVENT_DISPATCH` at `$03C9` samples ports `$00` and `$01` twice to detect stable values, then calls the shared `DISPATCH_INPUT_TRANSITION` at `$040D` with RAM input state and an action table. The two tables start at `$097E` and `$098E`. The action helper selects a changed control bit and jumps indirectly to its native address. The first player's firing vector points at `$04B0`; the second player's at `$0517`. The two paths each check projectile availability, update the shot counter through `$04FA`, write port `$01`, and load a player-specific object record.
+
+### Player-specific native routines
+
+| First player | Second player | Purpose |
+| --- | --- | --- |
+| `$042A` | `$043E` | Select input-dependent aim data from the ROM tables at `$0EE2` and `$0EF0`, then update `$202A` or `$203D` |
+| `$04B0` | `$0517` | Validate shot state, start fire/update work, and populate player projectile state |
+| `$202A` | `$203D` | Player object record bases |
+| `$2063` | `$2087` | Projectile/state flags read on the firing paths |
+| `$2012` | `$2013` | Fire guard counters checked before launching |
+| `$3EA2` | `$3EB8` | Display-related destination addresses passed to the common shot update |
+
+These are recovered operand and control-flow relationships; further screen-level tracing is needed to establish every visual and collision consequence.
+
+### Bitmap coordinate and drawing mechanics
+
+`VIDEO_ADDRESS_FROM_PACKED_COORDINATES` at `$0359` separates E's low three bits as bit-phase C and shifts the remaining 16-bit DE coordinate three places to the right, then adds the display base `$2400`. The result is a packed-pixel byte address in DE plus a bit-phase in C. The native sprite copier at `$022D` reads its shape source through DE, uses port `$04` to supply function/shift data and port `$03` for the returned pixel value, writes into video memory, and advances each row by `$20` bytes.
+
+`DRAW_FORMATTED_TEXT` at `$05FB` is a separate character renderer. It takes A as the number of characters and reads a byte stream through HL. Bytes below `$30` are positioning controls; nonnegative character indexes after subtracting `$30` select 10-byte glyph records from ROM `$09F8`. The routine copies each glyph as 10 rows into display memory using a `$20` stride. `UPDATE_SCORE_DISPLAY` at `$05A3` converts packed score digits into the byte stream before entering that renderer.
+
+### Inline graphics recovery
+
+The numeric font begins at `$09F8` and the first ten records are the glyphs for digits `0–9`. The source now expresses each record as ten individual byte rows with the corresponding eight-pixel on/off pattern as an inline comment. For example, digit zero is:
+
+```asm
+FONT_SCORE_DIGITS:
+        ; digit 0 — 8 pixels wide by 10 rows
+        DB $3C ; ..####..
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+```
+
+This is inline ROM graphics rather than an external replacement image. Five further width/height-prefixed ROM patterns, including three 24×12 frames, are now decoded in the source. See [graphics and display formats](GRAPHICS.md) for boundaries and native renderer evidence.
+
+### Compact object pointer helper
+
+The helper at `$02BD` reads a two-byte pointer from RAM address HL and clears those pointer bytes. Its final `EX DE,HL` returns the **old pointer in HL** and the **address after the cleared field in DE**. B is zero and Z reflects whether the old pointer was zero. The timer/interrupt engine repeatedly calls it while walking object pools. The object-coordinate updater at `$025E` uses the axis-step logic at `$0280`, tracks active-state flags, and may clear an object's activity bit when its motion ends.
+
+
+
 This report is generated from the original-ROM-reconstructed assembly at this PR's head. It distinguishes **native vector slots**, their **ROM command packet occurrences**, and the **initial native instructions** at each entry. Names are descriptive reconstructed identifiers, not original DNA spellings.
 
 - Original ROM image size: 4096 bytes.
@@ -37,7 +93,7 @@ This report is generated from the original-ROM-reconstructed assembly at this PR
 
 Each section shows the first native instructions at a handler entry, stopping at an unconditional `RET` or `JP` or after twelve instructions. This is a *bounded entry trace*, not a claim that all conditional paths or called services are semantically resolved. Detailed argument analysis is in [8080-WORD-SEMANTICS.md](8080-WORD-SEMANTICS.md).
 
-### $00 — WAIT_REPEAT ($0813)
+### $00 — WAIT_OR_REPEAT ($0813)
 
 13 known ROM command packet site(s). Native entry:
 
@@ -66,7 +122,7 @@ LD D,(HL)  ; ROM $05F5: 56
 INC HL  ; ROM $05F6: 23
 ```
 
-### $02 — SET_RAM_2003 ($063D)
+### $02 — SET_2003 ($063D)
 
 0 known ROM command packet site(s). Native entry:
 
@@ -79,7 +135,7 @@ LD ($2003),A  ; ROM $0645: 32 03 20
 RET  ; ROM $0648: C9
 ```
 
-### $03 — SET_RAM_2015 ($0649)
+### $03 — SET_2015 ($0649)
 
 12 known ROM command packet site(s). Native entry:
 
@@ -92,7 +148,7 @@ LD ($2015),A  ; ROM $0651: 32 15 20
 RET  ; ROM $0654: C9
 ```
 
-### $04 — CLEAR_DISPLAY ($0655)
+### $04 — CLEAR_DISPLAY_MEMORY ($0655)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -156,7 +212,7 @@ XOR A  ; ROM $067F: AF
 LD (DE),A  ; ROM $0680: 12
 ```
 
-### $08 — TOGGLE_OBJECT_FLAGS ($06AD)
+### $08 — TOGGLE_OBJECT_BITS ($06AD)
 
 0 known ROM command packet site(s). Native entry:
 
@@ -173,7 +229,7 @@ LD (DE),A  ; ROM $06BA: 12
 RET  ; ROM $06BB: C9
 ```
 
-### $09 — BRANCH_SCRIPT ($0682)
+### $09 — GOTO_SCRIPT ($0682)
 
 11 known ROM command packet site(s). Native entry:
 
@@ -187,7 +243,7 @@ LD ($2000),HL  ; ROM $0689: 22 00 20
 RET  ; ROM $068C: C9
 ```
 
-### $0A — GAME_DISPLAY ($06BC)
+### $0A — GAME_DISPLAY_SEQUENCE ($06BC)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -198,7 +254,7 @@ OUT ($02),A  ; ROM $06C0: D3 02
 LD A,($2002)  ; ROM $06C2: 3A 02 20
 ```
 
-### $0B — INIT_OBJECT ($0749)
+### $0B — INITIALIZE_OBJECT ($0749)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -217,7 +273,7 @@ LD A,(HL)  ; ROM $0756: 7E
 INC HL  ; ROM $0757: 23
 ```
 
-### $0C — BCD_INCREMENT_INIT ($0738)
+### $0C — INCREMENT_BCD_AND_RESET ($0738)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -235,7 +291,7 @@ LD (DE),A  ; ROM $0745: 12
 CALL $05A3  ; ROM $0746: CD A3 05
 ```
 
-### $0D — SET_OUTPUT_AND_RAM ($0775)
+### $0D — OUTPUT_AND_SET_2014 ($0775)
 
 3 known ROM command packet site(s). Native entry:
 
@@ -269,7 +325,7 @@ CALL $0359  ; ROM $0796: CD 59 03
 EX DE,HL  ; ROM $0799: EB
 ```
 
-### $0F — EXPAND_GRAPHICS ($07AB)
+### $0F — EXPAND_GRAPHICS_TABLE ($07AB)
 
 2 known ROM command packet site(s). Native entry:
 
@@ -278,7 +334,7 @@ LD HL,$2100  ; ROM $07AB: 21 00 21
 LD DE,$0BC4  ; ROM $07AE: 11 C4 0B
 ```
 
-### $10 — BRANCH_IF_STATE ($0807)
+### $10 — CONDITIONAL_GOTO_0882 ($0807)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -288,7 +344,7 @@ AND A  ; ROM $080A: A7
 RET Z  ; ROM $080B: C8
 ```
 
-### $11 — DRAW_STATUS_A ($07E9)
+### $11 — DRAW_STATUS_203F ($07E9)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -297,7 +353,7 @@ LD HL,$203F  ; ROM $07E9: 21 3F 20
 JP $07F2  ; ROM $07EC: C3 F2 07
 ```
 
-### $12 — DRAW_STATUS_B ($07EF)
+### $12 — DRAW_STATUS_202C ($07EF)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -314,7 +370,7 @@ XOR A  ; ROM $05A3: AF
 LD ($2003),A  ; ROM $05A4: 32 03 20
 ```
 
-### $14 — INPUT_EVENT_DISPATCH ($03C9)
+### $14 — INPUT_AND_EVENT_DISPATCH ($03C9)
 
 1 known ROM command packet site(s). Native entry:
 
@@ -333,6 +389,14 @@ IN A,($01)  ; ROM $03DE: DB 01
 CP B  ; ROM $03E0: B8
 ```
 
+For the fully annotated source-level control-flow and actual callable ABI, see [Native control flow](NATIVE-CONTROL-FLOW.md). The [internal native block inventory](NATIVE-BLOCK-INVENTORY.md) distinguishes branch targets and loops from separate callable routines.
+
 ## RE boundary
 
 Remaining raw `DB` sections include graphics, vector tables, command packets, native-unreached data, and potentially code copied into RAM. Do not call them 'unknown interpreter words' merely because their bytes resemble opcodes. Source-generation provenance and unresolved ranges are recorded in [DB-PROVENANCE.md](DB-PROVENANCE.md). Regenerating the source must preserve the original chip SHA-1s.
+
+## Controller pointer lookup versus projectile coordinate lookup — v20261108-0004
+
+The two controller actions at `$042A` / `$043E` calculate `(input & $70) >> 3`. Because the controller field is aligned to bits 4–6, this becomes one of the **even offsets `$02..$0E`** after zero has been rejected. `INSTALL_AIM_DESCRIPTOR` at `$044F` reads an ordinary little-endian 16-bit aim pointer from a player-specific table (`$0EE2` / `$0EF0`) and stores it at object record `+$0B`. The tables share the two bytes `$0EF0–$0EF1`: player one's final pointer and player two's unused zero index. This is an intentional-looking packed layout, not an overlapping unaligned pointer read.
+
+The separate firing helper `SELECT_AIM_DESCRIPTOR` at `$037C` uses the same even direction index but a **different record format**: it loads two coordinate-adjustment bytes at `$0EFE + index`, adds them to the player's object coordinates, and returns the adjusted shot position in DE. Those seven records run from `$0F00–$0F0D`. They are not 16-bit aim pointers. Full instruction flow, literal data and table indices: [Aim and fire](AIM-AND-FIRE.md).
