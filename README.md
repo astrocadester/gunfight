@@ -102,7 +102,7 @@ The native source separates interrupt entries, callable services, VM handlers an
 
 Display-memory writes begin at `$2400`. The ROM contains character shapes, bit patterns, graphics tables, and object descriptors. The score/text renderer at `$05FB` uses ten scanline bytes per glyph with a 32-byte screen-line stride; the packed graphics expander at `$07AB` writes unpacked data into RAM beginning at `$2100`.
 
-The source includes the original ten-row display font, the player aiming and animation patterns, and native width/height-prefixed object graphics. Their layouts and native rendering paths are documented in [graphics and display formats](docs/GRAPHICS.md). [Data classification](docs/DB-PROVENANCE.md) distinguishes scripts, code, pointers, and remaining packed data.
+The source includes the original ten-row display font, the player aiming and animation patterns, and native width/height-prefixed object graphics. VM word `$0F` mirrors twelve ROM graphics records ($0BC4–$0E8C) into RAM ($2100–$23C8), retaining their dimensions. Player-two aim and animation pointers reference the RAM copies; see the complete source-to-RAM table in [graphics and display formats](docs/GRAPHICS.md). Their layouts and native rendering paths are documented in [graphics and display formats](docs/GRAPHICS.md). [Data classification](docs/DB-PROVENANCE.md) distinguishes scripts, code, pointers, and remaining packed data.
 
 ## Research and references
 
