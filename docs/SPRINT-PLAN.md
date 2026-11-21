@@ -135,3 +135,9 @@ Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB or
 - Preserved original source bytes and hardware routines. Added native RAM EQU aliases, replaced bare second-player frame and aiming RAM addresses with these aliases, and corrected the previous ROM/RAM source commentary.
 - Updated GRAPHICS.md, source ownership and task status; on-screen orientation, hardware compositing, exact event appearance and clipping are pending dynamic validation.
 - Static original instruction/data comparison PASS (2,252 directives). Native build, all four original ROM SHA-1 checks and MAME are separate gates still pending for this branch.
+
+## v20261121-0002 — User native build and MAME verification for GF-RE-003
+
+- **PASS (user-reported, 2026-11-21):** the GF-RE-003 PR #7 branch builds successfully and runs in MAME.
+- The user confirmed build/runtime success without providing the complete command output or individual current-branch device SHA-1 lines in this report. Earlier PR #6 output confirmed all four original chip hashes; do not attribute those exact displayed hash results to PR #7 without its build log.
+- GF-RE-003 static ROM/RAM mapping is implemented; graphics-port composition, visual identities, clipping and physical hardware validation remain open.
