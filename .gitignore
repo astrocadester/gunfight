@@ -1,0 +1,7 @@
+/build/
+/roms/gunfight.zip
+/roms/build/
+/src/zout/
+/tools/__pycache__/
+*.pyc
+*.swp

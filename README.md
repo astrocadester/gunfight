@@ -14,6 +14,9 @@ The maintained reconstruction is [`src/gunfight.asm`](src/gunfight.asm); [`build
 
 ## Build
 
+The `build/` directory is disposable at the repository root. The source is read directly without a Python generation step. The build creates the playable archive in `roms/` and never modifies `roms/original/`.
+
+
 Linux:
 
 ```sh
@@ -26,24 +29,24 @@ Windows 10/11:
 build.bat
 ```
 
-Both scripts assemble `src/gunfight.asm` with **zmac 1.3**, create a 4 KB program image, split it into the original four 1 KB devices, verify their SHA-1 identities, and produce `roms/build/gunfight.zip` for MAME. Any ROM mismatch stops the build. Human-edited source is not regenerated during a build.
+Both scripts assemble `src/gunfight.asm` with **zmac 1.3**, create a 4 KB program image, split it into the original four 1 KB devices, verify their SHA-1 identities, and produce `roms/gunfight.zip` for MAME. Any ROM mismatch stops the build. Human-edited source is not regenerated during a build.
 
-Generated files:
+Generated files (ignored by Git):
 
 ```text
-roms/build/gunfight.bin
-roms/build/7609h.bin
-roms/build/7609g.bin
-roms/build/7609f.bin
-roms/build/7609e.bin
-roms/build/gunfight.zip
-src/zout/gunfight.lst
+build/gunfight.bin
+build/gunfight.lst
+build/7609h.bin
+build/7609g.bin
+build/7609f.bin
+build/7609e.bin
+roms/gunfight.zip
 ```
 
 ## Run in MAME
 
 ```sh
-mame gunfight -window -skip_gameinfo -rompath roms/build
+mame gunfight -window -skip_gameinfo -rompath roms
 ```
 
 ## ROM organization

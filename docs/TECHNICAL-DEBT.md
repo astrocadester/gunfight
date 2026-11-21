@@ -11,7 +11,7 @@ The maintained 8080 source is `src/gunfight.asm`. The engineering rules and veri
 | GF-RE-003 | In progress | Ten 8×10 font glyphs and five width/height-prefixed patterns are now decoded inline. Resolve remaining graphics streams, animation names, hardware shift/orientation and object frame identities. |
 | GF-RE-004 | Closed — static scope | Old bounded-prefix report reconciled with 82 statically decoded command sites; exact operand sizes and 21+9 vector split aligned across source, word catalog, interpreter JSON and ROM ownership. Dynamic native-installed scripts remain GF-RE-008. |
 | GF-RE-005 | Closed — generator isolation | `recover_8080.py` writes to `src/zout/gunfight-recovered.asm`; the audit, interpreter and memory-map research tools write to `docs/generated/` instead of overwriting maintained source or reviewed docs. None is used in normal builds. |
-| GF-RE-006 | Awaiting native execution | Run Linux/Windows bundled zmac builds, verify all four chip hashes, launch MAME; record actual results separately. Static ROM layout validation is not a substitute for this gate. |
+| GF-RE-006 | Linux and MAME verified on PR #4; follow-up pending | User ran bundled zmac, verified four original 1 KB SHA-1 hashes, and ran the game in MAME on 2026-11-21. Retest relocated PR #5 build outputs; Windows native build and physical hardware remain unverified. |
 | GF-RE-007 | Pending WB round-trip | After native assembly verification, reconcile any verified new Gun Fight architecture details into the WB runtime-variants document. |
 | GF-RE-008 | Open | Trace interrupt scheduling and RAM-installed script/graphics state dynamically, including control paths not represented by static ROM-root traversal. |
 
@@ -43,3 +43,11 @@ The retained original ROM and direct native assembler verification remain the fi
 - Created [NATIVE-CONTROL-FLOW.md](NATIVE-CONTROL-FLOW.md) and a 92-entry [NATIVE-BLOCK-INVENTORY.md](NATIVE-BLOCK-INVENTORY.md) with direct-branch reference counts.
 - **Static verification executed:** source has zero generic `NATIVE_xxxx` labels, 314 total defined labels, contiguous 1 KB `ORG` regions ending $1000, no undefined symbolic operands, and **zero canonical instruction/operand differences among 1,808 assembly statements** when compared against the prior PR checkpoint (after resolving renamed symbols back to their addresses).
 - **Not executed:** zmac native build, four original ROM chip SHA-1 checks, MAME, Windows or real hardware. Byte-identical assembler output is not claimed by the static source comparison. GF-RE-006 remains open.
+
+## v20261121-0001 — PR #4 merge and PR #5 build layout
+
+- PR #4 merged as `81d37d2` after the user's Linux build verified SHA-1 identities for `7609h.bin`, `7609g.bin`, `7609f.bin`, `7609e.bin`, and the user confirmed MAME execution.
+- New output layout: disposable and ignored `build/` for assembler listing, 4 KB binary, and split devices; ignored `roms/gunfight.zip` for MAME. `roms/original/gunfight.zip` stays tracked and authoritative.
+- Previously committed `roms/build/` and `src/zout/` outputs are removed from the Git tree, along with the Python-based reconstruction action. Optional research utilities under `tools/` are retained; normal builds never call them.
+- The rebuilt PR #5 branch intentionally retains PR #4's entire `src/gunfight.asm`, native graphics diagram, and research docs. The earlier PR #5 source rewrite and partial SVG were not carried forward.
+- **Not yet executed:** the relocated output build scripts, MAME run with `-rompath roms`, Windows batch build, and physical hardware tests.

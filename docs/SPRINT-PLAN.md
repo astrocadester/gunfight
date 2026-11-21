@@ -67,3 +67,11 @@ The next gate is native zmac compilation plus four-chip SHA-1 verification. Furt
 5. Native bundled zmac compilation, original device SHA-1 checks, MAME gameplay, Windows build and physical board execution remain separately pending. No substitute language, compiler, interpreted gameplay or alternative hardware implementation was introduced.
 
 Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB original device hashes. Continue deeper dynamic object/collision, sound, and graphics hardware behavior RE only after the static findings have been checked against a running game.
+
+## v20261121-0001 — Checkmate-style build and tracked-artifact cleanup
+
+- PR #4 native source and research merged; the 92 named internal control-flow blocks, 21 VM words and graphics/source annotations remain authoritative.
+- Source builds directly with zmac v1.3 without Python. Linux and Windows scripts now put intermediate binary, listing and four chip images in ignored root `build/`, and package the play-ready set at ignored `roms/gunfight.zip`.
+- Remove previously committed output from `roms/build/` and `src/zout/`, the obsolete reconstruction action, and the redundant older SVG in `docs/`. The maintained map remains `images/gunfight-memory-map.svg`; original ROM remains tracked.
+- **Verified by user on PR #4 (2026-11-21):** Linux native assembly, all four original SHA-1 chip comparisons and MAME game execution passed.
+- **PR #5 changes remain to be verified:** new build output paths, Linux/Windows script execution and MAME loading from `roms/`. Hardware testing remains open.
