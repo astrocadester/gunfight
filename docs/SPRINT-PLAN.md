@@ -75,3 +75,10 @@ Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB or
 - Remove previously committed output from `roms/build/` and `src/zout/`, the obsolete reconstruction action, and the redundant older SVG in `docs/`. The maintained map remains `images/gunfight-memory-map.svg`; original ROM remains tracked.
 - **Verified by user on PR #4 (2026-11-21):** Linux native assembly, all four original SHA-1 chip comparisons and MAME game execution passed.
 - **PR #5 changes remain to be verified:** new build output paths, Linux/Windows script execution and MAME loading from `roms/`. Hardware testing remains open.
+
+## v20261121-0002 — 280-ZZZAP build pattern alignment
+
+- Adopt the user-supplied 280-ZZZAP Linux and Windows build-script pattern, using four original Gun Fight 1 KB devices, a 4096-byte image, the existing Gun Fight SHA-1 checks, and bundled zmac v1.3.
+- Output remains root `build/` for temporary devices/listing and `roms/gunfight.zip` for MAME; neither `roms/build/` nor `src/zout/` is created or tracked.
+- Include the six JPEG images and Git cleanup pushed to the former PR #4 branch after its merge. The reviewed native 8080 assembly and memory-map SVG remain unchanged.
+- **Verification still required:** run the new Linux and Windows scripts and MAME against the relocated archive. PR #4 Linux ROM identity and MAME verification remain on record.
