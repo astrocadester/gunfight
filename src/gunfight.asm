@@ -34,6 +34,26 @@ PROJECTILE_EVENT_SELECTOR EQU $201C
 PROJECTILE_EVENT_CONTEXT  EQU $201D
 PROJECTILE_OUTPUT_TIMER   EQU $2014
 
+; -----------------------------------------------------------------------------
+; GF-RE-003: RAM destinations of VM word $0F's 12 original graphics records.
+; The $0BC4-$0E8C source stream produces 713 bytes at $2100-$23C8.
+; Per record: width8, height8, then width*height transformed bytes.
+; EXPANDED_GRAPHICS_END is exclusive. These EQU aliases allocate no space.
+; -----------------------------------------------------------------------------
+EXPANDED_AIM_DIRECTION_0      EQU $2100
+EXPANDED_AIM_DIRECTION_1      EQU $2141
+EXPANDED_AIM_DIRECTION_2      EQU $2182
+EXPANDED_AIM_DIRECTION_3      EQU $21C3
+EXPANDED_AIM_DIRECTION_4      EQU $2204
+EXPANDED_AIM_DIRECTION_5      EQU $2245
+EXPANDED_AIM_DIRECTION_6      EQU $2286
+EXPANDED_PLAYER_FRAME_A       EQU $22C7
+EXPANDED_PLAYER_FRAME_B       EQU $22ED
+EXPANDED_PLAYER_FRAME_C       EQU $2313
+EXPANDED_EVENT_OBJECT_24X32   EQU $2339
+EXPANDED_EVENT_OBJECT_32X11   EQU $239B
+EXPANDED_GRAPHICS_END         EQU $23C9
+
         ORG $0000
 
 ; Device 7609h.bin, SHA1 99d01313e251818d336281700e206d9003c71dae
@@ -800,13 +820,14 @@ CLEAR_PENDING_BITMAP_DESCRIPTOR:
         LD (HL),A
         RET
 
-; Four 16-bit drawing/animation source pointers for each player.
-; The state bits at $2009 select one of four entries (index 0,2,4,6).
+; Four 16-bit frame pointers per player. ($2009 AND $0C) rotated right
+; once selects byte offsets 0,2,4,6. Player one chooses ROM frames
+; A/B/C/B; player two chooses the matching expanded RAM frames.
 PLAYER_ONE_FRAME_POINTERS:
         DW PLAYER_FRAME_PATTERN_A_24X12,PLAYER_FRAME_PATTERN_B_24X12,PLAYER_FRAME_PATTERN_C_24X12,PLAYER_FRAME_PATTERN_B_24X12
 
 PLAYER_TWO_FRAME_POINTERS:
-        DW $22C7,$22ED,$2313,$22ED
+        DW EXPANDED_PLAYER_FRAME_A,EXPANDED_PLAYER_FRAME_B,EXPANDED_PLAYER_FRAME_C,EXPANDED_PLAYER_FRAME_B
 
 ; -----------------------------------------------------------------------------
 ; VIDEO_ADDRESS_FROM_PACKED_COORDINATES
@@ -1935,16 +1956,19 @@ RECTANGLE_FILL_ROW_BYTES:
 VM_WORD_0F_EXPAND_GRAPHICS_TABLE:
 ; -----------------------------------------------------------------------------
 ; EXPAND_PACKED_GRAPHICS
-; VM word $0F: unpack original RAM-resident graphic patterns.
-; Entry: no inline VM operands. Begin at ROM $0BC4, output RAM $2100.
-; Records contain dimension/stride bytes followed by packed bitstreams.
-; Nested column and byte loops rotate each source byte through D/E eight
-; times and write expanded graphic bytes to RAM; terminate at zero marker.
+; VM word $0F: copy and transform 12 ROM-resident graphic records to RAM.
+; Entry: no inline VM operands. Read ROM $0BC4, write RAM $2100.
+; Each record begins with width bytes/row and height in rows, followed by
+; width*height packed source bytes. For each row, read source bytes forward,
+; reverse their bit order through eight RRA/RLA pairs, and write those
+; bytes in reverse column order. The result mirrors the complete row.
+; Output records keep identical dimensions/sizes. The zero byte at $0E8D
+; terminates the stream; RAM output ends exclusively at $23C9.
 ; Clobbers A/B/C/D/E/HL, flags. No replacement graphics are generated.
 ; -----------------------------------------------------------------------------
 EXPAND_PACKED_GRAPHICS:
-        LD HL,$2100
-        LD DE,$0BC4
+        LD HL,EXPANDED_AIM_DIRECTION_0
+        LD DE,AIM_DIRECTION_PATTERN_0
 
 ; Read next packed graphics record from ROM $0BC4; zero byte ends stream.
 EXPAND_GRAPHICS_NEXT_BLOCK:
@@ -1961,7 +1985,8 @@ EXPAND_GRAPHICS_NEXT_BLOCK:
         LD (HL),A
         INC HL
 
-; Compute destination offset from record width for the next packed column.
+; Position destination after the current width-byte row; subsequent
+; DEC HL stores each transformed byte in reverse column order.
 EXPAND_GRAPHICS_NEXT_COLUMN:
         PUSH BC
         LD A,B
@@ -1969,8 +1994,8 @@ EXPAND_GRAPHICS_NEXT_COLUMN:
         ADD HL,BC
         LD B,A
 
-; Read next source byte and prepare eight-bit rotation into display
-; orientation.
+; Read next packed source byte. Eight RRA/RLA pairs reverse its bit
+; order; the destination pointer walks backwards across the row.
 EXPAND_GRAPHICS_READ_PACKED_COLUMN:
         DEC HL
         LD A,(DE)
@@ -1980,7 +2005,8 @@ EXPAND_GRAPHICS_READ_PACKED_COLUMN:
         LD E,$00
         LD B,$08
 
-; Rotate source bits into the expanded byte through D/E shift registers.
+; Reverse eight original source bits: D shifts right into carry while
+; E shifts left to receive that bit. Stored-bit order is mirrored.
 EXPAND_GRAPHICS_ROTATE_EIGHT_BITS:
         LD A,D
         RRA
@@ -3605,13 +3631,16 @@ EVENT_OBJECT_PATTERN_32X11:
         DB $00,$00,$00,$20 ; ........ ........ ........ ..#.....
 
 ; -----------------------------------------------------------------------------
-; Expanded-graphics terminator at $0E8D. The VM unpacker returns here.
+; Original graphics-stream terminator at $0E8D. VM word $0F stops
+; before the special-object record at $0E8E; it is not RAM-expanded.
 ; -----------------------------------------------------------------------------
 EXPANDED_GRAPHICS_TERMINATOR:
         DB $00
 
 ; -----------------------------------------------------------------------------
 ; Special-object 24x28 pattern at ROM $0E8E, referenced from $0F5D.
+; The native display renderer reads this source directly from ROM;
+; VM word $0F has already stopped at the preceding zero byte.
 ; 3 source bytes per row, 28 rows. Its last row shares the $0EE2-$0EE3
 ; bytes used as the unused first entry in PLAYER_ONE_AIM_POINTERS.
 ; The overlap is intentional source-byte ownership: DO NOT duplicate.
@@ -3666,19 +3695,19 @@ PLAYER_ONE_AIM_POINTERS:
 
 ; -----------------------------------------------------------------------------
 ; Player 2 aiming graphics table ($0EF0), same direction offsets.
-; Each active entry points to the corresponding graphic expanded to RAM
-; at $2100 by VM word $0F. The first entry ($0CC8) is shared with
+; Each active entry points to the corresponding transformed/mirrored RAM
+; graphic generated by VM word $0F. The first entry ($0CC8) is shared with
 ; Player 1's last direction and cannot be selected by Player 2's zero
 ; offset (rejected before reading the table).
 ; -----------------------------------------------------------------------------
 PLAYER_TWO_AIM_POINTERS:
         DW AIM_DIRECTION_PATTERN_4
-        DW $2286
-        DW $2182
-        DW $21C3
-        DW $2100
-        DW $2245
-        DW $2141
+        DW EXPANDED_AIM_DIRECTION_6
+        DW EXPANDED_AIM_DIRECTION_2
+        DW EXPANDED_AIM_DIRECTION_3
+        DW EXPANDED_AIM_DIRECTION_0
+        DW EXPANDED_AIM_DIRECTION_5
+        DW EXPANDED_AIM_DIRECTION_1
 
 ; -----------------------------------------------------------------------------
 ; Player 2 final direction pattern at $0EFE; also shot lookup base.
@@ -3686,7 +3715,7 @@ PLAYER_TWO_AIM_POINTERS:
 ; Projectile selection starts at +$02, so no shot lookup reads them.
 ; -----------------------------------------------------------------------------
 SHOT_PARAMETER_BASE:
-        DW $2204
+        DW EXPANDED_AIM_DIRECTION_4
 
 ; -----------------------------------------------------------------------------
 ; Shot origin adjustment pairs at $0F00, indexed by the SAME nonzero
