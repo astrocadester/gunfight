@@ -63,3 +63,7 @@ The firing actions at $04B0 and $0517 check projectile state at $2063/$2087 and 
 - **Open behavioral work:** exact collision-event consequences, screen positioning and compositing at hardware ports, sound/output signals, complete interrupt cadence, and every object animation frame. Do not treat static control-flow interpretation as executed-game verification.
 
 The architecture and native routines are original 8080; host-side RE assistance has not substituted program logic or original toolchain behavior.
+
+## GF-RE-002 gameplay lifecycle
+
+The end-to-end native gameplay trace is maintained separately in [Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md). It connects `VM_INPUT_EVENT_DISPATCH` input vectors to accepted shots, four projectile records, IRQ projectile qualification and the selector stored in `$201C`, event-script redirection through `$09D6`, and the BCD/round-control tail. This control-flow document remains focused on native register contracts and interrupt structure.

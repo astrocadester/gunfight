@@ -7,7 +7,7 @@ The maintained 8080 source is `src/gunfight.asm`. The engineering rules and veri
 | ID | Status | Work remaining / exit evidence |
 | --- | --- | --- |
 | GF-RE-001 | Source-label and static-flow pass complete; behavioral confirmation open | All 92 former `NATIVE_xxxx` block labels now carry function-specific branch/loop names with original addresses and direct-branch xrefs; entry-point contracts are documented. Some object/collision relationships require runtime confirmation; do not interpret all 92 as independent functions. See [native control flow](NATIVE-CONTROL-FLOW.md) and [block inventory](NATIVE-BLOCK-INVENTORY.md). |
-| GF-RE-002 | In progress | Both player aim, fire, shot counters, sprite/bitmap writer, score and event paths traced. Trace collision outcomes, full timer transitions, object lifetime and sound/cabinet outputs end to end. |
+| GF-RE-002 | Source-path implementation complete; runtime mapping open | Dedicated [gameplay/collision RE](GAMEPLAY-AND-COLLISION-RE.md) traces player inputs, four projectile slots, $0F3A event classification, $201C selector -> VM script, object updates, scoring and round timing, including original I/O values. Exit still requires traced hit/boundary conditions, selector-to-screen outcomes, and exact sound/cabinet signal mapping. |
 | GF-RE-003 | In progress | Ten 8×10 font glyphs and five width/height-prefixed patterns are now decoded inline. Resolve remaining graphics streams, animation names, hardware shift/orientation and object frame identities. |
 | GF-RE-004 | Closed — static scope | Old bounded-prefix report reconciled with 82 statically decoded command sites; exact operand sizes and 21+9 vector split aligned across source, word catalog, interpreter JSON and ROM ownership. Dynamic native-installed scripts remain GF-RE-008. |
 | GF-RE-005 | Closed — generator isolation | `recover_8080.py` writes to `src/zout/gunfight-recovered.asm`; the audit, interpreter and memory-map research tools write to `docs/generated/` instead of overwriting maintained source or reviewed docs. None is used in normal builds. |
@@ -70,3 +70,10 @@ The retained original ROM and direct native assembler verification remain the fi
 - Decoded byte-to-glyph mapping in game-message area, linked all original text source pointers to their VM $01 glyph counts, and corrected the terminology from generic format byte to glyph count.
 - Updated ROM device roles in the memory map; the $0BC4-$0D8A aim records span the 7609f/7609e boundary and encoded text belongs to 7609e.
 - User's native Linux build, original four-chip equality check and MAME playback PASSED on v20261121-0005. Latest symbol/annotation changes need a fresh check; Windows and physical hardware remain untested.
+
+## v20261121-0001 — GF-RE-002 source implementation
+
+- Added `GAMEPLAY-AND-COLLISION-RE.md` as the authoritative original-code trace for controls, firing guards and counters, projectile initialization, IRQ event selectors, native object updates, BCD scoring, VM event scripts and port writes.
+- Added targeted explanatory source comments; compared the full original instruction and data directive stream before/after and confirmed it is identical in order and operands. No native code/data changed.
+- Remaining GF-RE-002 work is executable gameplay/hardware confirmation; do not close it on source inspection alone. GF-RE-008 retains distinct interrupt cadence and RAM-installed execution analysis.
+- No assembler or MAME run performed in this change. Current PR #5 has separate user-reported Linux/MAME passes on an earlier source commit; verify current revision before merge.

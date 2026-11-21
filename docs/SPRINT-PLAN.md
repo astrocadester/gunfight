@@ -113,3 +113,10 @@ Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB or
 - Embed diagram in README interpreter section.
 - Represent $0F61-$0FFF encoded display text as quoted DB byte strings, preserving nonprintable cursor controls as $xx. The quoted text is the stored glyph encoding, not conventional ASCII, so comments supply actual on-screen phrases.
 - Checked all 159 original encoded text bytes against the transformed literals; native zmac and MAME verification remain to be executed after this source edit.
+
+## v20261121-0001 — GF-RE-002 original gameplay and collision RE
+
+- Traced the native control-to-shot-to-IRQ-to-VM event pathway in the original Gun Fight 8080 assembly; documented exact four-slot allocation, shot counters/guards, source shot-direction deltas, event-selector RAM and nine event script destinations.
+- Documented object update loops, bitmap queue path, timer/BCD score service, round state and original port $01/$02/$03/$04 operations in `GAMEPLAY-AND-COLLISION-RE.md`.
+- Added four comment-only source clarifications; complete ordered directive stream compared unchanged. No generated code, substitute logic or additional tools enter the build.
+- GF-RE-002 is **in progress until MAME event/IRQ, collision and sound/cabinet outcomes are traced**. This change supplies the static implementation and a reproducible dynamic trace matrix, not fabricated behavioral PASS results.

@@ -39,3 +39,7 @@ Only sections with established structure are promoted from anonymous `DB` groups
 Ordinary builds assemble the maintained source and perform chip checks. RE tools are optional and write generated drafts to `src/zout/` or `docs/generated/`, without replacing reviewed assembly, memory-map artwork, or command documentation.
 
 Recommended independent investigations: trace other packed graphics to object dimensions and draw calls; enumerate native interrupts and object-table cycles; run actual zmac and MAME verification. Source-level findings should be reconciled with native output before merge.
+
+## Projectile and event-table use
+
+[Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md) documents the original projectile IRQ lookup into scene-state bytes at `$0F3A` and the selected event pointer indexing at `$09D6`. The nine selectors at `$09D8–$09E9` are bytecode script targets, not additional native interpreter words.

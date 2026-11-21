@@ -102,3 +102,7 @@ The ASM aim tables now list one `DW` per entry without redundant per-line commen
 The unused Player 1 zero-offset word at `$0EE2` also supplies the last two stored bytes of `SPECIAL_OBJECT_PATTERN_24X28`, whose declared 3-by-28 raster begins at `$0E8E`. The original code does not select the unused zero-offset entry, so its address value is incidental to aiming while still meaningful as source bitmap data.
 
 The seven shot adjustment pairs are kept as `DB` pairs in ascending direction-offset order, with a single header explaining coordinate arithmetic. They are not 16-bit pointers and do not receive speculative compass direction names.
+
+## Complete gameplay path cross-reference
+
+The source-grounded fire-acceptance, projectile-slot lifecycle, IRQ selector and scoring paths are documented in [Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md). The seven direction-offset records here are inputs to the shared projectile-installation routine and should not be mistaken for hit-result or sound-code tables.

@@ -237,7 +237,9 @@ IRQ_RENDER_PENDING_SPRITE_JOB:
 IRQ_SCAN_PROJECTILE_RECORDS:
         LD HL,$2063
 
-; Check active flag and coordinate window for one $12-byte projectile slot.
+; GF-RE-002: examine four $12-byte projectile slots at $2063/$2075/
+; $2087/$2099. This checks status and coordinate windows, not a proven
+; pixel-overlap collision test.
 IRQ_CHECK_PROJECTILE_SLOT:
         LD A,(HL)
         AND A
@@ -309,7 +311,9 @@ IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         RRA
         RRA
 
-; Extract low nibble of ROM table value into RAM $201C (event selector).
+; GF-RE-002: write the low nibble selected from ROM table $0F3A into
+; $201C. The VM later consumes nonzero selectors through $09D6-based
+; script pointers; selector-to-visible-hit meaning needs an IRQ trace.
 IRQ_STORE_EVENT_SELECTOR:
         AND $0F
         LD ($201C),A
@@ -389,8 +393,9 @@ IRQ_ADVANCE_OBJECT_CYCLE:
         JP NZ,IRQ_CHECK_OBJECT_CYCLE_COMPLETE
         LD HL,$202A
 
-; Compare walker against starting slot and update output/timing after a full
-; pass.
+; GF-RE-002: after a full $13-byte object cycle, service output latch
+; $2014, frame/round countdown $2009, BCD state and script delay.
+; Output port $01 values are established; electrical meanings are not.
 IRQ_CHECK_OBJECT_CYCLE_COMPLETE:
         LD A,($20C0)
         CP L
@@ -1223,8 +1228,9 @@ FIRE_P1_CHECK_GUARD_AND_LAUNCH:
         LD BC,$1A08
         LD A,($201A)
 
-; Shared firing tail: apply direction-based shot position; atomically write
-; projectile fields.
+; GF-RE-002: combine selected player origin with two-byte direction
+; offset from $0F00-$0F0D. Under DI/EI, initialize the chosen projectile
+; slot with status $C6 and derived coordinate fields.
 FIRE_INSTALL_PROJECTILE_FROM_DIRECTION:
         LD HL,SHOT_PARAMETER_BASE
         CALL SELECT_AIM_DESCRIPTOR
