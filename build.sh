@@ -21,4 +21,3 @@ echo "[3/3] Package MAME ROM set"
 rm -f roms/build/gunfight.zip
 (cd roms/build && zip -q gunfight.zip "${names[@]}")
 echo "PASS: roms/build/gunfight.zip"
-echo "RE-only tools: python3 tools/audit_words.py (not part of build)"
