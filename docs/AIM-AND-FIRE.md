@@ -110,3 +110,7 @@ The source-grounded fire-acceptance, projectile-slot lifecycle, IRQ selector and
 ## GF-RE-002 original ASM naming
 
 The direction-offset helper at $037C is now named `CALCULATE_PROJECTILE_ORIGIN`: it calculates projectile coordinates and never selects the player graphics pointer. `INSTALL_AIM_DESCRIPTOR` at $044F is the separate aim-graphics pointer installer. Projectile RAM slot addresses $2063, $2075, $2087 and $2099 have `EQU` names in the original-code assembly.
+
+## GF-RE-003 exact expanded aiming pattern mapping
+
+VM word $0F transforms seven consecutive 65-byte ROM aim records at $0BC4, $0C05, $0C46, $0C87, $0CC8, $0D09 and $0D4A into equally sized RAM records at $2100, $2141, $2182, $21C3, $2204, $2245 and $2286. The original 8080 copies header width/height and mirrors each stored raster row by reversing bits in each byte and reversing byte order. Player 2 uses these RAM copies, whereas Player 1 uses the original ROM patterns. The source now names the expanded targets `EXPANDED_AIM_DIRECTION_0` through `_6` while preserving their nonsequential pointer table order. This graphics transformation is separate from the shot-coordinate deltas at $0F00. See [GRAPHICS.md](GRAPHICS.md).
