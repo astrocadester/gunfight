@@ -42,7 +42,7 @@ The first player's selected values point into ROM graphics/data. Several values 
 
 ## Projectile placement uses different data
 
-The firing handlers begin at `$04B0` and `$0517`. Both load the saved direction from `$201A` or `$201B`, then use the common `SELECT_AIM_DESCRIPTOR` helper at `$037C` with lookup base `$0EFE`.
+The firing handlers begin at `$04B0` and `$0517`. Both load the saved direction from `$201A` or `$201B`, then use the common `CALCULATE_PROJECTILE_ORIGIN` helper at `$037C` with lookup base `$0EFE`.
 
 That **is not another aim-pointer lookup**. The helper treats the indexed bytes as relative coordinate components and combines them with the player object position:
 
@@ -88,7 +88,7 @@ The VM installs game object records while native controller actions update their
 
 ### Source cross references
 
-- `src/gunfight.asm`: `PLAYER_ONE_AIM_ACTION`, `PLAYER_TWO_AIM_ACTION`, `INSTALL_AIM_DESCRIPTOR`, `PLAYER_ONE_AIM_POINTERS`, `PLAYER_TWO_AIM_POINTERS`, `SHOT_PARAMETER_BASE`, `SHOT_DIRECTION_DELTAS` and `SELECT_AIM_DESCRIPTOR`.
+- `src/gunfight.asm`: `PLAYER_ONE_AIM_ACTION`, `PLAYER_TWO_AIM_ACTION`, `INSTALL_AIM_DESCRIPTOR`, `PLAYER_ONE_AIM_POINTERS`, `PLAYER_TWO_AIM_POINTERS`, `SHOT_PARAMETER_BASE`, `SHOT_DIRECTION_DELTAS` and `CALCULATE_PROJECTILE_ORIGIN`.
 - [Native implementation notes](NATIVE-WORD-IMPLEMENTATIONS.md)
 - [Graphics structures](GRAPHICS.md)
 - [Command scripts](decoded-scripts.md)
@@ -106,3 +106,7 @@ The seven shot adjustment pairs are kept as `DB` pairs in ascending direction-of
 ## Complete gameplay path cross-reference
 
 The source-grounded fire-acceptance, projectile-slot lifecycle, IRQ selector and scoring paths are documented in [Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md). The seven direction-offset records here are inputs to the shared projectile-installation routine and should not be mistaken for hit-result or sound-code tables.
+
+## GF-RE-002 original ASM naming
+
+The direction-offset helper at $037C is now named `CALCULATE_PROJECTILE_ORIGIN`: it calculates projectile coordinates and never selects the player graphics pointer. `INSTALL_AIM_DESCRIPTOR` at $044F is the separate aim-graphics pointer installer. Projectile RAM slot addresses $2063, $2075, $2087 and $2099 have `EQU` names in the original-code assembly.
