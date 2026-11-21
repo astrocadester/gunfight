@@ -7,7 +7,7 @@ The interpreter, interrupts, object walkers, player controller actions, pixel ha
 ## Native entry classes
 
 - **Hardware entry vectors:** `RESET_ENTRY` ($0000), `INTERRUPT_VECTOR_08` ($0008), `INTERRUPT_VECTOR_10` ($0010). These use the original stack/register conventions.
-- **Callable subroutines:** `DRAW_NATIVE_OBJECT_DATA` ($022D), `UPDATE_ACTIVE_OBJECT_COORDINATES` ($025E), `STEP_OBJECT_AXIS` ($0280), `TAKE_AND_CLEAR_OBJECT_POINTER` ($02BD), `QUEUE_OBJECT_BITMAP_UPDATE` ($02C9), `VIDEO_ADDRESS_FROM_PACKED_COORDINATES` ($0359), `COPY_SCRIPT_LITERAL_BLOCK` ($0372), `SELECT_AIM_DESCRIPTOR` ($037C), `DISPATCH_INPUT_TRANSITION` ($040D), `INSTALL_AIM_DESCRIPTOR` ($044F), `UPDATE_SHOT_STATE` ($04FA), and `DRAW_FORMATTED_TEXT` ($05FB). Some tail-call rather than return normally.
+- **Callable subroutines:** `DRAW_NATIVE_OBJECT_DATA` ($022D), `UPDATE_ACTIVE_OBJECT_COORDINATES` ($025E), `STEP_OBJECT_AXIS` ($0280), `TAKE_AND_CLEAR_OBJECT_POINTER` ($02BD), `QUEUE_OBJECT_BITMAP_UPDATE` ($02C9), `VIDEO_ADDRESS_FROM_PACKED_COORDINATES` ($0359), `COPY_SCRIPT_LITERAL_BLOCK` ($0372), `CALCULATE_PROJECTILE_ORIGIN` ($037C), `DISPATCH_INPUT_TRANSITION` ($040D), `INSTALL_AIM_DESCRIPTOR` ($044F), `UPDATE_SHOT_STATE` ($04FA), and `DRAW_FORMATTED_TEXT` ($05FB). Some tail-call rather than return normally.
 - **Interpreter entry and word handlers:** `VM_DISPATCH_NEXT` ($03A7) and the 21 indexed native commands at table $09AE. Native word handlers generally return via the continuation address pushed by the dispatcher.
 - **Internal branches and loops:** the remaining 92 prior address-only labels describe loop entries, conditional branches, shared tails, and state-specific continuations. They are named *within* the owning routine in the assembly. Their source locations and direct xrefs are indexed separately.
 
@@ -44,7 +44,7 @@ The graphics-port contract is a real hardware interaction: port $04 supplies the
 
 **Player motion and firing:** Eight directional action entries write signed axis component bytes at offset +1 or +5 in the player records at $202A or $203D. The aim actions at $042A/$043E convert controller bits $70 into even byte offsets $02–$0E, then use `INSTALL_AIM_DESCRIPTOR` at $044F to store one of the two player-specific 16-bit graphics pointers at object offset +$0B.
 
-The firing actions at $04B0 and $0517 check projectile state at $2063/$2087 and fire guards $2012/$2013, then call `UPDATE_SHOT_STATE` at $04FA. A common firing tail at $04DF calls `SELECT_AIM_DESCRIPTOR` ($037C) with the saved direction index to derive relative projectile coordinates from seven two-byte adjustment records at $0F00–$0F0D, writes projectile data with interrupts disabled and updates $2014. The graphics-pointer selection and projectile-coordinate lookup are different original data formats. Full tables are in [AIM-AND-FIRE.md](AIM-AND-FIRE.md).
+The firing actions at $04B0 and $0517 check projectile state at $2063/$2087 and fire guards $2012/$2013, then call `UPDATE_SHOT_STATE` at $04FA. A common firing tail at $04DF calls `CALCULATE_PROJECTILE_ORIGIN` ($037C) with the saved direction index to derive relative projectile coordinates from seven two-byte adjustment records at $0F00–$0F0D, writes projectile data with interrupts disabled and updates $2014. The graphics-pointer selection and projectile-coordinate lookup are different original data formats. Full tables are in [AIM-AND-FIRE.md](AIM-AND-FIRE.md).
 
 ## Score text, bitmap graphics, and scene control
 
@@ -67,3 +67,5 @@ The architecture and native routines are original 8080; host-side RE assistance 
 ## GF-RE-002 gameplay lifecycle
 
 The end-to-end native gameplay trace is maintained separately in [Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md). It connects `VM_INPUT_EVENT_DISPATCH` input vectors to accepted shots, four projectile records, IRQ projectile qualification and the selector stored in `$201C`, event-script redirection through `$09D6`, and the BCD/round-control tail. This control-flow document remains focused on native register contracts and interrupt structure.
+
+The source now names ROM $0F3A `PROJECTILE_EVENT_LOOKUP_RECORDS`, based on its native IRQ lookup and selector-nibble extraction; this does not establish the human meaning of every event. Original helper $037C is `CALCULATE_PROJECTILE_ORIGIN` to distinguish it from graphics pointer selection at $044F.
