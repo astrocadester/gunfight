@@ -17,6 +17,23 @@
 ; The maintained ASM is assembled directly; no generator rewrites it.
 ;*******************************************************************************
 
+; -----------------------------------------------------------------------------
+; GF-RE-002: projectile and event RAM addresses used by native 8080 code.
+; EQU aliases allocate no ROM or RAM bytes. Each projectile slot is $12
+; bytes; the four entries are two slots per player.
+; -----------------------------------------------------------------------------
+PROJECTILE_P1_SLOT_0      EQU $2063
+PROJECTILE_P1_SLOT_1      EQU $2075
+PROJECTILE_P2_SLOT_0      EQU $2087
+PROJECTILE_P2_SLOT_1      EQU $2099
+PROJECTILE_P1_FIRE_GUARD  EQU $2012
+PROJECTILE_P2_FIRE_GUARD  EQU $2013
+PLAYER_ONE_SHOT_COUNT     EQU $2010
+PLAYER_TWO_SHOT_COUNT     EQU $2011
+PROJECTILE_EVENT_SELECTOR EQU $201C
+PROJECTILE_EVENT_CONTEXT  EQU $201D
+PROJECTILE_OUTPUT_TIMER   EQU $2014
+
         ORG $0000
 
 ; Device 7609h.bin, SHA1 99d01313e251818d336281700e206d9003c71dae
@@ -235,7 +252,7 @@ IRQ_RENDER_PENDING_SPRITE_JOB:
 
 ; Internal block: Begin pass over projectile/object records at $2063.
 IRQ_SCAN_PROJECTILE_RECORDS:
-        LD HL,$2063
+        LD HL,PROJECTILE_P1_SLOT_0
 
 ; GF-RE-002: examine four $12-byte projectile slots at $2063/$2075/
 ; $2087/$2099. This checks status and coordinate windows, not a proven
@@ -260,8 +277,8 @@ IRQ_CHECK_PROJECTILE_UPPER_WINDOW:
         CP $90
         JP NC,IRQ_NEXT_PROJECTILE_SLOT
 
-; Check additional record field and lower bound before reporting collision
-; code.
+; Qualify a projectile-generated event using another nonzero record
+; field and bounded coordinate. Not yet proven to test pixel overlap.
 IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         LD DE,$000C
         ADD HL,DE
@@ -291,7 +308,7 @@ IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         INC HL
         INC HL
         LD A,(HL)
-        LD ($201D),A
+        LD (PROJECTILE_EVENT_CONTEXT),A
         SUB $10
         RRA
         RRA
@@ -300,7 +317,7 @@ IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
         RRA
         LD E,A
         LD D,$00
-        LD HL,$0F3A
+        LD HL,PROJECTILE_EVENT_LOOKUP_RECORDS
         ADD HL,DE
         LD A,C
         RRA
@@ -316,7 +333,7 @@ IRQ_TEST_PROJECTILE_STATE_AND_BOUNDS:
 ; script pointers; selector-to-visible-hit meaning needs an IRQ trace.
 IRQ_STORE_EVENT_SELECTOR:
         AND $0F
-        LD ($201C),A
+        LD (PROJECTILE_EVENT_SELECTOR),A
 
 ; Advance by $12 through projectile records until low byte is $AB.
 IRQ_NEXT_PROJECTILE_SLOT:
@@ -326,7 +343,7 @@ IRQ_NEXT_PROJECTILE_SLOT:
         LD A,$AB
         CP L
         JP NZ,IRQ_CHECK_PROJECTILE_SLOT
-        LD HL,$2063
+        LD HL,PROJECTILE_P1_SLOT_0
 
 ; Update an active object and calculate its bitmap address and bit phase.
 IRQ_UPDATE_VISIBLE_OBJECT_SLOT:
@@ -844,14 +861,14 @@ COPY_SCRIPT_LITERAL_BYTE:
         RET
 
 ; -----------------------------------------------------------------------------
-; SELECT_AIM_DESCRIPTOR
+; CALCULATE_PROJECTILE_ORIGIN
 ; Fetch a two-byte relative shot adjustment at SHOT_PARAMETER_BASE + A.
 ; A is the previously saved nonzero even controller direction offset.
 ; B receives the first byte; D the second. Combine the offset with
 ; object bytes +0 and +4 and return adjusted DE for projectile placement.
 ; This is NOT a pointer lookup; unlike INSTALL_AIM_DESCRIPTOR.
 ; -----------------------------------------------------------------------------
-SELECT_AIM_DESCRIPTOR:
+CALCULATE_PROJECTILE_ORIGIN:
         PUSH DE
         LD E,A
         LD D,$00
@@ -953,7 +970,7 @@ VM_INPUT_EVENT_DISPATCH:
         LD HL,$2018
         LD DE,$098E
         CALL Z,DISPATCH_INPUT_TRANSITION
-        LD HL,$201C
+        LD HL,PROJECTILE_EVENT_SELECTOR
         LD A,(HL)
         AND A
         JP Z,VM_REFRESH_SCORE_IF_NEEDED
@@ -1201,11 +1218,11 @@ PLAYER_TWO_AXIS1_POSITIVE:
 ; -----------------------------------------------------------------------------
 PLAYER_ONE_FIRE_ACTION:
         RET Z
-        LD HL,$2063
+        LD HL,PROJECTILE_P1_SLOT_0
         LD A,(HL)
         AND $80
         JP Z,FIRE_P1_CHECK_GUARD_AND_LAUNCH
-        LD HL,$2075
+        LD HL,PROJECTILE_P1_SLOT_1
         LD A,(HL)
         AND $80
         RET NZ
@@ -1213,14 +1230,14 @@ PLAYER_ONE_FIRE_ACTION:
 ; Reject fire when $2012 nonzero; otherwise update count and configure
 ; projectile.
 FIRE_P1_CHECK_GUARD_AND_LAUNCH:
-        LD DE,$2012
+        LD DE,PROJECTILE_P1_FIRE_GUARD
         LD A,(DE)
         AND A
         RET NZ
         PUSH HL
         EX DE,HL
         LD DE,$3EA2
-        LD BC,$2010
+        LD BC,PLAYER_ONE_SHOT_COUNT
         CALL UPDATE_SHOT_STATE
         LD A,$E2
         OUT ($01),A
@@ -1233,7 +1250,7 @@ FIRE_P1_CHECK_GUARD_AND_LAUNCH:
 ; slot with status $C6 and derived coordinate fields.
 FIRE_INSTALL_PROJECTILE_FROM_DIRECTION:
         LD HL,SHOT_PARAMETER_BASE
-        CALL SELECT_AIM_DESCRIPTOR
+        CALL CALCULATE_PROJECTILE_ORIGIN
         POP HL
         DI
         LD (HL),$C6
@@ -1249,14 +1266,14 @@ FIRE_INSTALL_PROJECTILE_FROM_DIRECTION:
         LD (HL),D
         EI
         LD A,$02
-        LD ($2014),A
+        LD (PROJECTILE_OUTPUT_TIMER),A
         RET
 
 ; -----------------------------------------------------------------------------
 ; UPDATE_SHOT_STATE
 ; Called by both player firing handlers.
-; Entry BC=player shot-counter address, HL=guard/delay state address,
-; DE=scoreboard output destination. Increment (BC), compare with six;
+; Entry BC=player shot-counter address, HL=fire guard address,
+; DE=bitmap destination for the ammunition counter glyph. Increment (BC), compare with six;
 ; when reaching threshold, update guard and round-state byte $2003.
 ; Then tail-call DRAW_FORMATTED_TEXT with A=shot-count character and
 ; HL=$0FA4. Caller is responsible for output-port fire command and
@@ -1295,11 +1312,11 @@ SHOT_DRAW_AMMO_INDICATOR:
 ; -----------------------------------------------------------------------------
 PLAYER_TWO_FIRE_ACTION:
         RET Z
-        LD HL,$2087
+        LD HL,PROJECTILE_P2_SLOT_0
         LD A,(HL)
         AND $80
         JP Z,FIRE_P2_CHECK_GUARD_AND_LAUNCH
-        LD HL,$2099
+        LD HL,PROJECTILE_P2_SLOT_1
         LD A,(HL)
         AND $80
         RET NZ
@@ -1307,14 +1324,14 @@ PLAYER_TWO_FIRE_ACTION:
 ; Reject fire when $2013 nonzero; otherwise update count and configure
 ; projectile.
 FIRE_P2_CHECK_GUARD_AND_LAUNCH:
-        LD DE,$2013
+        LD DE,PROJECTILE_P2_FIRE_GUARD
         LD A,(DE)
         AND A
         RET NZ
         PUSH HL
         EX DE,HL
         LD DE,$3EB8
-        LD BC,$2011
+        LD BC,PLAYER_TWO_SHOT_COUNT
         CALL UPDATE_SHOT_STATE
         LD A,$D2
         OUT ($01),A
@@ -1332,7 +1349,7 @@ FIRE_P2_CHECK_GUARD_AND_LAUNCH:
 ADVANCE_ROUND_EVENT_COUNTER:
         RET Z
         LD A,$04
-        LD ($2014),A
+        LD (PROJECTILE_OUTPUT_TIMER),A
         OUT ($01),A
         LD HL,$2007
         INC (HL)
@@ -1427,7 +1444,7 @@ SCORE_DECODE_HIGH_BCD_DIGIT:
         JP NZ,SCORE_WRITE_BCD_DIGITS
         LD A,$10
 
-; Internal block: Emit ASCII high/low score digits into formatted text buffer.
+; Convert both packed-decimal nibbles into display font glyph codes.
 SCORE_WRITE_BCD_DIGITS:
         ADD A,$30
         LD (HL),A
@@ -1868,7 +1885,7 @@ WRITE_OUTPUT_AND_MODE:
         LD A,(HL)
         INC HL
         LD ($2000),HL
-        LD ($2014),A
+        LD (PROJECTILE_OUTPUT_TIMER),A
 
 ; NO_OP_INPUT_ACTION
 ; One-byte RET used by six native input action-table positions; also the
@@ -3675,7 +3692,7 @@ SHOT_PARAMETER_BASE:
 ; Shot origin adjustment pairs at $0F00, indexed by the SAME nonzero
 ; even direction offsets $02..$0E used by aiming. Each record is
 ; (X adjustment, Y adjustment) in 8-bit modular arithmetic, added
-; to the player's origin by SELECT_AIM_DESCRIPTOR; these are NOT DWs.
+; to the player's origin by CALCULATE_PROJECTILE_ORIGIN; these are NOT DWs.
 ; Rows below are in ascending direction-index order.
 ; -----------------------------------------------------------------------------
 SHOT_DIRECTION_DELTAS:
@@ -3719,8 +3736,10 @@ SCENE_DRAW_TABLE_SECONDARY:
 SCENE_DRAW_TABLE_FINAL:
         DW $300F,SCENE_VERTICAL_STRIP_8X22
 
-; Three eight-byte game-state setup records at $0F3A-$0F51.
-SCENE_STATE_SETUP_RECORDS:
+; Event lookup records at $0F3A-$0F51. IRQ projectile qualification
+; indexes these 24 original bytes and extracts a nibble into RAM $201C.
+; Individual event outcomes have not yet been traced in MAME.
+PROJECTILE_EVENT_LOOKUP_RECORDS:
         DB $11,$11,$11,$52,$65,$99,$99,$99
         DB $11,$11,$11,$53,$75,$99,$99,$99
         DB $11,$11,$11,$54,$85,$99,$99,$99
