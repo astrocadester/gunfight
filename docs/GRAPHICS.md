@@ -14,11 +14,11 @@ The following records are now expressed as typed inline byte rows in [`src/gunfi
 
 | Pattern | ROM | Header | Inline pixels |
 | --- | --- | --- | --- |
-| `ROM_FRAME_PATTERN_A` | `$0D8B` | `03 0C` | 3 bytes × 12 rows (24 stored bits/row) |
-| `ROM_FRAME_PATTERN_B` | `$0DB1` | `03 0C` | 3 bytes × 12 rows |
-| `ROM_FRAME_PATTERN_C` | `$0DD7` | `03 0C` | 3 bytes × 12 rows |
-| `ROM_OBJECT_PATTERN_32_ROWS` | `$0DFD` | `03 20` | 3 bytes × 32 rows |
-| `ROM_OBJECT_PATTERN_4BYTE_11ROWS` | `$0E5F` | `04 0B` | 4 bytes × 11 rows |
+| `OBJECT_PATTERN_24X12_A` | `$0D8B` | `03 0C` | 3 bytes × 12 rows (24 stored bits/row) |
+| `OBJECT_PATTERN_24X12_B` | `$0DB1` | `03 0C` | 3 bytes × 12 rows |
+| `OBJECT_PATTERN_24X12_C` | `$0DD7` | `03 0C` | 3 bytes × 12 rows |
+| `OBJECT_PATTERN_24X32` | `$0DFD` | `03 20` | 3 bytes × 32 rows |
+| `OBJECT_PATTERN_32X11` | `$0E5F` | `04 0B` | 4 bytes × 11 rows |
 
 The first three record boundaries are proven by the consecutive `$0D8B/$0DB1/$0DD7` native frame pointers at `$0349`, the two-byte dimensions, and the 38-byte separation. The following `$0DFD` and `$0E5F` boundaries follow the same packed record convention and sizes (98 and 46 bytes). Pattern identity (cowboy, obstacle, animation frame, etc.) is deliberately not assigned until graphics call sites establish it.
 
@@ -29,7 +29,7 @@ The animation/frame-pointer tables at `$0349` and `$0351` each have four little-
 For example, the first bytes of pattern A are the header `$03,$0C`, then one 24-bit row:
 
 ```asm
-ROM_FRAME_PATTERN_A:
+OBJECT_PATTERN_24X12_A:
         DB $03,$0C          ; width=3 bytes, height=12 rows
         DB $F0,$3F,$00      ; ####.... ..###### ........
 ```

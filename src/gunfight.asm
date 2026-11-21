@@ -6,8 +6,7 @@
 ; Developer : Dave Nutting Associates (DNA)
 ; Publisher : Midway Manufacturing
 ; CPU       : Intel 8080
-; Software : Native game routines and 21-word indexed game-command
-; interpreter
+; Software  : Native 8080 routines and 21-word game-command interpreter
 ;
 ; ROM       : 7609h.bin / 7609g.bin / 7609f.bin / 7609e.bin
 ; Build     : Project zmac v1.3; four original 1 KB ROM devices
@@ -2113,7 +2112,7 @@ CMD_0837_DRAW_FORMATTED_DATA:
 ; $083D: Copy 15 literal bytes from the script into a RAM object record.
 CMD_083D_COPY_INLINE_15:
         DB $05
-        DW $202A ; Display RAM destination
+        DW $202A ; Destination object in working RAM
         DB $C3,$01,$00,$00,$40,$00,$66,$0B,$AA,$8B,$0D,$4A,$0D,$8B,$0D ; inline RAM data
 
 ; $084F: Store the next countdown or mode value at RAM $2015.
@@ -2128,7 +2127,7 @@ CMD_0851_WAIT_OR_REPEAT:
 ; $0852: Copy nine literal bytes from the script into a RAM object record.
 CMD_0852_COPY_INLINE_9:
         DB $06
-        DW $2063 ; Display RAM destination
+        DW $2063 ; Destination object in working RAM
         DB $C6,$03,$54,$00,$FE,$02,$78,$00,$C8 ; inline RAM data
 
 ; $085E: Store the next countdown or mode value at RAM $2015.
@@ -2159,7 +2158,7 @@ CMD_0869_WAIT_OR_REPEAT:
 ; $086A: Copy 15 literal bytes from the script into a RAM object record.
 CMD_086A_COPY_INLINE_15:
         DB $05
-        DW $203D ; Display RAM destination
+        DW $203D ; Destination object in working RAM
         DB $C2,$FF,$40,$00,$60,$00,$66,$27,$A0,$C7,$22,$00,$21,$C7,$22 ; inline RAM data
 
 ; $087C: Store the next countdown or mode value at RAM $2015.
@@ -2186,7 +2185,7 @@ CMD_0882_DRAW_FORMATTED_DATA:
 ; $0888: Copy 15 literal bytes from the script into a RAM object record.
 CMD_0888_COPY_INLINE_15:
         DB $05
-        DW $202A ; Display RAM destination
+        DW $202A ; Destination object in working RAM
         DB $C3,$02,$00,$00,$40,$00,$A0,$0B,$AA,$8B,$0D,$4A,$0D,$8B,$0D ; inline RAM data
 
 ; $089A: Repeat this command while the frame counter is pending.
@@ -2226,37 +2225,37 @@ CMD_08A5_DRAW_FORMATTED_DATA:
 ; $08AB: Copy 15 literal bytes from the script into a RAM object record.
 CMD_08AB_COPY_INLINE_15:
         DB $05
-        DW $202A ; Display RAM destination
+        DW $202A ; Destination object in working RAM
         DB $C0,$01,$00,$00,$48,$00,$66,$13,$9A,$8B,$0D,$87,$0C,$8B,$0D ; inline RAM data
 
 ; $08BD: Copy 15 literal bytes from the script into a RAM object record.
 CMD_08BD_COPY_INLINE_15:
         DB $05
-        DW $203D ; Display RAM destination
+        DW $203D ; Destination object in working RAM
         DB $C0,$FF,$E7,$A0,$48,$00,$66,$13,$9A,$C7,$22,$C3,$21,$C7,$22 ; inline RAM data
 
 ; $08CF: Copy nine literal bytes from the script into a RAM object record.
 CMD_08CF_COPY_INLINE_9:
         DB $06
-        DW $2063 ; Display RAM destination
+        DW $2063 ; Destination object in working RAM
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
 
 ; $08DB: Copy nine literal bytes from the script into a RAM object record.
 CMD_08DB_COPY_INLINE_9:
         DB $06
-        DW $2075 ; Display RAM destination
+        DW $2075 ; Destination object in working RAM
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
 
 ; $08E7: Copy nine literal bytes from the script into a RAM object record.
 CMD_08E7_COPY_INLINE_9:
         DB $06
-        DW $2087 ; Display RAM destination
+        DW $2087 ; Destination object in working RAM
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
 
 ; $08F3: Copy nine literal bytes from the script into a RAM object record.
 CMD_08F3_COPY_INLINE_9:
         DB $06
-        DW $2099 ; Display RAM destination
+        DW $2099 ; Destination object in working RAM
         DB $06,$00,$00,$04,$F8,$00,$00,$0A,$C8 ; inline RAM data
 
 ; $08FF: Store the next countdown or mode value at RAM $2015.
@@ -3050,8 +3049,6 @@ ADDITIONAL_PACKED_SHAPE_BITS:
         DB $06,$81,$60,$04,$00,$20,$04,$00,$20,$04,$00,$20
         DB $04 ; preceding graphic/table byte at $0EE1
 
-; Player aim lookup: input bits 4..6 become byte offsets $02,$04,...,$0E.
-; Zero is rejected by both callers; every valid offset addresses a DW.
 ; Each controller aim value uses input bits 4-6 to produce an EVEN
 ; byte offset ($02-$0E). The zero offset returns without a lookup.
 ; INSTALL_AIM_DESCRIPTOR reads one 16-bit entry and stores it
@@ -3065,8 +3062,6 @@ PLAYER_ONE_AIM_POINTERS:
         DW $0D09 ; input-derived offset $0A; $0D09 descriptor
         DW $0C05 ; input-derived offset $0C; $0C05 descriptor
 
-; The shared boundary is player one's last entry and player two's
-; unreachable zero-index entry. It is stored ONCE in the original ROM.
 ; Both player tables share the single DW at ROM $0EF0:
 ; P1 offset $0E and P2 offset $00 are the SAME original bytes.
 PLAYER_TWO_AIM_POINTERS:
