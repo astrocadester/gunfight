@@ -67,8 +67,3 @@ DB $0A                     ; select display sequence
 DB $01,$09                 ; draw formatted data
 DW $0FAF,$2E0C             ; source and bitmap destination
 ```
-
-## Research and references
-
-- [Commands](docs/8080-WORD-SEMANTICS.md)
-- [Original documentation](docs/GunFight.pdf) and [supplementary manual](docs/gunfight_2.pdf)
