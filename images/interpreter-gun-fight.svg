@@ -1,98 +1,90 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="950" viewBox="0 0 1800 950" role="img" aria-labelledby="t d"><title id="t">Gun Fight indexed command interpreter</title><desc id="d">Representative Gun Fight original startup script and indexed 8080 interpreter with a selection of 17 out of 21 native game words.</desc><defs><linearGradient id="fill" x2="0" y2="1"><stop stop-color="#dceafd"/><stop offset="1" stop-color="#aac9f5"/></linearGradient><marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2253e9"/></marker></defs>
-<rect x="28" y="230" width="414" height="528" rx="21" fill="white" stroke="#2253e9" stroke-width="3"/>
-<rect x="30" y="232" width="410" height="61" rx="19" fill="url(#fill)" stroke="#2253e9" stroke-width="3"/>
-<path d="M28 294 L442 294" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="235" y="273" font-family="Arial,Helvetica,sans-serif" font-size="32" font-weight="700" text-anchor="middle" fill="#111827">Command Stream</text>
-<text x="54" y="332" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">$04</text>
-<text x="139" y="332" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="400" text-anchor="start" fill="#111827">Clear display</text>
-<path d="M28 352 L442 352" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="54" y="390" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">$13</text>
-<text x="139" y="390" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="400" text-anchor="start" fill="#111827">Update score text</text>
-<path d="M28 410 L442 410" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="54" y="448" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">$01</text>
-<text x="139" y="448" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="400" text-anchor="start" fill="#111827">Draw formatted data</text>
-<path d="M28 468 L442 468" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="54" y="506" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">$10</text>
-<text x="139" y="506" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="400" text-anchor="start" fill="#111827">Conditional goto</text>
-<path d="M28 526 L442 526" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="54" y="564" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">$0F</text>
-<text x="139" y="564" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="400" text-anchor="start" fill="#111827">Expand graphics</text>
-<path d="M28 584 L442 584" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="54" y="622" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">$03</text>
-<text x="139" y="622" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="400" text-anchor="start" fill="#111827">Set delay</text>
-<path d="M28 642 L442 642" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="54" y="680" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">$00</text>
-<text x="139" y="680" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="400" text-anchor="start" fill="#111827">Wait / repeat</text>
-<path d="M28 700 L442 700" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="54" y="738" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827">…</text>
-<rect x="1240" y="70" width="530" height="860" rx="20" fill="white" stroke="#2253e9" stroke-width="3"/>
-<rect x="1242" y="72" width="526" height="58" rx="18" fill="url(#fill)" stroke="#2253e9" stroke-width="3"/>
-<path d="M1240 131 L1770 131" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<path d="M1352 70 L1352 930" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="112" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#111827">Word</text>
-<text x="1555" y="112" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#111827">Routine</text>
-<text x="1296" y="164" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$00</text>
-<text x="1368" y="164" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Wait / repeat</text>
-<path d="M1240 178 L1770 178" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="211" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$01</text>
-<text x="1368" y="211" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Draw formatted data</text>
-<path d="M1240 225 L1770 225" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="258" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$02</text>
-<text x="1368" y="258" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Set score state</text>
-<path d="M1240 272 L1770 272" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="305" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$03</text>
-<text x="1368" y="305" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Set delay state</text>
-<path d="M1240 319 L1770 319" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="352" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$04</text>
-<text x="1368" y="352" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Clear display</text>
-<path d="M1240 366 L1770 366" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="399" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$05</text>
-<text x="1368" y="399" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Copy 15-byte block</text>
-<path d="M1240 413 L1770 413" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="446" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$06</text>
-<text x="1368" y="446" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Copy 9-byte block</text>
-<path d="M1240 460 L1770 460" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="493" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$07</text>
-<text x="1368" y="493" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Clear object flags</text>
-<path d="M1240 507 L1770 507" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="540" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$08</text>
-<text x="1368" y="540" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Toggle object bits</text>
-<path d="M1240 554 L1770 554" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="587" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$09</text>
-<text x="1368" y="587" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Goto script</text>
-<path d="M1240 601 L1770 601" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="634" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$0A</text>
-<text x="1368" y="634" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Game display sequence</text>
-<path d="M1240 648 L1770 648" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="681" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$0B</text>
-<text x="1368" y="681" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Initialize object</text>
-<path d="M1240 695 L1770 695" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="728" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$0C</text>
-<text x="1368" y="728" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Increment BCD / initialize</text>
-<path d="M1240 742 L1770 742" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="775" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$0F</text>
-<text x="1368" y="775" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Expand graphics</text>
-<path d="M1240 789 L1770 789" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="822" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$10</text>
-<text x="1368" y="822" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Conditional goto</text>
-<path d="M1240 836 L1770 836" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="869" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$13</text>
-<text x="1368" y="869" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Update score text</text>
-<path d="M1240 883 L1770 883" stroke="#2253e9" stroke-width="4" fill="none" stroke-linecap="round" />
-<text x="1296" y="916" font-family="Arial,Helvetica,sans-serif" font-size="23" font-weight="700" text-anchor="middle" fill="#111827">$14</text>
-<text x="1368" y="916" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="400" text-anchor="start" fill="#111827">Input / event dispatch</text>
-<rect x="503" y="198" width="565" height="94" rx="24" fill="url(#fill)" stroke="#2253e9" stroke-width="3"/>
-<text x="785" y="258" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#111827">Fetch Next Command</text>
-<rect x="503" y="338" width="565" height="94" rx="24" fill="url(#fill)" stroke="#2253e9" stroke-width="3"/>
-<text x="785" y="398" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#111827">Decode / Dispatch</text>
-<rect x="503" y="478" width="565" height="94" rx="24" fill="url(#fill)" stroke="#2253e9" stroke-width="3"/>
-<text x="785" y="538" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#111827">Execute 8080 Routine</text>
-<rect x="503" y="618" width="565" height="94" rx="24" fill="url(#fill)" stroke="#2253e9" stroke-width="3"/>
-<text x="785" y="678" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#111827">Next Command</text>
-<path d="M442 249 H490" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
-<path d="M785 292 V327" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
-<path d="M785 432 V467" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
-<path d="M785 572 V607" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
-<path d="M1068 664 H1120 V246 H1080" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
-<path d="M1068 385 H1102 Q1120 361 1138 385 H1227" stroke="#2253e9" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1672" height="900" viewBox="0 0 1672 900" role="img" aria-labelledby="title desc">
+<title id="title">Gun Fight — indexed 8080 interpreter</title>
+<desc id="desc">Gun Fight interpreted command stream, fetch and dispatch loop, and selected native command routines.</desc>
+<defs><linearGradient id="top" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dce9ff"/><stop offset="1" stop-color="#b0cafa"/></linearGradient><marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0 0 L7 4 L0 8 Z" fill="#1246e4"/></marker><marker id="arrowDark" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0 0 L7 4 L0 8 Z" fill="#152434"/></marker></defs>
+<rect x="22" y="214" width="383" height="456" rx="22" fill="#fff" stroke="#204ceb" stroke-width="3"/>
+<path d="M24 286 V236 Q24 216 44 216 H383 Q403 216 403 236 V286Z" fill="url(#top)"/>
+<path d="M22 286 H405" stroke="#204ceb" stroke-width="2"/>
+<text x="213.5" y="260" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="30">Command Stream</text>
+<text x="46" y="319" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$04</text>
+<text x="133" y="319" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Clear display</text>
+<path d="M22 334 H405" stroke="#2453e8" stroke-width="1.4"/>
+<text x="46" y="367" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$13</text>
+<text x="133" y="367" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Update score text</text>
+<path d="M22 382 H405" stroke="#2453e8" stroke-width="1.4"/>
+<text x="46" y="415" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$01</text>
+<text x="133" y="415" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Draw formatted data</text>
+<path d="M22 430 H405" stroke="#2453e8" stroke-width="1.4"/>
+<text x="46" y="463" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$10</text>
+<text x="133" y="463" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Conditional goto</text>
+<path d="M22 478 H405" stroke="#2453e8" stroke-width="1.4"/>
+<text x="46" y="511" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$0F</text>
+<text x="133" y="511" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Expand graphics</text>
+<path d="M22 526 H405" stroke="#2453e8" stroke-width="1.4"/>
+<text x="46" y="559" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$03</text>
+<text x="133" y="559" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Set delay</text>
+<path d="M22 574 H405" stroke="#2453e8" stroke-width="1.4"/>
+<text x="46" y="607" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$00</text>
+<text x="133" y="607" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Wait / repeat</text>
+<path d="M22 622 H405" stroke="#2453e8" stroke-width="1.4"/>
+<text x="46" y="655" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">...</text>
+<rect x="1165" y="94" width="480" height="649" rx="19" fill="white" stroke="#204ceb" stroke-width="3"/>
+<path d="M1167 158 V113 Q1167 96 1184 96 H1626 Q1643 96 1643 113 V158Z" fill="url(#top)"/>
+<path d="M1165 158 H1645" stroke="#204ceb" stroke-width="2"/>
+<path d="M1285 94 V743" stroke="#204ceb" stroke-width="1.4"/>
+<text x="1225" y="136" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="30">Word</text>
+<text x="1466" y="136" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="30">Routine</text>
+<text x="1225" y="189" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$00</text>
+<text x="1304" y="189" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Wait / repeat</text>
+<path d="M1165 203 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="234" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$01</text>
+<text x="1304" y="234" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Draw formatted data</text>
+<path d="M1165 248 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="279" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$02</text>
+<text x="1304" y="279" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Set score state</text>
+<path d="M1165 293 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="324" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$03</text>
+<text x="1304" y="324" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Set delay state</text>
+<path d="M1165 338 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="369" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$04</text>
+<text x="1304" y="369" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Clear display</text>
+<path d="M1165 383 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="414" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$05</text>
+<text x="1304" y="414" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Copy 15-byte block</text>
+<path d="M1165 428 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="459" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$06</text>
+<text x="1304" y="459" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Copy 9-byte block</text>
+<path d="M1165 473 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="504" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$07</text>
+<text x="1304" y="504" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Clear object flags</text>
+<path d="M1165 518 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="549" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$09</text>
+<text x="1304" y="549" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Goto script</text>
+<path d="M1165 563 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="594" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$0A</text>
+<text x="1304" y="594" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Game display sequence</text>
+<path d="M1165 608 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="639" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$0F</text>
+<text x="1304" y="639" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Expand graphics</text>
+<path d="M1165 653 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="684" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$10</text>
+<text x="1304" y="684" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Conditional goto</text>
+<path d="M1165 698 H1645" stroke="#2453e8" stroke-width="1.4"/>
+<text x="1225" y="729" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23">$13</text>
+<text x="1304" y="729" fill="#0d182a" text-anchor="start" font-family="Arial,Helvetica,sans-serif" font-weight="400" font-size="21">Update score text</text>
+<rect x="456" y="182" width="565" height="92" rx="23" fill="url(#top)" stroke="#204ceb" stroke-width="3"/>
+<text x="738.5" y="241" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="32">Fetch Next Command</text>
+<rect x="456" y="328" width="565" height="92" rx="23" fill="url(#top)" stroke="#204ceb" stroke-width="3"/>
+<text x="738.5" y="387" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="32">Decode / Dispatch</text>
+<rect x="456" y="474" width="565" height="92" rx="23" fill="url(#top)" stroke="#204ceb" stroke-width="3"/>
+<text x="738.5" y="533" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="32">Execute 8080 Routine</text>
+<rect x="456" y="620" width="565" height="92" rx="23" fill="url(#top)" stroke="#204ceb" stroke-width="3"/>
+<text x="738.5" y="679" fill="#0d182a" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="32">Next Command</text>
+<path d="M405 228 H448" fill="none" stroke="#1246e4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowBlue)"/>
+<path d="M738.5 278 V319" fill="none" stroke="#152434" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowDark)"/>
+<path d="M738.5 424 V465" fill="none" stroke="#152434" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowDark)"/>
+<path d="M738.5 570 V611" fill="none" stroke="#152434" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowDark)"/>
+<path d="M1023 666 H1083 V228 H1032" fill="none" stroke="#1246e4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowBlue)"/>
+<path d="M1023 374 H1154" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="butt"/>
+<path d="M1023 374 H1154" fill="none" stroke="#1246e4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrowBlue)"/>
 </svg>
