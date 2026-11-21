@@ -14,13 +14,13 @@ The following records are now expressed as typed inline byte rows in [`src/gunfi
 
 | Pattern | ROM | Header | Inline pixels |
 | --- | --- | --- | --- |
-| `OBJECT_PATTERN_24X12_A` | `$0D8B` | `03 0C` | 3 bytes × 12 rows (24 stored bits/row) |
-| `OBJECT_PATTERN_24X12_B` | `$0DB1` | `03 0C` | 3 bytes × 12 rows |
-| `OBJECT_PATTERN_24X12_C` | `$0DD7` | `03 0C` | 3 bytes × 12 rows |
-| `OBJECT_PATTERN_24X32` | `$0DFD` | `03 20` | 3 bytes × 32 rows |
-| `OBJECT_PATTERN_32X11` | `$0E5F` | `04 0B` | 4 bytes × 11 rows |
+| `PLAYER_FRAME_PATTERN_A_24X12` | `$0D8B` | `03 0C` | 3 bytes × 12 rows (24 stored bits/row) |
+| `PLAYER_FRAME_PATTERN_B_24X12` | `$0DB1` | `03 0C` | 3 bytes × 12 rows |
+| `PLAYER_FRAME_PATTERN_C_24X12` | `$0DD7` | `03 0C` | 3 bytes × 12 rows |
+| `EVENT_OBJECT_PATTERN_24X32` | `$0DFD` | `03 20` | 3 bytes × 32 rows |
+| `EVENT_OBJECT_PATTERN_32X11` | `$0E5F` | `04 0B` | 4 bytes × 11 rows |
 
-The first three record boundaries are proven by the consecutive `$0D8B/$0DB1/$0DD7` native frame pointers at `$0349`, the two-byte dimensions, and the 38-byte separation. The following `$0DFD` and `$0E5F` boundaries follow the same packed record convention and sizes (98 and 46 bytes). Pattern identity (cowboy, obstacle, animation frame, etc.) is deliberately not assigned until graphics call sites establish it.
+The first three record boundaries are proven by the consecutive `$0D8B/$0DB1/$0DD7` native frame pointers at `$0349`, the two-byte dimensions, and the 38-byte separation. The following `$0DFD` and `$0E5F` boundaries follow the same packed record convention and sizes (98 and 46 bytes). The three 24x12 records are frame selections for the player animation tables. The 24x32 and 32x11 records are installed by the event scripts at $091B and $0929; their exact on-screen object identities remain under investigation.
 
 The animation/frame-pointer tables at `$0349` and `$0351` each have four little-endian entries selected by `$2009` state bits. These are distinct from the controller aim-pointer tables at `$0EE2` and `$0EF0`. The first uses ROM frame patterns A, B, C, B; the second references RAM-based pattern/animation records. These are typed `DW` entries in the assembly.
 
@@ -29,7 +29,7 @@ The animation/frame-pointer tables at `$0349` and `$0351` each have four little-
 For example, the first bytes of pattern A are the header `$03,$0C`, then one 24-bit row:
 
 ```asm
-OBJECT_PATTERN_24X12_A:
+PLAYER_FRAME_PATTERN_A_24X12:
         DB $03,$0C          ; width=3 bytes, height=12 rows
         DB $F0,$3F,$00      ; ####.... ..###### ........
 ```
@@ -50,3 +50,20 @@ The source displays each digit's ten literal bytes and eight-bit pixel row. No g
 - Confirm on-screen orientation, left/right shifts, and hardware-specific pixel composition against the original board or MAME.
 
 This analysis is limited to original code/data relationships and does not imply an executed emulator trace.
+
+## ROM record boundaries recovered in v20261121-0005
+
+The original drawing and VM expansion code now identifies these additional data structures:
+
+- `$0A5C–$0B73`: 28 more ten-row font glyph slots following the numeric digits, indexed as character codes `$3A–$55`. They are presented individually with original scanline bits in ASM.
+- `$0B74`: `SCENE_VERTICAL_STRIP_8X22` (header `01 16`), referenced by native scene draw lists at `$0F0E`, `$0F22` and `$0F36`.
+- `$0B8C`: `SCENE_WIDE_SHAPE_16X27` (header `02 1B`), also selected by scene draw lists.
+- `$0BC4–$0D8A`: seven consecutive `3 × 21` aim-direction patterns, 65 bytes each. These match the first player's seven ROM aim pointers and the second player's corresponding expanded RAM entries `$2100,$2141,...,$2286`.
+- `$0D8B–$0DFD`: three 24x12 player animation/frame sources; selected by the first player in ROM and the second through the corresponding RAM-expanded copies.
+- `$0DFD` and `$0E5F`: event-installed object graphics (24x32 and 32x11).
+- `$0E8D`: zero terminator of the packed graphics expansion stream.
+- `$0E8E`: special-object 24x28 pattern, referenced by the 15-byte initialization record at `$0F52`. Its last two stored bytes at `$0EE2–$0EE3` also form the unused `DW $2000` zero-index entry of the Player 1 aim table; source bytes are deliberately shared, not duplicated.
+- `$0F0E/$0F22/$0F36`: destination/pattern 16-bit pointer pairs consumed by the scene-drawing routine.
+- `$0F3A/$0F52/$0F61`: state setup, special-object initialization and encoded display text records.
+
+These names document code-proven ownership and dimensions, rather than guessing historical DNA symbols or assigning unverified pictured-object identities.

@@ -92,3 +92,10 @@ Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB or
 - Add conservative region headings for larger font-like/packed-graphics/table byte spans; full sprite identity and sub-record boundaries remain RE work.
 - Clarify player aim DW entries, even-byte controller offsets, shared table boundary, and RAM descriptor destination.
 - **Static preservation:** all 1812 assembler instructions/data directives retained in original order, with only explicitly documented symbol-prefix substitutions. Native zmac, ROM SHA-1 and MAME must be rechecked after this source formatting pass.
+
+## v20261121-0005 — deeper original data ownership and aim-table cleanup
+
+- Decode 28 additional 8x10 font slot records, scene patterns 1x22 and 2x27, and seven 3x21 aim-direction ROM patterns, using original record-header lengths and original pointer references.
+- Decode scene draw-list pointer pairs ($0F0E/$0F22/$0F36), state records ($0F3A), special-object initialization ($0F52), and source-record boundaries in encoded text ($0F61 onward).
+- Interpret $0E8D as VM packed-graphics terminator and $0E8E as a 3x28 special-object pattern whose last two bytes deliberately overlap the unused first-player aim-table entry at $0EE2.
+- Keep byte-for-byte original DB/DW data. All rebuilt data sections were checked for identical emitted byte sequences in memory before publishing. Native zmac, four-chip hashes and MAME need separate execution after this source change.

@@ -58,3 +58,9 @@ The retained original ROM and direct native assembler verification remain the fi
 - Large ROM data regions near the score font, $0C00 device boundary and later game tables received bounded category headings without inventing original DNA routine names, sprite identity or record formats.
 - Remaining task: derive exact glyph/graphics/text record boundaries from the native callers and verify rendering behavior in MAME; initial category comments are not proof of finer segmentation.
 - Directive stream preservation checked statically (1812 directives), but **new source commit has not been assembled or tested in MAME**.
+
+## v20261121-0005 — graphics/aim RE progress
+
+- Seven 3x21 aim frames, two smaller scene shapes, 28 font slots, and a special 3x28 object pattern are now expressed as structured source data.
+- Event object records and first/second-player frame sources have role-based names based on native caller paths. Exact appearance/obstacle identification remains open until visible draw-state verification.
+- Source data reconstruction includes explicit original byte-preservation checks for the transformed sections. All original code bytes outside those data sections remain unchanged; assembly and MAME execution are not yet performed after this pass.

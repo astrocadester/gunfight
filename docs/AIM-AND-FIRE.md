@@ -94,3 +94,11 @@ The VM installs game object records while native controller actions update their
 - [Command scripts](decoded-scripts.md)
 
 **Verification:** This contract is established by direct 8080 instruction and source-data inspection. Native zmac byte-identity and emulator validation remain separate checks.
+
+## Source formatting and overlap, v20261121-0005
+
+The ASM aim tables now list one `DW` per entry without redundant per-line comments. The shared offsets and the owner of each pointer are documented in the table above. First-player active graphics entries use their identified ROM symbols `AIM_DIRECTION_PATTERN_0` through `AIM_DIRECTION_PATTERN_6`; second-player active entries continue to refer to their actual RAM locations.
+
+The unused Player 1 zero-offset word at `$0EE2` also supplies the last two stored bytes of `SPECIAL_OBJECT_PATTERN_24X28`, whose declared 3-by-28 raster begins at `$0E8E`. The original code does not select the unused zero-offset entry, so its address value is incidental to aiming while still meaningful as source bitmap data.
+
+The seven shot adjustment pairs are kept as `DB` pairs in ascending direction-offset order, with a single header explaining coordinate arithmetic. They are not 16-bit pointers and do not receive speculative compass direction names.

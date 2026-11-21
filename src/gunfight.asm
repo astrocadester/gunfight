@@ -781,7 +781,7 @@ CLEAR_PENDING_BITMAP_DESCRIPTOR:
 ; Four 16-bit drawing/animation source pointers for each player.
 ; The state bits at $2009 select one of four entries (index 0,2,4,6).
 PLAYER_ONE_FRAME_POINTERS:
-        DW OBJECT_PATTERN_24X12_A,OBJECT_PATTERN_24X12_B,OBJECT_PATTERN_24X12_C,OBJECT_PATTERN_24X12_B
+        DW PLAYER_FRAME_PATTERN_A_24X12,PLAYER_FRAME_PATTERN_B_24X12,PLAYER_FRAME_PATTERN_C_24X12,PLAYER_FRAME_PATTERN_B_24X12
 
 PLAYER_TWO_FRAME_POINTERS:
         DW $22C7,$22ED,$2313,$22ED
@@ -2315,7 +2315,7 @@ CMD_091B_INCREMENT_BCD_AND_RESET:
         DW $2005 ; BCD counter
         DW $202A ; descriptor address
         DB $20 ; flags
-        DW $0DFD ; link pointer
+        DW EVENT_OBJECT_PATTERN_24X32 ; initial object graphic
 
 ; $0923: Set the output mode and update RAM $2014.
 CMD_0923_OUTPUT_AND_SET_2014:
@@ -2337,7 +2337,7 @@ CMD_0929_INITIALIZE_OBJECT:
         DB $0B
         DW $202A ; descriptor address
         DB $10 ; flags
-        DW $0E5F ; link pointer
+        DW EVENT_OBJECT_PATTERN_32X11 ; initial object graphic
 
 ; $092F: Render the first player's status fields.
 CMD_092F_DRAW_STATUS_202C:
@@ -2831,103 +2831,647 @@ FONT_SCORE_DIGITS:
         DB $7C ; .#####..
         DB $3C ; ..####..
 
-; Additional font-like and symbol bitmap bytes after the score digits.
-; Contains repeated 8-bit row patterns; exact glyph boundaries remain under RE.
-ADDITIONAL_FONT_AND_SYMBOL_BITMAPS:
-        DB $10,$38,$38,$38,$38,$38 ; next graphic data
-        DB $38,$38,$38,$7C,$C0,$C0,$C0,$C0,$C0,$C0,$00,$00
-        DB $C0,$C0,$00,$00,$00,$00,$00,$00,$00,$00,$C0,$C0
-        DB $00,$00,$00,$20,$40,$FF,$40,$20,$00,$00,$F0,$C0
-        DB $A0,$90,$08,$04,$02,$01,$00,$00,$78,$FC,$CC,$E0
-        DB $70,$30,$30,$00,$30,$30,$00,$00,$00,$00,$00,$00
-        DB $00,$00,$00,$00,$18,$3C,$7E,$66,$66,$66,$7E,$7E
-        DB $66,$66,$3E,$7E,$66,$66,$3E,$7E,$66,$66,$7E,$3E
-        DB $3C,$7E,$66,$06,$06,$06,$06,$66,$7E,$3C,$3E,$7E
-        DB $66,$66,$66,$66,$66,$66,$7E,$3E,$7E,$7E,$06,$06
-        DB $3E,$3E,$06,$06,$7E,$7E,$7E,$7E,$06,$06,$3E,$3E
-        DB $06,$06,$06,$06,$3C,$7E,$66,$06,$06,$76,$76,$66
-        DB $7E,$3C,$66,$66,$66,$66,$7E,$7E,$66,$66,$66,$66
-        DB $3C,$3C,$18,$18,$18,$18,$18,$18,$3C,$3C,$06,$06
-        DB $06,$06,$06,$06,$06,$06,$7E,$7E,$C3,$C3,$E7,$E7
-        DB $FF,$FF,$DB,$C3,$C3,$C3,$66,$66,$6E,$6E,$7E,$7E
-        DB $76,$76,$66,$66,$3C,$7E,$66,$66,$66,$66,$66,$66
-        DB $7E,$3C,$3E,$7E,$66,$66,$7E,$3E,$06,$06,$06,$06
-        DB $3E,$7E,$66,$66,$7E,$3E,$76,$66,$66,$66,$3C,$7E
-        DB $66,$06,$3E,$7C,$60,$66,$7E,$3C,$7E,$7E,$18,$18
-        DB $18,$18,$18,$18,$18,$18,$66,$66,$66,$66,$66,$66
-        DB $66,$66,$7E,$3C,$66,$66,$66,$66,$66,$7E,$3C,$3C
-        DB $18,$18,$C3,$C3,$C3,$DB,$FF,$FF,$E7,$E7,$C3,$C3
-        DB $66,$66,$7E,$3C,$18,$18,$18,$18,$18,$18,$01,$16
-        DB $10,$18,$18,$18,$18,$58,$78,$1B,$1A,$1E,$1E,$98
-        DB $98,$78,$38,$18,$18,$18,$18,$18,$18,$18,$02,$1B
-        DB $00,$01,$00,$03,$80,$03,$C0,$07,$C0,$07,$60,$1D
-        DB $00,$31,$80,$07,$E0,$1F,$F0,$3D,$38,$39,$04,$41
-        DB $80,$03,$C0,$07,$E0,$0F,$F8,$1F,$3E,$29,$07,$E9
-        DB $00,$01,$00,$09,$00,$05,$00,$05,$08,$1F,$38,$1B
-        DB $38,$29,$CC,$37,$FE,$5D,$03,$15,$00,$05,$00,$80
-        DB $0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8
-        ; Packed bits, successive 3-byte groups (raw MSB-to-LSB preview):
-        ; ....##.# ........ #.......
-        ; ....##.# ........ #.......
-        ; ....#### ........ ##..#...
-        ; #..##### ........ #####...
+; -----------------------------------------------------------------------------
+; Display font continuation, 28 ten-scanline glyph slots ($3A-$55).
+; Each slot is ten literal bytes, addressed by the game's font renderer.
+; Slots are named by their encoded character value, not inferred artwork.
+; -----------------------------------------------------------------------------
 
-; Continuation of packed graphics data across the third ROM device.
-; The byte sequence is preserved; further record boundaries require xrefs.
-GRAPHICS_BITSTREAM_CONTINUATION:
-        DB $FF,$00,$C0,$17,$80,$C0,$3F,$50,$C0,$7F,$60,$C0
-        DB $1F,$30,$80,$1F,$38,$00,$07,$1C,$80,$0F,$0E,$F8
-        DB $FF,$07,$FC,$FF,$03,$CE,$FF,$01,$C6,$1F,$00,$C6
-        DB $1F,$00,$C6,$1F,$00,$C6
+; Glyph code $3A at ROM $0A5C.
+FONT_GLYPH_3A:
+        DB $10 ; ...#....
+        DB $38 ; ..###...
+        DB $38 ; ..###...
+        DB $38 ; ..###...
+        DB $38 ; ..###...
+        DB $38 ; ..###...
+        DB $38 ; ..###...
+        DB $38 ; ..###...
+        DB $38 ; ..###...
+        DB $7C ; .#####..
 
-        ORG $0C00
-; Device 7609e.bin, SHA1 de3f2e6841122bbe6e2fda5b87d37842c072289a
-; Packed graphics and game tables.
+; Glyph code $3B at ROM $0A66.
+FONT_GLYPH_3B:
+        DB $C0 ; ##......
+        DB $C0 ; ##......
+        DB $C0 ; ##......
+        DB $C0 ; ##......
+        DB $C0 ; ##......
+        DB $C0 ; ##......
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $C0 ; ##......
+        DB $C0 ; ##......
 
-; Continuation of packed graphics in device 7609e.bin.
-; Do not interpret each row of DB as a separate image or instruction.
-GRAPHICS_DEVICE_E_DATA:
-        DB $1F,$00,$FA,$3F,$00,$03,$15,$00,$05,$00,$80,$0D
-        DB $00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8,$FF
-        DB $00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0,$1F
-        DB $C0,$80,$1F,$70,$00,$07,$3C,$80,$0F,$0F,$F8,$FF
-        DB $03,$FC,$FF,$01,$CE,$FF,$00,$C6,$1F,$00,$C6,$1F
-        DB $00,$C6,$1F,$00,$C6,$1F,$00,$FA,$3F,$00,$03,$15
-        DB $00,$05,$00,$80,$0D,$00,$80,$0D,$00,$80,$0F,$00
-        DB $C8,$9F,$00,$F8,$FF,$00,$C0,$17,$00,$C0,$3F,$00
-        DB $C0,$7F,$00,$C0,$1F,$00,$80,$1F,$C0,$00,$07,$38
-        DB $80,$0F,$0C,$F8,$FF,$0F,$FC,$FF,$03,$CE,$7F,$00
-        DB $C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00
-        DB $FA,$3F,$00,$03,$15,$00,$05,$00,$80,$0D,$00,$80
-        DB $0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8,$FF,$00,$C0
-        DB $17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0,$1F,$00,$80
-        DB $1F,$00,$00,$07,$08,$80,$0F,$F0,$F8,$FF,$1F,$FC
-        DB $FF,$0F,$CE,$FF,$00,$C6,$1F,$00,$C6,$1F,$00,$C6
-        DB $1F,$00,$C6,$1F,$00,$FA,$3F,$00,$03,$15,$00,$05
-        DB $00,$80,$0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F
-        DB $00,$F8,$FF,$00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F
-        DB $00,$C0,$1F,$00,$80,$1F,$00,$00,$07,$00,$80,$0F
-        DB $00,$F8,$3F,$00,$FC,$FF,$01,$CE,$FF,$0F,$C6,$1F
-        DB $7F,$C6,$1F,$00,$C6,$1F,$00,$C6,$1F,$00,$FA,$3F
-        DB $00,$03,$15,$00,$05,$00,$80,$0D,$00,$80,$0D,$00
+; Glyph code $3C at ROM $0A70.
+FONT_GLYPH_3C:
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $C0 ; ##......
+        DB $C0 ; ##......
 
-PACKED_GRAPHICS_BITSTREAM:
-        DB $80,$0F,$00,$C8,$9F,$00,$F8,$FF,$00,$C0,$17,$00
-        DB $C0,$3F,$00,$C0,$7F,$00,$C0,$1F,$00,$80,$1F,$00
-        DB $00,$07,$00,$80,$0F,$00,$F8,$3F,$00,$FC,$FF,$00
-        DB $CE,$FF,$01,$C6,$FF,$07,$C6,$1F,$1E,$C6,$1F,$70
-        DB $C6,$1F,$00,$FA,$3F,$00,$03,$15,$00,$05,$00,$80
-        DB $0D,$00,$80,$0D,$00,$80,$0F,$00,$C8,$9F,$00,$F8
-        DB $FF,$00,$C0,$17,$00,$C0,$3F,$00,$C0,$7F,$00,$C0
-        DB $1F,$00,$80,$1F,$00,$00,$07,$00,$80,$0F,$00,$F8
-        DB $3F,$00,$FC,$7F,$00,$CE,$FF,$01,$C6,$FF,$03,$C6
-        DB $1F,$17,$C6,$1F,$0E,$C6,$1F,$14,$FA,$3F,$20
+; Glyph code $3D at ROM $0A7A.
+FONT_GLYPH_3D:
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $20 ; ..#.....
+        DB $40 ; .#......
+        DB $FF ; ########
+        DB $40 ; .#......
+        DB $20 ; ..#.....
+        DB $00 ; ........
+        DB $00 ; ........
+
+; Glyph code $3E at ROM $0A84.
+FONT_GLYPH_3E:
+        DB $F0 ; ####....
+        DB $C0 ; ##......
+        DB $A0 ; #.#.....
+        DB $90 ; #..#....
+        DB $08 ; ....#...
+        DB $04 ; .....#..
+        DB $02 ; ......#.
+        DB $01 ; .......#
+        DB $00 ; ........
+        DB $00 ; ........
+
+; Glyph code $3F at ROM $0A8E.
+FONT_GLYPH_3F:
+        DB $78 ; .####...
+        DB $FC ; ######..
+        DB $CC ; ##..##..
+        DB $E0 ; ###.....
+        DB $70 ; .###....
+        DB $30 ; ..##....
+        DB $30 ; ..##....
+        DB $00 ; ........
+        DB $30 ; ..##....
+        DB $30 ; ..##....
+
+; Glyph code $40 at ROM $0A98.
+FONT_GLYPH_40:
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+        DB $00 ; ........
+
+; Glyph code $41 at ROM $0AA2.
+FONT_GLYPH_41:
+        DB $18 ; ...##...
+        DB $3C ; ..####..
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+
+; Glyph code $42 at ROM $0AAC.
+FONT_GLYPH_42:
+        DB $3E ; ..#####.
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $3E ; ..#####.
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3E ; ..#####.
+
+; Glyph code $43 at ROM $0AB6.
+FONT_GLYPH_43:
+        DB $3C ; ..####..
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+
+; Glyph code $44 at ROM $0AC0.
+FONT_GLYPH_44:
+        DB $3E ; ..#####.
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3E ; ..#####.
+
+; Glyph code $45 at ROM $0ACA.
+FONT_GLYPH_45:
+        DB $7E ; .######.
+        DB $7E ; .######.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $3E ; ..#####.
+        DB $3E ; ..#####.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $7E ; .######.
+        DB $7E ; .######.
+
+; Glyph code $46 at ROM $0AD4.
+FONT_GLYPH_46:
+        DB $7E ; .######.
+        DB $7E ; .######.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $3E ; ..#####.
+        DB $3E ; ..#####.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+
+; Glyph code $47 at ROM $0ADE.
+FONT_GLYPH_47:
+        DB $3C ; ..####..
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $76 ; .###.##.
+        DB $76 ; .###.##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+
+; Glyph code $48 at ROM $0AE8.
+FONT_GLYPH_48:
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+
+; Glyph code $49 at ROM $0AF2.
+FONT_GLYPH_49:
+        DB $3C ; ..####..
+        DB $3C ; ..####..
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $3C ; ..####..
+        DB $3C ; ..####..
+
+; Glyph code $4A at ROM $0AFC.
+FONT_GLYPH_4A:
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $7E ; .######.
+        DB $7E ; .######.
+
+; Glyph code $4B at ROM $0B06.
+FONT_GLYPH_4B:
+        DB $C3 ; ##....##
+        DB $C3 ; ##....##
+        DB $E7 ; ###..###
+        DB $E7 ; ###..###
+        DB $FF ; ########
+        DB $FF ; ########
+        DB $DB ; ##.##.##
+        DB $C3 ; ##....##
+        DB $C3 ; ##....##
+        DB $C3 ; ##....##
+
+; Glyph code $4C at ROM $0B10.
+FONT_GLYPH_4C:
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $6E ; .##.###.
+        DB $6E ; .##.###.
+        DB $7E ; .######.
+        DB $7E ; .######.
+        DB $76 ; .###.##.
+        DB $76 ; .###.##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+
+; Glyph code $4D at ROM $0B1A.
+FONT_GLYPH_4D:
+        DB $3C ; ..####..
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+
+; Glyph code $4E at ROM $0B24.
+FONT_GLYPH_4E:
+        DB $3E ; ..#####.
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3E ; ..#####.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+        DB $06 ; .....##.
+
+; Glyph code $4F at ROM $0B2E.
+FONT_GLYPH_4F:
+        DB $3E ; ..#####.
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3E ; ..#####.
+        DB $76 ; .###.##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+
+; Glyph code $50 at ROM $0B38.
+FONT_GLYPH_50:
+        DB $3C ; ..####..
+        DB $7E ; .######.
+        DB $66 ; .##..##.
+        DB $06 ; .....##.
+        DB $3E ; ..#####.
+        DB $7C ; .#####..
+        DB $60 ; .##.....
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+
+; Glyph code $51 at ROM $0B42.
+FONT_GLYPH_51:
+        DB $7E ; .######.
+        DB $7E ; .######.
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+
+; Glyph code $52 at ROM $0B4C.
+FONT_GLYPH_52:
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+
+; Glyph code $53 at ROM $0B56.
+FONT_GLYPH_53:
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+        DB $3C ; ..####..
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+
+; Glyph code $54 at ROM $0B60.
+FONT_GLYPH_54:
+        DB $C3 ; ##....##
+        DB $C3 ; ##....##
+        DB $C3 ; ##....##
+        DB $DB ; ##.##.##
+        DB $FF ; ########
+        DB $FF ; ########
+        DB $E7 ; ###..###
+        DB $E7 ; ###..###
+        DB $C3 ; ##....##
+        DB $C3 ; ##....##
+
+; Glyph code $55 at ROM $0B6A.
+FONT_GLYPH_55:
+        DB $66 ; .##..##.
+        DB $66 ; .##..##.
+        DB $7E ; .######.
+        DB $3C ; ..####..
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
 
 ; -----------------------------------------------------------------------------
-; OBJECT_PATTERN_24X12_A: 3 bytes per row (24 stored bits) x 12 rows.
+; Eight-bit-wide, 22-row scene element; rendered by scene draw sets.
+; Original width/height header: 1 bytes per row by 22 rows.
+; -----------------------------------------------------------------------------
+SCENE_VERTICAL_STRIP_8X22:
+        DB $01,$16 ; width in bytes, height in rows
+        DB $10 ; ...#....
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $58 ; .#.##...
+        DB $78 ; .####...
+        DB $1B ; ...##.##
+        DB $1A ; ...##.#.
+        DB $1E ; ...####.
+        DB $1E ; ...####.
+        DB $98 ; #..##...
+        DB $98 ; #..##...
+        DB $78 ; .####...
+        DB $38 ; ..###...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+        DB $18 ; ...##...
+
+; -----------------------------------------------------------------------------
+; Sixteen-bit-wide, 27-row scene element; rendered by scene draw sets.
+; Original width/height header: 2 bytes per row by 27 rows.
+; -----------------------------------------------------------------------------
+SCENE_WIDE_SHAPE_16X27:
+        DB $02,$1B ; width in bytes, height in rows
+        DB $00,$01 ; ........ .......#
+        DB $00,$03 ; ........ ......##
+        DB $80,$03 ; #....... ......##
+        DB $C0,$07 ; ##...... .....###
+        DB $C0,$07 ; ##...... .....###
+        DB $60,$1D ; .##..... ...###.#
+        DB $00,$31 ; ........ ..##...#
+        DB $80,$07 ; #....... .....###
+        DB $E0,$1F ; ###..... ...#####
+        DB $F0,$3D ; ####.... ..####.#
+        DB $38,$39 ; ..###... ..###..#
+        DB $04,$41 ; .....#.. .#.....#
+        DB $80,$03 ; #....... ......##
+        DB $C0,$07 ; ##...... .....###
+        DB $E0,$0F ; ###..... ....####
+        DB $F8,$1F ; #####... ...#####
+        DB $3E,$29 ; ..#####. ..#.#..#
+        DB $07,$E9 ; .....### ###.#..#
+        DB $00,$01 ; ........ .......#
+        DB $00,$09 ; ........ ....#..#
+        DB $00,$05 ; ........ .....#.#
+        DB $00,$05 ; ........ .....#.#
+        DB $08,$1F ; ....#... ...#####
+        DB $38,$1B ; ..###... ...##.##
+        DB $38,$29 ; ..###... ..#.#..#
+        DB $CC,$37 ; ##..##.. ..##.###
+        DB $FE,$5D ; #######. .#.###.#
+
+; -----------------------------------------------------------------------------
+; AIM_DIRECTION_PATTERN_0: 24 stored bits x 21 rows.
+; Original ROM $0BC4; copied to RAM $2100 by VM word $0F.
+; Selected by a controller direction through an indexed graphics pointer.
+; -----------------------------------------------------------------------------
+AIM_DIRECTION_PATTERN_0:
+        DB $03,$15 ; width in bytes, height in rows
+        DB $00,$05,$00 ; ........ .....#.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $C8,$9F,$00 ; ##..#... #..##### ........
+        DB $F8,$FF,$00 ; #####... ######## ........
+        DB $C0,$17,$80 ; ##...... ...#.### #.......
+        DB $C0,$3F,$50 ; ##...... ..###### .#.#....
+        DB $C0,$7F,$60 ; ##...... .####### .##.....
+        DB $C0,$1F,$30 ; ##...... ...##### ..##....
+        DB $80,$1F,$38 ; #....... ...##### ..###...
+        DB $00,$07,$1C ; ........ .....### ...###..
+        DB $80,$0F,$0E ; #....... ....#### ....###.
+        DB $F8,$FF,$07 ; #####... ######## .....###
+        DB $FC,$FF,$03 ; ######.. ######## ......##
+        DB $CE,$FF,$01 ; ##..###. ######## .......#
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $FA,$3F,$00 ; #####.#. ..###### ........
+
+; -----------------------------------------------------------------------------
+; AIM_DIRECTION_PATTERN_1: 24 stored bits x 21 rows.
+; Original ROM $0C05; copied to RAM $2141 by VM word $0F.
+; Selected by a controller direction through an indexed graphics pointer.
+; -----------------------------------------------------------------------------
+AIM_DIRECTION_PATTERN_1:
+        DB $03,$15 ; width in bytes, height in rows
+        DB $00,$05,$00 ; ........ .....#.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $C8,$9F,$00 ; ##..#... #..##### ........
+        DB $F8,$FF,$00 ; #####... ######## ........
+        DB $C0,$17,$00 ; ##...... ...#.### ........
+        DB $C0,$3F,$00 ; ##...... ..###### ........
+        DB $C0,$7F,$00 ; ##...... .####### ........
+        DB $C0,$1F,$C0 ; ##...... ...##### ##......
+        DB $80,$1F,$70 ; #....... ...##### .###....
+        DB $00,$07,$3C ; ........ .....### ..####..
+        DB $80,$0F,$0F ; #....... ....#### ....####
+        DB $F8,$FF,$03 ; #####... ######## ......##
+        DB $FC,$FF,$01 ; ######.. ######## .......#
+        DB $CE,$FF,$00 ; ##..###. ######## ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $FA,$3F,$00 ; #####.#. ..###### ........
+
+; -----------------------------------------------------------------------------
+; AIM_DIRECTION_PATTERN_2: 24 stored bits x 21 rows.
+; Original ROM $0C46; copied to RAM $2182 by VM word $0F.
+; Selected by a controller direction through an indexed graphics pointer.
+; -----------------------------------------------------------------------------
+AIM_DIRECTION_PATTERN_2:
+        DB $03,$15 ; width in bytes, height in rows
+        DB $00,$05,$00 ; ........ .....#.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $C8,$9F,$00 ; ##..#... #..##### ........
+        DB $F8,$FF,$00 ; #####... ######## ........
+        DB $C0,$17,$00 ; ##...... ...#.### ........
+        DB $C0,$3F,$00 ; ##...... ..###### ........
+        DB $C0,$7F,$00 ; ##...... .####### ........
+        DB $C0,$1F,$00 ; ##...... ...##### ........
+        DB $80,$1F,$C0 ; #....... ...##### ##......
+        DB $00,$07,$38 ; ........ .....### ..###...
+        DB $80,$0F,$0C ; #....... ....#### ....##..
+        DB $F8,$FF,$0F ; #####... ######## ....####
+        DB $FC,$FF,$03 ; ######.. ######## ......##
+        DB $CE,$7F,$00 ; ##..###. .####### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $FA,$3F,$00 ; #####.#. ..###### ........
+
+; -----------------------------------------------------------------------------
+; AIM_DIRECTION_PATTERN_3: 24 stored bits x 21 rows.
+; Original ROM $0C87; copied to RAM $21C3 by VM word $0F.
+; Selected by a controller direction through an indexed graphics pointer.
+; -----------------------------------------------------------------------------
+AIM_DIRECTION_PATTERN_3:
+        DB $03,$15 ; width in bytes, height in rows
+        DB $00,$05,$00 ; ........ .....#.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $C8,$9F,$00 ; ##..#... #..##### ........
+        DB $F8,$FF,$00 ; #####... ######## ........
+        DB $C0,$17,$00 ; ##...... ...#.### ........
+        DB $C0,$3F,$00 ; ##...... ..###### ........
+        DB $C0,$7F,$00 ; ##...... .####### ........
+        DB $C0,$1F,$00 ; ##...... ...##### ........
+        DB $80,$1F,$00 ; #....... ...##### ........
+        DB $00,$07,$08 ; ........ .....### ....#...
+        DB $80,$0F,$F0 ; #....... ....#### ####....
+        DB $F8,$FF,$1F ; #####... ######## ...#####
+        DB $FC,$FF,$0F ; ######.. ######## ....####
+        DB $CE,$FF,$00 ; ##..###. ######## ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $FA,$3F,$00 ; #####.#. ..###### ........
+
+; -----------------------------------------------------------------------------
+; AIM_DIRECTION_PATTERN_4: 24 stored bits x 21 rows.
+; Original ROM $0CC8; copied to RAM $2204 by VM word $0F.
+; Selected by a controller direction through an indexed graphics pointer.
+; -----------------------------------------------------------------------------
+AIM_DIRECTION_PATTERN_4:
+        DB $03,$15 ; width in bytes, height in rows
+        DB $00,$05,$00 ; ........ .....#.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $C8,$9F,$00 ; ##..#... #..##### ........
+        DB $F8,$FF,$00 ; #####... ######## ........
+        DB $C0,$17,$00 ; ##...... ...#.### ........
+        DB $C0,$3F,$00 ; ##...... ..###### ........
+        DB $C0,$7F,$00 ; ##...... .####### ........
+        DB $C0,$1F,$00 ; ##...... ...##### ........
+        DB $80,$1F,$00 ; #....... ...##### ........
+        DB $00,$07,$00 ; ........ .....### ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $F8,$3F,$00 ; #####... ..###### ........
+        DB $FC,$FF,$01 ; ######.. ######## .......#
+        DB $CE,$FF,$0F ; ##..###. ######## ....####
+        DB $C6,$1F,$7F ; ##...##. ...##### .#######
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $FA,$3F,$00 ; #####.#. ..###### ........
+
+; -----------------------------------------------------------------------------
+; AIM_DIRECTION_PATTERN_5: 24 stored bits x 21 rows.
+; Original ROM $0D09; copied to RAM $2245 by VM word $0F.
+; Selected by a controller direction through an indexed graphics pointer.
+; -----------------------------------------------------------------------------
+AIM_DIRECTION_PATTERN_5:
+        DB $03,$15 ; width in bytes, height in rows
+        DB $00,$05,$00 ; ........ .....#.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $C8,$9F,$00 ; ##..#... #..##### ........
+        DB $F8,$FF,$00 ; #####... ######## ........
+        DB $C0,$17,$00 ; ##...... ...#.### ........
+        DB $C0,$3F,$00 ; ##...... ..###### ........
+        DB $C0,$7F,$00 ; ##...... .####### ........
+        DB $C0,$1F,$00 ; ##...... ...##### ........
+        DB $80,$1F,$00 ; #....... ...##### ........
+        DB $00,$07,$00 ; ........ .....### ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $F8,$3F,$00 ; #####... ..###### ........
+        DB $FC,$FF,$00 ; ######.. ######## ........
+        DB $CE,$FF,$01 ; ##..###. ######## .......#
+        DB $C6,$FF,$07 ; ##...##. ######## .....###
+        DB $C6,$1F,$1E ; ##...##. ...##### ...####.
+        DB $C6,$1F,$70 ; ##...##. ...##### .###....
+        DB $C6,$1F,$00 ; ##...##. ...##### ........
+        DB $FA,$3F,$00 ; #####.#. ..###### ........
+
+; -----------------------------------------------------------------------------
+; AIM_DIRECTION_PATTERN_6: 24 stored bits x 21 rows.
+; Original ROM $0D4A; copied to RAM $2286 by VM word $0F.
+; Selected by a controller direction through an indexed graphics pointer.
+; -----------------------------------------------------------------------------
+AIM_DIRECTION_PATTERN_6:
+        DB $03,$15 ; width in bytes, height in rows
+        DB $00,$05,$00 ; ........ .....#.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0D,$00 ; #....... ....##.# ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $C8,$9F,$00 ; ##..#... #..##### ........
+        DB $F8,$FF,$00 ; #####... ######## ........
+        DB $C0,$17,$00 ; ##...... ...#.### ........
+        DB $C0,$3F,$00 ; ##...... ..###### ........
+        DB $C0,$7F,$00 ; ##...... .####### ........
+        DB $C0,$1F,$00 ; ##...... ...##### ........
+        DB $80,$1F,$00 ; #....... ...##### ........
+        DB $00,$07,$00 ; ........ .....### ........
+        DB $80,$0F,$00 ; #....... ....#### ........
+        DB $F8,$3F,$00 ; #####... ..###### ........
+        DB $FC,$7F,$00 ; ######.. .####### ........
+        DB $CE,$FF,$01 ; ##..###. ######## .......#
+        DB $C6,$FF,$03 ; ##...##. ######## ......##
+        DB $C6,$1F,$17 ; ##...##. ...##### ...#.###
+        DB $C6,$1F,$0E ; ##...##. ...##### ....###.
+        DB $C6,$1F,$14 ; ##...##. ...##### ...#.#..
+        DB $FA,$3F,$20 ; #####.#. ..###### ..#.....
+
+; -----------------------------------------------------------------------------
+; PLAYER_FRAME_PATTERN_A_24X12: 3 bytes per row (24 stored bits) x 12 rows.
 ; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
-OBJECT_PATTERN_24X12_A:
+PLAYER_FRAME_PATTERN_A_24X12:
         DB $03,$0C ; width (bytes), height (rows)
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $F0,$3F,$00 ; ####.... ..###### ........
@@ -2943,10 +3487,10 @@ OBJECT_PATTERN_24X12_A:
         DB $F0,$F0,$00 ; ####.... ####.... ........
 
 ; -----------------------------------------------------------------------------
-; OBJECT_PATTERN_24X12_B: 3 bytes per row (24 stored bits) x 12 rows.
+; PLAYER_FRAME_PATTERN_B_24X12: 3 bytes per row (24 stored bits) x 12 rows.
 ; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
-OBJECT_PATTERN_24X12_B:
+PLAYER_FRAME_PATTERN_B_24X12:
         DB $03,$0C ; width (bytes), height (rows)
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $E0,$3F,$00 ; ###..... ..###### ........
@@ -2962,10 +3506,10 @@ OBJECT_PATTERN_24X12_B:
         DB $00,$3C,$00 ; ........ ..####.. ........
 
 ; -----------------------------------------------------------------------------
-; OBJECT_PATTERN_24X12_C: 3 bytes per row (24 stored bits) x 12 rows.
+; PLAYER_FRAME_PATTERN_C_24X12: 3 bytes per row (24 stored bits) x 12 rows.
 ; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
-OBJECT_PATTERN_24X12_C:
+PLAYER_FRAME_PATTERN_C_24X12:
         DB $03,$0C ; width (bytes), height (rows)
         DB $F0,$3F,$00 ; ####.... ..###### ........
         DB $F0,$3F,$00 ; ####.... ..###### ........
@@ -2981,10 +3525,10 @@ OBJECT_PATTERN_24X12_C:
         DB $F0,$F0,$00 ; ####.... ####.... ........
 
 ; -----------------------------------------------------------------------------
-; OBJECT_PATTERN_24X32: 3 bytes per row (24 stored bits) x 32 rows.
+; EVENT_OBJECT_PATTERN_24X32: 3 bytes per row (24 stored bits) x 32 rows.
 ; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
-OBJECT_PATTERN_24X32:
+EVENT_OBJECT_PATTERN_24X32:
         DB $03,$20 ; width (bytes), height (rows)
         DB $04,$00,$00 ; .....#.. ........ ........
         DB $19,$02,$00 ; ...##..# ......#. ........
@@ -3020,10 +3564,10 @@ OBJECT_PATTERN_24X32:
         DB $00,$00,$0F ; ........ ........ ....####
 
 ; -----------------------------------------------------------------------------
-; OBJECT_PATTERN_32X11: 4 bytes per row (32 stored bits) x 11 rows.
+; EVENT_OBJECT_PATTERN_32X11: 4 bytes per row (32 stored bits) x 11 rows.
 ; Inline bits are shown MSB-first, not necessarily final display orientation.
 ; -----------------------------------------------------------------------------
-OBJECT_PATTERN_32X11:
+EVENT_OBJECT_PATTERN_32X11:
         DB $04,$0B ; width (bytes), height (rows)
         DB $A0,$00,$00,$00 ; #.#..... ........ ........ ........
         DB $B0,$01,$00,$00 ; #.##.... .......# ........ ........
@@ -3037,80 +3581,174 @@ OBJECT_PATTERN_32X11:
         DB $00,$00,$FF,$40 ; ........ ........ ######## .#......
         DB $00,$00,$00,$20 ; ........ ........ ........ ..#.....
 
-; Further packed shape bits after the confirmed 32-by-11 pattern.
-; Shape boundaries and display orientation remain to be resolved.
-ADDITIONAL_PACKED_SHAPE_BITS:
-        DB $00,$03,$1C,$00,$7E,$00,$80,$FF,$01,$E0,$FF,$07
-        DB $F0,$FF,$0F,$F0,$FF,$0F,$F8,$FF,$1F,$F8,$FF,$1F
-        DB $F8,$FF,$1F,$F8,$E7,$1F,$F0,$C3,$0F,$F0,$81,$0F
-        DB $E0,$81,$07,$C0,$81,$03,$80,$C3,$01,$F0,$FF,$0F
-        DB $E0,$FF,$07,$E0,$FF,$07,$F4,$FF,$2F,$84,$3C,$21
-        DB $04,$81,$20,$04,$81,$20,$06,$81,$60,$F7,$FF,$EF
-        DB $06,$81,$60,$04,$00,$20,$04,$00,$20,$04,$00,$20
-        DB $04 ; preceding graphic/table byte at $0EE1
+; -----------------------------------------------------------------------------
+; Expanded-graphics terminator at $0E8D. The VM unpacker returns here.
+; -----------------------------------------------------------------------------
+EXPANDED_GRAPHICS_TERMINATOR:
+        DB $00
 
-; Each controller aim value uses input bits 4-6 to produce an EVEN
-; byte offset ($02-$0E). The zero offset returns without a lookup.
-; INSTALL_AIM_DESCRIPTOR reads one 16-bit entry and stores it
-; in the selected player's object descriptor at offset +$0B.
+; -----------------------------------------------------------------------------
+; Special-object 24x28 pattern at ROM $0E8E, referenced from $0F5D.
+; 3 source bytes per row, 28 rows. Its last row shares the $0EE2-$0EE3
+; bytes used as the unused first entry in PLAYER_ONE_AIM_POINTERS.
+; The overlap is intentional source-byte ownership: DO NOT duplicate.
+; -----------------------------------------------------------------------------
+SPECIAL_OBJECT_PATTERN_24X28:
+        DB $03,$1C ; width in bytes, height in rows
+        DB $00,$7E,$00 ; ........ .######. ........
+        DB $80,$FF,$01 ; #....... ######## .......#
+        DB $E0,$FF,$07 ; ###..... ######## .....###
+        DB $F0,$FF,$0F ; ####.... ######## ....####
+        DB $F0,$FF,$0F ; ####.... ######## ....####
+        DB $F8,$FF,$1F ; #####... ######## ...#####
+        DB $F8,$FF,$1F ; #####... ######## ...#####
+        DB $F8,$FF,$1F ; #####... ######## ...#####
+        DB $F8,$E7,$1F ; #####... ###..### ...#####
+        DB $F0,$C3,$0F ; ####.... ##....## ....####
+        DB $F0,$81,$0F ; ####.... #......# ....####
+        DB $E0,$81,$07 ; ###..... #......# .....###
+        DB $C0,$81,$03 ; ##...... #......# ......##
+        DB $80,$C3,$01 ; #....... ##....## .......#
+        DB $F0,$FF,$0F ; ####.... ######## ....####
+        DB $E0,$FF,$07 ; ###..... ######## .....###
+        DB $E0,$FF,$07 ; ###..... ######## .....###
+        DB $F4,$FF,$2F ; ####.#.. ######## ..#.####
+        DB $84,$3C,$21 ; #....#.. ..####.. ..#....#
+        DB $04,$81,$20 ; .....#.. #......# ..#.....
+        DB $04,$81,$20 ; .....#.. #......# ..#.....
+        DB $06,$81,$60 ; .....##. #......# .##.....
+        DB $F7,$FF,$EF ; ####.### ######## ###.####
+        DB $06,$81,$60 ; .....##. #......# .##.....
+        DB $04,$00,$20 ; .....#.. ........ ..#.....
+        DB $04,$00,$20 ; .....#.. ........ ..#.....
+        DB $04,$00,$20 ; .....#.. ........ ..#.....
+; Last row: $0EE1 plus shared $0EE2-$0EE3 (the DW immediately below).
+        DB $04
+
+; -----------------------------------------------------------------------------
+; Player 1 aiming graphics pointer table ($0EE2).
+; INPUT bits 4-6 select even byte offsets $02,$04,...,$0E.
+; $00 is rejected by the controller handler; it shares the final two
+; bytes of SPECIAL_OBJECT_PATTERN_24X28 and is never dereferenced.
+; The table selects a 24x21 pattern in original ROM.
+; -----------------------------------------------------------------------------
 PLAYER_ONE_AIM_POINTERS:
-        DW $2000 ; zero input rejected before lookup
-        DW $0D4A ; input-derived offset $02; $0D4A descriptor
-        DW $0C46 ; input-derived offset $04; $0C46 descriptor
-        DW $0C87 ; input-derived offset $06; $0C87 descriptor
-        DW $0BC4 ; input-derived offset $08; $0BC4 descriptor
-        DW $0D09 ; input-derived offset $0A; $0D09 descriptor
-        DW $0C05 ; input-derived offset $0C; $0C05 descriptor
+        DW $2000
+        DW AIM_DIRECTION_PATTERN_6
+        DW AIM_DIRECTION_PATTERN_2
+        DW AIM_DIRECTION_PATTERN_3
+        DW AIM_DIRECTION_PATTERN_0
+        DW AIM_DIRECTION_PATTERN_5
+        DW AIM_DIRECTION_PATTERN_1
 
-; Both player tables share the single DW at ROM $0EF0:
-; P1 offset $0E and P2 offset $00 are the SAME original bytes.
+; -----------------------------------------------------------------------------
+; Player 2 aiming graphics table ($0EF0), same direction offsets.
+; Each active entry points to the corresponding graphic expanded to RAM
+; at $2100 by VM word $0F. The first entry ($0CC8) is shared with
+; Player 1's last direction and cannot be selected by Player 2's zero
+; offset (rejected before reading the table).
+; -----------------------------------------------------------------------------
 PLAYER_TWO_AIM_POINTERS:
-        DW $0CC8 ; also P1 offset $0E; P2 zero input rejected
-        DW $2286 ; input-derived offset $02; $2286 descriptor
-        DW $2182 ; input-derived offset $04; $2182 descriptor
-        DW $21C3 ; input-derived offset $06; $21C3 descriptor
-        DW $2100 ; input-derived offset $08; $2100 descriptor
-        DW $2245 ; input-derived offset $0A; $2245 descriptor
-        DW $2141 ; input-derived offset $0C; $2141 descriptor
+        DW AIM_DIRECTION_PATTERN_4
+        DW $2286
+        DW $2182
+        DW $21C3
+        DW $2100
+        DW $2245
+        DW $2141
 
-; This entry is also the base used for packed shot parameter byte lookups
-; at +$02,+$04,...,+$0E. Those bytes are NOT a third DW pointer table.
+; -----------------------------------------------------------------------------
+; Player 2 final direction pattern at $0EFE; also shot lookup base.
+; The shared bytes form pointer $2204 for direction $0E.
+; Projectile selection starts at +$02, so no shot lookup reads them.
+; -----------------------------------------------------------------------------
 SHOT_PARAMETER_BASE:
-        DW $2204 ; P2 direction offset $0E / shot-parameter base $0EFE
+        DW $2204
 
-; This seven-entry table is indexed from SHOT_PARAMETER_BASE by the
-; same nonzero even $02..$0E direction offsets. Unlike the aim tables,
-; its entries are relative coordinate byte pairs, NOT pointers.
+; -----------------------------------------------------------------------------
+; Shot origin adjustment pairs at $0F00, indexed by the SAME nonzero
+; even direction offsets $02..$0E used by aiming. Each record is
+; (X adjustment, Y adjustment) in 8-bit modular arithmetic, added
+; to the player's origin by SELECT_AIM_DESCRIPTOR; these are NOT DWs.
+; Rows below are in ascending direction-index order.
+; -----------------------------------------------------------------------------
 SHOT_DIRECTION_DELTAS:
-        DB $06,$1A ; offset $02: low and high coordinate adjustments
-        DB $FF,$08 ; offset $04
-        DB $00,$0C ; offset $06
-        DB $FA,$FE ; offset $08
-        DB $03,$16 ; offset $0A
-        DB $FD,$02 ; offset $0C
-        DB $01,$14 ; offset $0E
+        DB $06,$1A
+        DB $FF,$08
+        DB $00,$0C
+        DB $FA,$FE
+        DB $03,$16
+        DB $FD,$02
+        DB $01,$14
 
-; Additional game parameter records and encoded on-screen text.
-; The section includes repeated structured bytes and display-character codes.
-GAME_TABLES_AND_ENCODED_TEXT:
-        DB $13,$28,$74 ; following unrelated game data
-        DB $0B,$33,$36,$74,$0B,$12,$30,$74,$0B,$32,$36,$8C
-        DB $0B,$12,$28,$8C,$0B,$0C,$38,$74,$0B,$0C,$2A,$74
-        DB $0B,$0D,$30,$74,$0B,$0C,$2A,$8C,$0B,$0C,$38,$8C
-        DB $0B,$0F,$30,$74,$0B,$11,$11,$11,$52,$65,$99,$99
-        DB $99,$11,$11,$11,$53,$75,$99,$99,$99,$11,$11,$11
-        DB $54,$85,$99,$99,$99,$C4,$00,$74,$70,$20,$FF,$A0
-        DB $0A,$B4,$00,$00,$8E,$0E,$00,$00,$47,$41,$4B,$45
-        DB $40,$40,$40,$40,$4D,$53,$45,$4F,$40,$40,$40,$40
+; -----------------------------------------------------------------------------
+; Game display scene set selected from state at $2002 ($0F0E).
+; Each entry contains a bitmap destination (HL), then the address
+; of its original width/height-prefixed source pattern (DE).
+; -----------------------------------------------------------------------------
+SCENE_DRAW_TABLE_PRIMARY:
+        DW $2813,SCENE_VERTICAL_STRIP_8X22
+        DW $3633,SCENE_VERTICAL_STRIP_8X22
+        DW $3012,SCENE_VERTICAL_STRIP_8X22
+        DW $3632,SCENE_WIDE_SHAPE_16X27
+        DW $2812,SCENE_WIDE_SHAPE_16X27
+
+; -----------------------------------------------------------------------------
+; Secondary game display set selected from state at $2005 ($0F22).
+; Each entry contains a bitmap destination (HL), then the address
+; of its original width/height-prefixed source pattern (DE).
+; -----------------------------------------------------------------------------
+SCENE_DRAW_TABLE_SECONDARY:
+        DW $380C,SCENE_VERTICAL_STRIP_8X22
+        DW $2A0C,SCENE_VERTICAL_STRIP_8X22
+        DW $300D,SCENE_VERTICAL_STRIP_8X22
+        DW $2A0C,SCENE_WIDE_SHAPE_16X27
+        DW $380C,SCENE_WIDE_SHAPE_16X27
+
+; -----------------------------------------------------------------------------
+; Final scene pattern drawn in output mode $04 ($0F36).
+; Each entry contains a bitmap destination (HL), then the address
+; of its original width/height-prefixed source pattern (DE).
+; -----------------------------------------------------------------------------
+SCENE_DRAW_TABLE_FINAL:
+        DW $300F,SCENE_VERTICAL_STRIP_8X22
+
+; Three eight-byte game-state setup records at $0F3A-$0F51.
+SCENE_STATE_SETUP_RECORDS:
+        DB $11,$11,$11,$52,$65,$99,$99,$99
+        DB $11,$11,$11,$53,$75,$99,$99,$99
+        DB $11,$11,$11,$54,$85,$99,$99,$99
+
+; Fifteen original object-initialization bytes at $0F52, copied to
+; $2050 by GAME_PREPARE_SPECIAL_OBJECT. These include $0E8E, the
+; pointer to SPECIAL_OBJECT_PATTERN_24X28.
+SPECIAL_OBJECT_INITIALIZATION_BYTES:
+        DB $C4,$00,$74,$70,$20,$FF,$A0,$0A,$B4,$00,$00,$8E,$0E,$00,$00
+
+; Encoded game text/format records ($0F61-$0FFF). Referenced by
+; interpreted DRAW_FORMATTED_DATA packets, not raw 8080 opcodes.
+; Keep native encoding and leading record bytes unchanged.
+
+GAME_TEXT_RECORD_F61:
+        DB $47,$41,$4B,$45,$40,$40,$40,$40,$4D,$53,$45,$4F
+
+GAME_TEXT_RECORD_F6D:
         DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
         DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$40,$40,$00,$00,$25,$47,$52,$4C,$40,$46
-        DB $49,$47,$48,$51,$49,$4C,$50,$45,$4F,$51,$40,$43
-        DB $4D,$49,$4C,$40,$40,$40,$40,$40,$40,$40,$40,$40
-        DB $40,$40,$47,$45,$51,$40,$4F,$45,$41,$44,$55,$3A
-        DB $3A,$3A,$3A,$3A,$3A,$20,$3A,$3A,$3A,$3A,$3A,$3A
-        DB $40,$40,$44,$4F,$41,$54,$3B,$40,$40,$47,$4D,$51
-        DB $40,$4B,$45,$3B,$48,$45,$55,$40,$4E,$41,$4F,$44
-        DB $4C,$45,$4F,$3B,$2E,$55,$4D,$52,$40,$48,$41,$53
-        DB $45,$40,$43,$4F,$45,$44,$49,$51,$3C,$00,$00,$1A
-        DB $4E,$52,$50,$48,$40,$42,$52,$51,$51,$4D,$4C
+        DB $40,$40,$40,$40,$40,$40,$40,$40,$00,$00,$25,$47
+        DB $52,$4C,$40,$46,$49,$47,$48,$51
+
+GAME_TEXT_RECORD_F99:
+        DB $49,$4C,$50,$45,$4F,$51,$40,$43,$4D,$49,$4C
+
+GAME_TEXT_RECORD_FA4:
+        DB $40,$40,$40,$40,$40,$40,$40,$40,$40,$40,$40
+
+GAME_TEXT_RECORD_FAF:
+        DB $47,$45,$51,$40,$4F,$45,$41,$44,$55,$3A,$3A,$3A
+        DB $3A,$3A,$3A,$20,$3A,$3A,$3A,$3A,$3A,$3A,$40,$40
+        DB $44,$4F,$41,$54,$3B,$40,$40,$47,$4D,$51,$40,$4B
+        DB $45,$3B,$48,$45,$55,$40,$4E,$41,$4F,$44,$4C,$45
+        DB $4F,$3B,$2E,$55,$4D,$52,$40,$48,$41,$53,$45,$40
+        DB $43,$4F,$45,$44,$49,$51,$3C,$00,$00,$1A,$4E,$52
+        DB $50,$48,$40,$42,$52,$51,$51,$4D,$4C
