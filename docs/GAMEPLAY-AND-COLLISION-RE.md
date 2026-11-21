@@ -14,7 +14,7 @@ input change (ports $00/$01)
           -> axis / aim / firing / round-input action
              fire: $04B0 or $0517
                  -> UPDATE_SHOT_STATE $04FA
-                 -> SELECT_AIM_DESCRIPTOR $037C
+                 -> CALCULATE_PROJECTILE_ORIGIN $037C
                  -> FIRE_INSTALL_PROJECTILE_FROM_DIRECTION
                     (one of four projectile records at $2063,$2075,$2087,$2099)
 
@@ -62,7 +62,7 @@ The eight axis entries write signed velocity components at player object offsets
 
 The common `UPDATE_SHOT_STATE` routine ($04FA) increments the shot counter and compares with `$06`. On the threshold path it writes the count to the fire-guard byte, and changes the round-state byte `$2003` to `$11` or `$02`, depending on its preceding value. It then uses `DRAW_FORMATTED_TEXT` with source `$0FA4` to update the on-screen shot indicator. Those writes do not themselves establish that a score was awarded.
 
-`FIRE_INSTALL_PROJECTILE_FROM_DIRECTION` uses `SELECT_AIM_DESCRIPTOR` ($037C), but **this is the shot-position helper, not the graphics-pointer installation**. It reads a two-byte relative X/Y adjustment at `SHOT_PARAMETER_BASE + direction_offset`; the source table begins at `$0EFE`, with the seven effective pairs at `$0F00–$0F0D`. The helper combines them with player-origin bytes at offsets `+0` and `+4`. The firing tail then disables interrupts, stores the new projectile status/coordinates, reenables interrupts and sets `$2014=$02`.
+`FIRE_INSTALL_PROJECTILE_FROM_DIRECTION` uses `CALCULATE_PROJECTILE_ORIGIN` ($037C), but **this is the shot-position helper, not the graphics-pointer installation**. It reads a two-byte relative X/Y adjustment at `SHOT_PARAMETER_BASE + direction_offset`; the source table begins at `$0EFE`, with the seven effective pairs at `$0F00–$0F0D`. The helper combines them with player-origin bytes at offsets `+0` and `+4`. The firing tail then disables interrupts, stores the new projectile status/coordinates, reenables interrupts and sets `$2014=$02`.
 
 The first `$0EFE–$0EFF` word is also the last Player 2 aim pointer. It is not accessed by valid, nonzero shot direction offsets.
 
@@ -161,3 +161,7 @@ Recommended test cases: P1 fires with a free slot; P1 fires with both slots acti
 | Which score/round transition corresponds to each event? | `DAA` counters, `$2008/$2009`, scripts | Gameplay trace through win, loss, draw and reset |
 
 **GF-RE-002 status: source-path reconstruction implemented; behavioral completion still in progress.** Closing the task requires the above runtime-supported state and hardware mappings. These obligations should not be silently reassigned to GF-RE-008 or called complete solely because the ROM rebuild passes.
+
+## v20261121-0002 — maintained assembly integration
+
+GF-RE-002 findings now have corresponding source symbols in [`src/gunfight.asm`](../src/gunfight.asm): `CALCULATE_PROJECTILE_ORIGIN` names the $037C direction-based coordinate helper, `PROJECTILE_EVENT_LOOKUP_RECORDS` names the $0F3A IRQ-indexed table, and nonallocating `EQU` aliases identify four projectile slots, two fire guards, two shot counters, event selector/context, and output latch timer. This distinguishes coordinate calculation from `INSTALL_AIM_DESCRIPTOR` at $044F, which selects player aiming graphics. Existing native instruction/data bytes are unchanged. Selector-to-visible-hit and physical output semantics remain unverified.
