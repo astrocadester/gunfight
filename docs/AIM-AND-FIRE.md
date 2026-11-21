@@ -42,7 +42,7 @@ The first player's selected values point into ROM graphics/data. Several values 
 
 ## Projectile placement uses different data
 
-The firing handlers begin at `$04B0` and `$0517`. Both load the saved direction from `$201A` or `$201B`, then use the common `SELECT_AIM_DESCRIPTOR` helper at `$037C` with lookup base `$0EFE`.
+The firing handlers begin at `$04B0` and `$0517`. Both load the saved direction from `$201A` or `$201B`, then use the common `CALCULATE_PROJECTILE_ORIGIN` helper at `$037C` with lookup base `$0EFE`.
 
 That **is not another aim-pointer lookup**. The helper treats the indexed bytes as relative coordinate components and combines them with the player object position:
 
@@ -88,9 +88,29 @@ The VM installs game object records while native controller actions update their
 
 ### Source cross references
 
-- `src/gunfight.asm`: `PLAYER_ONE_AIM_ACTION`, `PLAYER_TWO_AIM_ACTION`, `INSTALL_AIM_DESCRIPTOR`, `PLAYER_ONE_AIM_POINTERS`, `PLAYER_TWO_AIM_POINTERS`, `SHOT_PARAMETER_BASE`, `SHOT_DIRECTION_DELTAS` and `SELECT_AIM_DESCRIPTOR`.
+- `src/gunfight.asm`: `PLAYER_ONE_AIM_ACTION`, `PLAYER_TWO_AIM_ACTION`, `INSTALL_AIM_DESCRIPTOR`, `PLAYER_ONE_AIM_POINTERS`, `PLAYER_TWO_AIM_POINTERS`, `SHOT_PARAMETER_BASE`, `SHOT_DIRECTION_DELTAS` and `CALCULATE_PROJECTILE_ORIGIN`.
 - [Native implementation notes](NATIVE-WORD-IMPLEMENTATIONS.md)
 - [Graphics structures](GRAPHICS.md)
 - [Command scripts](decoded-scripts.md)
 
 **Verification:** This contract is established by direct 8080 instruction and source-data inspection. Native zmac byte-identity and emulator validation remain separate checks.
+
+## Source formatting and overlap, v20261121-0005
+
+The ASM aim tables now list one `DW` per entry without redundant per-line comments. The shared offsets and the owner of each pointer are documented in the table above. First-player active graphics entries use their identified ROM symbols `AIM_DIRECTION_PATTERN_0` through `AIM_DIRECTION_PATTERN_6`; second-player active entries continue to refer to their actual RAM locations.
+
+The unused Player 1 zero-offset word at `$0EE2` also supplies the last two stored bytes of `SPECIAL_OBJECT_PATTERN_24X28`, whose declared 3-by-28 raster begins at `$0E8E`. The original code does not select the unused zero-offset entry, so its address value is incidental to aiming while still meaningful as source bitmap data.
+
+The seven shot adjustment pairs are kept as `DB` pairs in ascending direction-offset order, with a single header explaining coordinate arithmetic. They are not 16-bit pointers and do not receive speculative compass direction names.
+
+## Complete gameplay path cross-reference
+
+The source-grounded fire-acceptance, projectile-slot lifecycle, IRQ selector and scoring paths are documented in [Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md). The seven direction-offset records here are inputs to the shared projectile-installation routine and should not be mistaken for hit-result or sound-code tables.
+
+## GF-RE-002 original ASM naming
+
+The direction-offset helper at $037C is now named `CALCULATE_PROJECTILE_ORIGIN`: it calculates projectile coordinates and never selects the player graphics pointer. `INSTALL_AIM_DESCRIPTOR` at $044F is the separate aim-graphics pointer installer. Projectile RAM slot addresses $2063, $2075, $2087 and $2099 have `EQU` names in the original-code assembly.
+
+## GF-RE-003 exact expanded aiming pattern mapping
+
+VM word $0F transforms seven consecutive 65-byte ROM aim records at $0BC4, $0C05, $0C46, $0C87, $0CC8, $0D09 and $0D4A into equally sized RAM records at $2100, $2141, $2182, $21C3, $2204, $2245 and $2286. The original 8080 copies header width/height and mirrors each stored raster row by reversing bits in each byte and reversing byte order. Player 2 uses these RAM copies, whereas Player 1 uses the original ROM patterns. The source now names the expanded targets `EXPANDED_AIM_DIRECTION_0` through `_6` while preserving their nonsequential pointer table order. This graphics transformation is separate from the shot-coordinate deltas at $0F00. See [GRAPHICS.md](GRAPHICS.md).

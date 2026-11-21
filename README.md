@@ -14,6 +14,9 @@ The maintained reconstruction is [`src/gunfight.asm`](src/gunfight.asm); [`build
 
 ## Build
 
+The `build/` directory is disposable at the repository root. The source is read directly without a Python generation step. The build creates the playable archive in `roms/` and never modifies `roms/original/`.
+
+
 Linux:
 
 ```sh
@@ -26,24 +29,24 @@ Windows 10/11:
 build.bat
 ```
 
-Both scripts assemble `src/gunfight.asm` with **zmac 1.3**, create a 4 KB program image, split it into the original four 1 KB devices, verify their SHA-1 identities, and produce `roms/build/gunfight.zip` for MAME. Any ROM mismatch stops the build. Human-edited source is not regenerated during a build.
+Both scripts assemble `src/gunfight.asm` with **zmac 1.3**, create a 4 KB program image, split it into the original four 1 KB devices, verify their SHA-1 identities, and produce `roms/gunfight.zip` for MAME. Any ROM mismatch stops the build. Human-edited source is not regenerated during a build.
 
-Generated files:
+Generated files (ignored by Git):
 
 ```text
-roms/build/gunfight.bin
-roms/build/7609h.bin
-roms/build/7609g.bin
-roms/build/7609f.bin
-roms/build/7609e.bin
-roms/build/gunfight.zip
-src/zout/gunfight.lst
+build/gunfight.bin
+build/gunfight.lst
+build/7609h.bin
+build/7609g.bin
+build/7609f.bin
+build/7609e.bin
+roms/gunfight.zip
 ```
 
 ## Run in MAME
 
 ```sh
-mame gunfight -window -skip_gameinfo -rompath roms/build
+mame gunfight -window -skip_gameinfo -rompath roms
 ```
 
 ## ROM organization
@@ -65,6 +68,8 @@ The memory map identifies original ROM regions separately from working RAM, bitm
 
 ## Indexed game-command interpreter
 
+![Gun Fight command-stream interpreter](images/interpreter-gun-fight.svg)
+
 Gun Fight contains an early indexed VM at `$03A7`. Its script pointer is stored at RAM `$2000`, and its native command vector table starts at ROM `$09AE`. There are **21 native command handlers** (tokens `$00–$14`), with separate native input-action and event-script pointer tables.
 
 This 1975 indexed command architecture establishes an early foundation for DNA's later 8080 game-programming systems. Later titles retained and evolved the indexed-native-dispatch idea while changing their command vocabularies and scheduling; common architecture alone does not establish identical source or code.
@@ -85,6 +90,10 @@ The complete reconstructed commands and native effects are in [8080 word semanti
 
 ## Native code and input
 
+The original firing, projectile, event-selection, scoring and round-control paths are traced together in [Gameplay and collision RE](docs/GAMEPLAY-AND-COLLISION-RE.md). The source identifies exact RAM records and event-script destinations; collision outcomes and hardware sound signals still require MAME debugger and board-level verification.
+
+
+
 The Intel 8080 reset path initializes game state and enters the VM. Input handling samples ports `$00` and `$01`; a 24-entry table at `$097E` selects native movement, aim and firing actions. The two firing paths at `$04B0` and `$0517` share the shot-state service at `$04FA`. The aim handlers use even-byte offsets into separate 16-bit graphic-pointer tables; a related firing lookup uses direction-indexed coordinate adjustments. See [Aiming and firing](docs/AIM-AND-FIRE.md). Score conversion and formatted display are implemented by separate native services.
 
 The native source separates interrupt entries, callable services, VM handlers and internal branch/loop blocks. See [native control flow and register contracts](docs/NATIVE-CONTROL-FLOW.md), [internal block cross-references](docs/NATIVE-BLOCK-INVENTORY.md), [word implementations](docs/NATIVE-WORD-IMPLEMENTATIONS.md), and [interpreter dispatch](docs/interpreter.md).
@@ -93,7 +102,7 @@ The native source separates interrupt entries, callable services, VM handlers an
 
 Display-memory writes begin at `$2400`. The ROM contains character shapes, bit patterns, graphics tables, and object descriptors. The score/text renderer at `$05FB` uses ten scanline bytes per glyph with a 32-byte screen-line stride; the packed graphics expander at `$07AB` writes unpacked data into RAM beginning at `$2100`.
 
-The source includes inline 8×10 digit glyphs and five width/height-prefixed object patterns (24×12, 24×32, and 32×11 stored bits). Their layouts and native rendering paths are documented in [graphics and display formats](docs/GRAPHICS.md). [Data classification](docs/DB-PROVENANCE.md) distinguishes scripts, code, pointers, and remaining packed data.
+The source includes the original ten-row display font, the player aiming and animation patterns, and native width/height-prefixed object graphics. VM word `$0F` mirrors twelve ROM graphics records ($0BC4–$0E8C) into RAM ($2100–$23C8), retaining their dimensions. Player-two aim and animation pointers reference the RAM copies; see the complete source-to-RAM table in [graphics and display formats](docs/GRAPHICS.md). Their layouts and native rendering paths are documented in [graphics and display formats](docs/GRAPHICS.md). [Data classification](docs/DB-PROVENANCE.md) distinguishes scripts, code, pointers, and remaining packed data.
 
 ## Research and references
 

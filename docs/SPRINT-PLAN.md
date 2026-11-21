@@ -45,7 +45,7 @@ The next gate is native zmac compilation plus four-chip SHA-1 verification. Furt
 
 - Traced `PLAYER_ONE_AIM_ACTION`, `PLAYER_TWO_AIM_ACTION`, and `INSTALL_AIM_DESCRIPTOR`: `(input & $70)` rotated right three times yields **even byte offsets** `$02–$0E`; the seven effective entries are ordinary 16-bit pointers, not unaligned overlapping reads.
 - Typed the player-one and player-two aim pointer tables at `$0EE2` and `$0EF0` using original `DW` values, including their single shared boundary entry.
-- Identified `SHOT_PARAMETER_BASE=$0EFE` and seven non-pointer coordinate-adjustment byte pairs `$0F00–$0F0D`, used by `SELECT_AIM_DESCRIPTOR` at `$037C`. Corrected routine headers and source relationships. See [AIM-AND-FIRE.md](AIM-AND-FIRE.md).
+- Identified `SHOT_PARAMETER_BASE=$0EFE` and seven non-pointer coordinate-adjustment byte pairs `$0F00–$0F0D`, used by `CALCULATE_PROJECTILE_ORIGIN` at `$037C`. Corrected routine headers and source relationships. See [AIM-AND-FIRE.md](AIM-AND-FIRE.md).
 - Updated README, native implementation notes and graphics documentation. The Gun Fight repo retains **no dependency/link to WB**; the introductory architecture establishes the 1975 starting point without asserting identical later machine-code reuse.
 - Updated WB PR #45's 8080 chapter to explain the native input/table details, sprite/font recovery and Gun Fight's different dispatcher, with a compact local memory-map SVG. WB's outward source links remain to the Gun Fight repo's regular `main` paths, not to this development PR branch.
 - **Verification:** Independent static comparison confirms all 1,024 bytes of data in `$0C00–$0FFF` are unchanged from the previous PR #4 checkpoint. Existing static script and word aliases remain 82/21. Native assembler, chip hashes, MAME and hardware remain unexecuted in this pass.
@@ -67,3 +67,77 @@ The next gate is native zmac compilation plus four-chip SHA-1 verification. Furt
 5. Native bundled zmac compilation, original device SHA-1 checks, MAME gameplay, Windows build and physical board execution remain separately pending. No substitute language, compiler, interpreted gameplay or alternative hardware implementation was introduced.
 
 Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB original device hashes. Continue deeper dynamic object/collision, sound, and graphics hardware behavior RE only after the static findings have been checked against a running game.
+
+## v20261121-0001 — Checkmate-style build and tracked-artifact cleanup
+
+- PR #4 native source and research merged; the 92 named internal control-flow blocks, 21 VM words and graphics/source annotations remain authoritative.
+- Source builds directly with zmac v1.3 without Python. Linux and Windows scripts now put intermediate binary, listing and four chip images in ignored root `build/`, and package the play-ready set at ignored `roms/gunfight.zip`.
+- Remove previously committed output from `roms/build/` and `src/zout/`, the obsolete reconstruction action, and the redundant older SVG in `docs/`. The maintained map remains `images/gunfight-memory-map.svg`; original ROM remains tracked.
+- **Verified by user on PR #4 (2026-11-21):** Linux native assembly, all four original SHA-1 chip comparisons and MAME game execution passed.
+- **PR #5 changes remain to be verified:** new build output paths, Linux/Windows script execution and MAME loading from `roms/`. Hardware testing remains open.
+
+## v20261121-0002 — 280-ZZZAP build pattern alignment
+
+- Adopt the user-supplied 280-ZZZAP Linux and Windows build-script pattern, using four original Gun Fight 1 KB devices, a 4096-byte image, the existing Gun Fight SHA-1 checks, and bundled zmac v1.3.
+- Output remains root `build/` for temporary devices/listing and `roms/gunfight.zip` for MAME; neither `roms/build/` nor `src/zout/` is created or tracked.
+- Include the six JPEG images and Git cleanup pushed to the former PR #4 branch after its merge. The reviewed native 8080 assembly and memory-map SVG remain unchanged.
+- **Verification still required:** run the new Linux and Windows scripts and MAME against the relocated archive. PR #4 Linux ROM identity and MAME verification remain on record.
+
+## v20261121-0003 — source presentation and semantic labeling
+
+- Match Checkmate's standard source header and blank-line style without changing instructions or DB/DW values.
+- Reformat indexed script packets with preceding descriptive comment headers instead of repetitive inline opcode text.
+- Rename ROM table labels by their actual role: INPUT_ACTION_VECTOR, VM_WORD_VECTOR, EVENT_SCRIPT_VECTOR. Rename VM_WORD alias labels and dimension-only graphics patterns.
+- Wrap IRQ internal-block comments to readable widths while retaining existing precisely traced interrupt loop labels.
+- Add conservative region headings for larger font-like/packed-graphics/table byte spans; full sprite identity and sub-record boundaries remain RE work.
+- Clarify player aim DW entries, even-byte controller offsets, shared table boundary, and RAM descriptor destination.
+- **Static preservation:** all 1812 assembler instructions/data directives retained in original order, with only explicitly documented symbol-prefix substitutions. Native zmac, ROM SHA-1 and MAME must be rechecked after this source formatting pass.
+
+## v20261121-0005 — deeper original data ownership and aim-table cleanup
+
+- Decode 28 additional 8x10 font slot records, scene patterns 1x22 and 2x27, and seven 3x21 aim-direction ROM patterns, using original record-header lengths and original pointer references.
+- Decode scene draw-list pointer pairs ($0F0E/$0F22/$0F36), state records ($0F3A), special-object initialization ($0F52), and source-record boundaries in encoded text ($0F61 onward).
+- Interpret $0E8D as VM packed-graphics terminator and $0E8E as a 3x28 special-object pattern whose last two bytes deliberately overlap the unused first-player aim-table entry at $0EE2.
+- Keep byte-for-byte original DB/DW data. All rebuilt data sections were checked for identical emitted byte sequences in memory before publishing. Native zmac, four-chip hashes and MAME need separate execution after this source change.
+
+## v20261121-0006 — encoded display text and memory map
+
+- Native text handler at $05FB confirms that VM word $01's first operand counts rendered glyphs, with a 16-bit text source and screen destination. Codes $30 and above address glyph slots from $09F8; smaller values advance the bitmap position. These are not plain ASCII strings.
+- Reorganized $0F61–$0FFF as encoded display source entry points, labeling GAME OVER, GUN FIGHT, INSERT COIN, GET READY, DRAW and other prompts without changing the original byte values.
+- Updated device map and detailed memory document to show $09F8–$0B73 font, $0B74–$0BC3 scene shapes, $0BC4–$0D8A aim patterns spanning ROM devices, and the source-pointer table and display strings in device 7609e.bin.
+- **Verification supplied by user for prior commit v20261121-0005:** Linux zmac v1.3 build, all four original chip SHA-1 comparisons, and MAME gameplay PASS (average speed ~100%). This latest source-symbol/comment change still requires the ROM equality and emulator gate after pull.
+
+## v20261121-0007 — Gun Fight interpreter diagram and readable ROM text
+
+- Add transparent native SVG interpreter schematic using the 1975 Gun Fight script, $03A7 dispatcher, and correct representative $00-$14 word-number associations.
+- Embed diagram in README interpreter section.
+- Represent $0F61-$0FFF encoded display text as quoted DB byte strings, preserving nonprintable cursor controls as $xx. The quoted text is the stored glyph encoding, not conventional ASCII, so comments supply actual on-screen phrases.
+- Checked all 159 original encoded text bytes against the transformed literals; native zmac and MAME verification remain to be executed after this source edit.
+
+## v20261121-0001 — GF-RE-002 original gameplay and collision RE
+
+- Traced the native control-to-shot-to-IRQ-to-VM event pathway in the original Gun Fight 8080 assembly; documented exact four-slot allocation, shot counters/guards, source shot-direction deltas, event-selector RAM and nine event script destinations.
+- Documented object update loops, bitmap queue path, timer/BCD score service, round state and original port $01/$02/$03/$04 operations in `GAMEPLAY-AND-COLLISION-RE.md`.
+- Added four comment-only source clarifications; complete ordered directive stream compared unchanged. No generated code, substitute logic or additional tools enter the build.
+- GF-RE-002 is **in progress until MAME event/IRQ, collision and sound/cabinet outcomes are traced**. This change supplies the static implementation and a reproducible dynamic trace matrix, not fabricated behavioral PASS results.
+
+## v20261121-0002 — GF-RE-002 ASM integration
+
+- Updated original 8080 ASM with meaningful, evidence-based names: `CALCULATE_PROJECTILE_ORIGIN` ($037C) and `PROJECTILE_EVENT_LOOKUP_RECORDS` ($0F3A), plus nonallocating RAM `EQU` symbols for projectile slots, counters, guards and event state.
+- Improved projectile event qualification, lookup and ammunition/BCD glyph comments; synchronized gameplay and native docs.
+- **PASS static directive integrity:** 2,252 original instruction/data directives compared in order after resolving new symbols to original numeric operands, with no differences.
+- **PENDING:** native zmac build, four original ROM hash checks and MAME execution on the updated commit; behavioral event mapping remains open.
+
+## v20261121-0001 — GF-RE-003 graphics source integration
+
+- Mapped original 12 width/height raster records at ROM $0BC4–$0E8C to $2100–$23C8 in RAM: seven aiming, three player-animation, two event-object patterns; each header and original byte count was checked.
+- Decoded original expander $07AB's eight RRA/RLA shift pairs and backward byte stores as horizontal mirroring of complete stored raster rows.
+- Preserved original source bytes and hardware routines. Added native RAM EQU aliases, replaced bare second-player frame and aiming RAM addresses with these aliases, and corrected the previous ROM/RAM source commentary.
+- Updated GRAPHICS.md, source ownership and task status; on-screen orientation, hardware compositing, exact event appearance and clipping are pending dynamic validation.
+- Static original instruction/data comparison PASS (2,252 directives). Native build, all four original ROM SHA-1 checks and MAME are separate gates still pending for this branch.
+
+## v20261121-0002 — User native build and MAME verification for GF-RE-003
+
+- **PASS (user-reported, 2026-11-21):** the GF-RE-003 PR #7 branch builds successfully and runs in MAME.
+- The user confirmed build/runtime success without providing the complete command output or individual current-branch device SHA-1 lines in this report. Earlier PR #6 output confirmed all four original chip hashes; do not attribute those exact displayed hash results to PR #7 without its build log.
+- GF-RE-003 static ROM/RAM mapping is implemented; graphics-port composition, visual identities, clipping and physical hardware validation remain open.

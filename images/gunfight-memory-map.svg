@@ -1,5 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1235" viewBox="0 0 1200 1235" role="img" aria-labelledby="title description"><title id="title">Gun Fight Intel 8080 memory map</title><desc id="description">Four original 1 KB ROM devices, working RAM, generated graphics and bitmap display memory.</desc><rect width="1200" height="1235" fill="#0e1721"/><style>.title{fill:#f4f7fb;font:700 42px Georgia,serif}.subtitle{fill:#aac1d5;font:18px Arial,sans-serif}.range{fill:#ffffff;font:23px monospace}.heading{fill:#ffffff;font:700 24px Arial,sans-serif}.body{fill:#e2edf5;font:18px Arial,sans-serif}.small{fill:#c7d8e6;font:16px monospace}</style><text class="title" x="42" y="67">GUN FIGHT</text><text class="subtitle" x="44" y="104">1975 MIDWAY / DNA  •  INTEL 8080 ADDRESS SPACE</text><line x1="36" y1="130" x2="1164" y2="130" stroke="#7796ad" stroke-width="2"/><!-- Marquee cowboy: low, wide-legged gunslinger aiming right; inline vector artwork. -->
-<g transform="translate(979 12) scale(.89)" stroke-linecap="round" stroke-linejoin="round" aria-label="Crouching Gun Fight marquee cowboy">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1990" viewBox="0 0 1000 1990" role="img" aria-labelledby="title desc">
+<title id="title">Gun Fight Intel 8080 memory map</title><desc id="desc">Sea Wolf II style card memory map with RAM, display and four original Gun Fight ROM chips.</desc>
+<rect x="0" y="0" width="1000" height="1990" rx="0" fill="#0b1621" stroke="#0b1621" stroke-width="1"/>
+<text x="35" y="76" fill="#f4f7fa" font-size="54" font-weight="bold" font-family="Georgia,serif" text-anchor="start">GUN FIGHT</text>
+<text x="35" y="113" fill="#a9c1d4" font-size="19" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">1975 MIDWAY / DNA · INTEL 8080 ADDRESS SPACE</text>
+<g transform="translate(790 12) scale(.85)" stroke-linecap="round" stroke-linejoin="round" aria-label="Crouching Gun Fight marquee cowboy">
   <!-- Back leg thrust far to the left, with boot turned outward -->
   <path d="M88 80 Q69 85 49 95 L18 102 L3 109 L10 115 L35 111 L66 105 L91 96 Z" fill="#bd9d76" stroke="#8d7d64" stroke-width="2"/>
   <path d="M18 101 L1 101 L1 111 L22 112 L33 108" fill="#498c94" stroke="#285963" stroke-width="2"/>
@@ -39,11 +43,105 @@
   <path d="M94 23 L123 25" stroke="#82b3b2" stroke-width="4"/>
   <path d="M80 29 Q97 25 115 27 L140 29 L137 34 L112 36 L85 34 Q78 33 80 29 Z" fill="#403735" stroke="#2b2829" stroke-width="2"/>
   <path d="M93 30 L129 31" stroke="#9db9b5" stroke-width="3"/>
-</g><g transform="translate(32 154)"><rect width="1136" height="95" rx="14" fill="#485565" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$4000–$FFFF</text><text x="270" y="33" class="heading">Unmapped</text><text x="24" y="65" class="body">Display clear uses SP=$400F; further mapping is not identified.</text></g>
-<g transform="translate(32 264)"><rect width="1136" height="123" rx="14" fill="#145e4c" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$2400–$3FFF</text><text x="270" y="33" class="heading">Bitmap display and stack-driven clear</text><text x="24" y="65" class="body">Native graphics and text writers target the display.</text><text x="24" y="95" class="small">Screen clear temporarily uses SP=$400F; runtime stack starts at $2400.</text></g>
-<g transform="translate(32 402)"><rect width="1136" height="152" rx="14" fill="#145e4c" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$2000–$23FF</text><text x="270" y="33" class="heading">Working RAM and expanded graphics</text><text x="24" y="65" class="body">$2000: VM cursor   $2002+: scores, state, controls and timers</text><text x="24" y="95" class="small">$202A/$203D: player records    $2100+: expanded graphics</text></g>
-<g transform="translate(32 569)"><rect width="1136" height="88" rx="14" fill="#485565" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$1000–$1FFF</text><text x="270" y="33" class="heading">Unmapped</text><text x="24" y="65" class="body">No program ROM or working RAM is identified in this range.</text></g>
-<g transform="translate(32 672)"><rect width="1136" height="111" rx="14" fill="#603a69" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$0C00–$0FFF</text><text x="270" y="33" class="heading">7609e.bin — graphics and game data</text><text x="24" y="65" class="body">Packed images, font bytes, drawing tables and text.</text><text x="24" y="95" class="small">1 KB    SHA-1 de3f2e6841122bbe6e2fda5b87d37842c072289a</text></g>
-<g transform="translate(32 798)"><rect width="1136" height="111" rx="14" fill="#603a69" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$0800–$0BFF</text><text x="270" y="33" class="heading">7609f.bin — VM, scripts and tables</text><text x="24" y="65" class="body">$0821/$089B script roots  •  $097E input actions  •  $09AE word table</text><text x="24" y="95" class="small">1 KB    SHA-1 215b068663e431582591001cbe028929fa96d49f</text></g>
-<g transform="translate(32 924)"><rect width="1136" height="111" rx="14" fill="#603a69" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$0400–$07FF</text><text x="270" y="33" class="heading">7609g.bin — game and drawing services</text><text x="24" y="65" class="body">Control actions, shooting, scoring, graphics and VM handlers.</text><text x="24" y="95" class="small">1 KB    SHA-1 c177e3f72db9af17ab99b2481448ca26318184b9</text></g>
-<g transform="translate(32 1050)"><rect width="1136" height="111" rx="14" fill="#603a69" stroke="#a5b7c4" stroke-width="1"/><text x="24" y="33" class="range">$0000–$03FF</text><text x="270" y="33" class="heading">7609h.bin — native engine</text><text x="24" y="65" class="body">Reset/IRQ paths, object and video helpers; interpreter at $03A7.</text><text x="24" y="95" class="small">1 KB    SHA-1 99d01313e251818d336281700e206d9003c71dae</text></g><text class="subtitle" x="43" y="1200">ROM boundaries: original 1 KB chips. RAM/video regions: native address use; board mapping remains subject to schematics.</text></svg>
+</g>
+<line x1="30" x2="970" y1="144" y2="144" stroke="#94afc1"/>
+<rect x="25" y="162" width="950" height="156" rx="18" fill="#3d4855" stroke="#b4c9d8" stroke-width="1"/>
+<text x="46" y="202" fill="#d8e7f3" font-size="21" font-weight="normal" font-family="monospace" text-anchor="start">$4000–$FFFF</text>
+<text x="250" y="202" fill="#f3f6fa" font-size="25" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">Unmapped / Open Bus</text>
+<text x="46" y="232" fill="#e8f2fa" font-size="18" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">No program ROM or working RAM is identified above the bitmap display.</text>
+<rect x="878" y="176" width="75" height="27" rx="14" fill="#07111c" stroke="#b4c9d8" stroke-width="1"/><text x="915.5" y="195" fill="#eaf3fb" font-size="13" font-weight="normal" font-family="monospace" text-anchor="middle">48 KB</text>
+<rect x="45" y="243" width="910" height="57" rx="10" fill="#07111b" stroke="#b4c9d8" stroke-width="1"/>
+<text x="62" y="266" fill="#d6e4f0" font-size="15" font-weight="normal" font-family="monospace" text-anchor="start">UNMAPPED_HIGH_START  equ $4000</text><text x="62" y="291" fill="#d6e4f0" font-size="15" font-weight="normal" font-family="monospace" text-anchor="start">UNMAPPED_HIGH_END    equ $FFFF</text>
+<rect x="25" y="335" width="950" height="205" rx="18" fill="#196786" stroke="#b4c9d8" stroke-width="1"/>
+<text x="46" y="375" fill="#d8e7f3" font-size="21" font-weight="normal" font-family="monospace" text-anchor="start">$2400–$3FFF</text>
+<text x="250" y="375" fill="#f3f6fa" font-size="25" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">Bitmap Display</text>
+<text x="46" y="405" fill="#e8f2fa" font-size="18" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Native drawing, formatted text and stack-driven screen clearing.</text>
+<rect x="878" y="349" width="75" height="27" rx="14" fill="#07111c" stroke="#b4c9d8" stroke-width="1"/><text x="915.5" y="368" fill="#eaf3fb" font-size="13" font-weight="normal" font-family="monospace" text-anchor="middle">7 KB</text>
+<rect x="45" y="418" width="910" height="105" rx="10" fill="#07111b" stroke="#b4c9d8" stroke-width="1"/>
+<text x="62" y="444" fill="#d6e4f0" font-size="15" font-weight="normal" font-family="monospace" text-anchor="start">DISPLAY_RAM_BASE     equ $2400</text><text x="62" y="469" fill="#d6e4f0" font-size="15" font-weight="normal" font-family="monospace" text-anchor="start">DISPLAY_RAM_LIMIT    equ $4000</text><text x="62" y="494" fill="#d6e4f0" font-size="15" font-weight="normal" font-family="monospace" text-anchor="start">SCREEN_CLEAR_SP      equ $400F  ; temporary zero-fill stack</text>
+<rect x="25" y="557" width="950" height="345" rx="18" fill="#1c6048" stroke="#b4c9d8" stroke-width="1"/>
+<text x="46" y="597" fill="#d8e7f3" font-size="21" font-weight="normal" font-family="monospace" text-anchor="start">$2000–$23FF</text>
+<text x="250" y="597" fill="#f3f6fa" font-size="25" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">Work RAM / Expanded Graphics</text>
+<text x="46" y="627" fill="#e8f2fa" font-size="18" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Interpreter state, player records, counters and unpacked graphics.</text>
+<rect x="878" y="571" width="75" height="27" rx="14" fill="#07111c" stroke="#b4c9d8" stroke-width="1"/><text x="915.5" y="590" fill="#eaf3fb" font-size="13" font-weight="normal" font-family="monospace" text-anchor="middle">1 KB</text>
+<rect x="45" y="640" width="910" height="40" rx="7" fill="#081c19" stroke="#6ba993" stroke-width="1"/>
+<rect x="45" y="640" width="5" height="40" rx="0" fill="#67c4a2" stroke="#67c4a2" stroke-width="1"/>
+<text x="65" y="666" fill="#a8e9d4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$2000–$2001</text>
+<text x="307" y="666" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Current script/VM continuation pointer</text>
+<rect x="45" y="688" width="910" height="40" rx="7" fill="#081c19" stroke="#6ba993" stroke-width="1"/>
+<rect x="45" y="688" width="5" height="40" rx="0" fill="#67c4a2" stroke="#67c4a2" stroke-width="1"/>
+<text x="65" y="714" fill="#a8e9d4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$2002–$201D</text>
+<text x="307" y="714" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Score, controller, event and timer state</text>
+<rect x="45" y="736" width="910" height="40" rx="7" fill="#081c19" stroke="#6ba993" stroke-width="1"/>
+<rect x="45" y="736" width="5" height="40" rx="0" fill="#67c4a2" stroke="#67c4a2" stroke-width="1"/>
+<text x="65" y="762" fill="#a8e9d4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$202A / $203D</text>
+<text x="307" y="762" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Two player object-record bases</text>
+<rect x="45" y="784" width="910" height="40" rx="7" fill="#081c19" stroke="#6ba993" stroke-width="1"/>
+<rect x="45" y="784" width="5" height="40" rx="0" fill="#67c4a2" stroke="#67c4a2" stroke-width="1"/>
+<text x="65" y="810" fill="#a8e9d4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$20B9 / $20C5</text>
+<text x="307" y="810" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Visual selector / wait counter</text>
+<rect x="45" y="832" width="910" height="40" rx="7" fill="#081c19" stroke="#6ba993" stroke-width="1"/>
+<rect x="45" y="832" width="5" height="40" rx="0" fill="#67c4a2" stroke="#67c4a2" stroke-width="1"/>
+<text x="65" y="858" fill="#a8e9d4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$2100+</text>
+<text x="307" y="858" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Expanded aiming and frame graphics</text>
+<rect x="25" y="918" width="950" height="146" rx="18" fill="#3d4855" stroke="#b4c9d8" stroke-width="1"/>
+<text x="46" y="958" fill="#d8e7f3" font-size="21" font-weight="normal" font-family="monospace" text-anchor="start">$1000–$1FFF</text>
+<text x="250" y="958" fill="#f3f6fa" font-size="25" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">Unmapped / Open Bus</text>
+<text x="46" y="988" fill="#e8f2fa" font-size="18" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">No program ROM or working RAM is identified in this range.</text>
+<rect x="878" y="932" width="75" height="27" rx="14" fill="#07111c" stroke="#b4c9d8" stroke-width="1"/><text x="915.5" y="951" fill="#eaf3fb" font-size="13" font-weight="normal" font-family="monospace" text-anchor="middle">4 KB</text>
+<rect x="45" y="997" width="910" height="49" rx="10" fill="#07111b" stroke="#b4c9d8" stroke-width="1"/>
+<text x="62" y="1028" fill="#d6e4f0" font-size="15" font-weight="normal" font-family="monospace" text-anchor="start">UNMAPPED_MID_START   equ $1000    ; through $1FFF</text>
+<rect x="25" y="1081" width="950" height="730" rx="18" fill="#593167" stroke="#b4c9d8" stroke-width="1"/>
+<text x="46" y="1121" fill="#d8e7f3" font-size="21" font-weight="normal" font-family="monospace" text-anchor="start">$0000–$0FFF</text>
+<text x="250" y="1121" fill="#f3f6fa" font-size="25" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">Program ROM / VM / Graphics</text>
+<text x="46" y="1151" fill="#e8f2fa" font-size="18" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Four original 1 KB chips containing native 8080 code and game data.</text>
+<rect x="878" y="1095" width="75" height="27" rx="14" fill="#07111c" stroke="#b4c9d8" stroke-width="1"/><text x="915.5" y="1114" fill="#eaf3fb" font-size="13" font-weight="normal" font-family="monospace" text-anchor="middle">4 KB</text>
+<rect x="45" y="1174" width="445" height="132" rx="12" fill="#07111c" stroke="#e4d5c3" stroke-width="1"/>
+<text x="267" y="1202" fill="#f5f3ed" font-size="21" font-weight="bold" font-family="monospace" text-anchor="middle">7609H.BIN</text>
+<text x="267" y="1228" fill="#7ec8ef" font-size="15" font-weight="normal" font-family="monospace" text-anchor="middle">$0000–$03FF  ·  1 KB</text>
+<text x="267" y="1252" fill="#dbe7ef" font-size="15" font-weight="normal" font-family="Arial,sans-serif" text-anchor="middle">Reset, IRQ and interpreter</text>
+<text x="267" y="1279" fill="#9cbbd0" font-size="12" font-weight="normal" font-family="monospace" text-anchor="middle">SHA-1 99d01313e251818d336281700e206d9003c71dae</text>
+<rect x="510" y="1174" width="445" height="132" rx="12" fill="#07111c" stroke="#e4d5c3" stroke-width="1"/>
+<text x="732" y="1202" fill="#f5f3ed" font-size="21" font-weight="bold" font-family="monospace" text-anchor="middle">7609G.BIN</text>
+<text x="732" y="1228" fill="#7ec8ef" font-size="15" font-weight="normal" font-family="monospace" text-anchor="middle">$0400–$07FF  ·  1 KB</text>
+<text x="732" y="1252" fill="#dbe7ef" font-size="15" font-weight="normal" font-family="Arial,sans-serif" text-anchor="middle">Game, scoring and drawing services</text>
+<text x="732" y="1279" fill="#9cbbd0" font-size="12" font-weight="normal" font-family="monospace" text-anchor="middle">SHA-1 c177e3f72db9af17ab99b2481448ca26318184b9</text>
+<rect x="45" y="1320" width="445" height="132" rx="12" fill="#07111c" stroke="#e4d5c3" stroke-width="1"/>
+<text x="267" y="1348" fill="#f5f3ed" font-size="21" font-weight="bold" font-family="monospace" text-anchor="middle">7609F.BIN</text>
+<text x="267" y="1374" fill="#7ec8ef" font-size="15" font-weight="normal" font-family="monospace" text-anchor="middle">$0800–$0BFF  ·  1 KB</text>
+<text x="267" y="1398" fill="#dbe7ef" font-size="15" font-weight="normal" font-family="Arial,sans-serif" text-anchor="middle">Scripts, VM vectors and font</text>
+<text x="267" y="1425" fill="#9cbbd0" font-size="12" font-weight="normal" font-family="monospace" text-anchor="middle">SHA-1 215b068663e431582591001cbe028929fa96d49f</text>
+<rect x="510" y="1320" width="445" height="132" rx="12" fill="#07111c" stroke="#e4d5c3" stroke-width="1"/>
+<text x="732" y="1348" fill="#f5f3ed" font-size="21" font-weight="bold" font-family="monospace" text-anchor="middle">7609E.BIN</text>
+<text x="732" y="1374" fill="#7ec8ef" font-size="15" font-weight="normal" font-family="monospace" text-anchor="middle">$0C00–$0FFF  ·  1 KB</text>
+<text x="732" y="1398" fill="#dbe7ef" font-size="15" font-weight="normal" font-family="Arial,sans-serif" text-anchor="middle">Graphics, pointer tables and text</text>
+<text x="732" y="1425" fill="#9cbbd0" font-size="12" font-weight="normal" font-family="monospace" text-anchor="middle">SHA-1 de3f2e6841122bbe6e2fda5b87d37842c072289a</text>
+<rect x="45" y="1475" width="910" height="310" rx="10" fill="#07111c" stroke="#b4c9d8" stroke-width="1"/>
+<text x="64" y="1504" fill="#f0f4fb" font-size="17" font-weight="bold" font-family="monospace" text-anchor="start">ROM STRUCTURE / ORIGINAL ADDRESS OWNERSHIP</text>
+<text x="65" y="1539" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$03A7</text>
+<text x="277" y="1539" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Indexed 8080 command dispatcher</text>
+<text x="65" y="1568" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$0821 / $089B</text>
+<text x="277" y="1568" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Interpreted startup / game script roots</text>
+<text x="65" y="1597" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$097E / $09AE</text>
+<text x="277" y="1597" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Input-action vectors / 21 VM word vectors</text>
+<text x="65" y="1626" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$09F8–$0B73</text>
+<text x="277" y="1626" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">10-row display font</text>
+<text x="65" y="1655" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$0B74–$0D8A</text>
+<text x="277" y="1655" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Scene and player aiming patterns</text>
+<text x="65" y="1684" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$0D8B–$0EE3</text>
+<text x="277" y="1684" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Player frames and event object graphics</text>
+<text x="65" y="1713" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$0F0E–$0F39</text>
+<text x="277" y="1713" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Scene drawing pointer tables</text>
+<text x="65" y="1742" fill="#a4d9f4" font-size="16" font-weight="normal" font-family="monospace" text-anchor="start">$0F61–$0FFF</text>
+<text x="277" y="1742" fill="#e8f2fa" font-size="17" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Encoded game messages and display controls</text>
+<line x1="29" x2="970" y1="1831" y2="1831" stroke="#8eafc3"/>
+<rect x="26" y="1845" width="948" height="35" rx="8" fill="#06101a" stroke="#b4c9d8" stroke-width="1"/>
+<text x="44" y="1868" fill="#f4c44d" font-size="16" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">ROM:</text>
+<text x="177" y="1868" fill="#e8f2fa" font-size="15" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Four original 1 KB devices; graphics and glyph streams cross chip boundaries.</text>
+<rect x="26" y="1888" width="948" height="35" rx="8" fill="#06101a" stroke="#b4c9d8" stroke-width="1"/>
+<text x="44" y="1911" fill="#f4c44d" font-size="16" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">Interpreter:</text>
+<text x="177" y="1911" fill="#e8f2fa" font-size="15" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Native indexed dispatch at $03A7; active script pointer in RAM at $2000.</text>
+<rect x="26" y="1931" width="948" height="35" rx="8" fill="#06101a" stroke="#b4c9d8" stroke-width="1"/>
+<text x="44" y="1954" fill="#f4c44d" font-size="16" font-weight="bold" font-family="Arial, sans-serif" text-anchor="start">Display:</text>
+<text x="177" y="1954" fill="#e8f2fa" font-size="15" font-weight="normal" font-family="Arial, sans-serif" text-anchor="start">Video begins at $2400; original packed graphics expand to RAM at $2100.</text>
+</svg>

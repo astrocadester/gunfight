@@ -29,7 +29,33 @@ The four program ROM devices form one contiguous 4 KB image. The addresses below
 - `$097E–$09AD`: 24-entry native input-action vector table.
 - `$09AE–$09D7`: 21-entry native game-word table.
 - `$09D6–$09E9`: event selection uses the last VM word entry as its first slot and nine subsequent script addresses.
-- `$09F8`: ten-row digit-font glyphs, used by the native text renderer.
+- `$09F8`: ten-row font begins here; includes digit and subsequent display glyphs through `$0B73`.
+
+
+## ROM artwork and text layout
+
+The original ROM partitions are device boundaries, not semantic boundaries. In particular, the font and packed graphics cross between device `7609f.bin` and `7609e.bin`.
+
+| ROM addresses | Recovered contents |
+| --- | --- |
+| `$0800–$097D` | VM handler tails and interpreted game-command scripts |
+| `$097E–$09AD` | 24 native input-action vectors |
+| `$09AE–$09D7` | 21 indexed game-command handlers |
+| `$09D8–$09E9` | Nine event-script destination pointers (the event selector also uses the shared `$09D6` entry) |
+| `$09F8–$0B73` | Ten-row display font, digit glyphs and following glyph slots |
+| `$0B74–$0BC3` | Two dimensioned scene-drawing shapes, 8×22 and 16×27 |
+| `$0BC4–$0D8A` | Seven 24×21 player aiming graphics, crossing the `$0C00` ROM boundary |
+| `$0D8B–$0E8C` | Player frame graphics and two event-installed object patterns |
+| `$0E8D–$0EE3` | Graphics terminator and special-object pattern (last two bytes shared with an unused aim-table entry) |
+| `$0EE2–$0EFD` | Two linked, shared-entry player aim-pointer tables |
+| `$0EFE–$0F0D` | Shared second-player pointer / shot-parameter base and seven relative XY shot pairs |
+| `$0F0E–$0F39` | Native scene drawing destination/source pointer pairs |
+| `$0F3A–$0F60` | Scene state and special-object initialization bytes |
+| `$0F61–$0FFF` | Encoded game messages and display control values |
+
+At `$0F61` the text begins with the *GAME OVER* message. Later entry points display *GUN FIGHT*, *INSERT COIN*, *GET READY*, *DRAW*, and other status/credit prompts. Each byte at least `$30` indexes the original 10-row glyph font; smaller values move the display position. These are encoded glyph streams, not standard ASCII strings. The code uses the `$01` VM command's glyph-count operand and a source pointer to render them.
+
+The addresses and record roles are reconstructed from the native source and preserved ROM; no claim of exhaustive physical memory decoding is made. See [graphics formats](GRAPHICS.md) and [script semantics](8080-WORD-SEMANTICS.md).
 
 ## RAM and display
 
@@ -50,3 +76,7 @@ The addresses below are observed directly in original 8080 memory instructions. 
 Native code reads player input ports `$00` and `$01` (with repeated reads for stable sampling), and a separate video interaction path uses `$02`, `$03`, and `$04`. Output port `$01` is also written during firing and mode changes. Port direction and any board-specific signal names must be verified against the original schematic.
 
 Related references: [word semantics](8080-WORD-SEMANTICS.md), [decoded scripts](decoded-scripts.md), [vector ownership](ROM-VECTOR-OWNERSHIP.md), and [original ROM data classification](DB-PROVENANCE.md).
+
+## GF-RE-002 projectile RAM and event lookup
+
+The source now identifies two projectile slots per player: `PROJECTILE_P1_SLOT_0` ($2063), `PROJECTILE_P1_SLOT_1` ($2075), `PROJECTILE_P2_SLOT_0` ($2087) and `PROJECTILE_P2_SLOT_1` ($2099), spaced $12 bytes apart. The two firing guards are at $2012/$2013, shot counters at $2010/$2011, and the IRQ-produced event selector at $201C with context at $201D. The original 24-byte event lookup at ROM $0F3A is named `PROJECTILE_EVENT_LOOKUP_RECORDS`; its detailed on-screen results require runtime validation. See [Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md).
