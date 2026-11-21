@@ -45,7 +45,7 @@ The next gate is native zmac compilation plus four-chip SHA-1 verification. Furt
 
 - Traced `PLAYER_ONE_AIM_ACTION`, `PLAYER_TWO_AIM_ACTION`, and `INSTALL_AIM_DESCRIPTOR`: `(input & $70)` rotated right three times yields **even byte offsets** `$02–$0E`; the seven effective entries are ordinary 16-bit pointers, not unaligned overlapping reads.
 - Typed the player-one and player-two aim pointer tables at `$0EE2` and `$0EF0` using original `DW` values, including their single shared boundary entry.
-- Identified `SHOT_PARAMETER_BASE=$0EFE` and seven non-pointer coordinate-adjustment byte pairs `$0F00–$0F0D`, used by `SELECT_AIM_DESCRIPTOR` at `$037C`. Corrected routine headers and source relationships. See [AIM-AND-FIRE.md](AIM-AND-FIRE.md).
+- Identified `SHOT_PARAMETER_BASE=$0EFE` and seven non-pointer coordinate-adjustment byte pairs `$0F00–$0F0D`, used by `CALCULATE_PROJECTILE_ORIGIN` at `$037C`. Corrected routine headers and source relationships. See [AIM-AND-FIRE.md](AIM-AND-FIRE.md).
 - Updated README, native implementation notes and graphics documentation. The Gun Fight repo retains **no dependency/link to WB**; the introductory architecture establishes the 1975 starting point without asserting identical later machine-code reuse.
 - Updated WB PR #45's 8080 chapter to explain the native input/table details, sprite/font recovery and Gun Fight's different dispatcher, with a compact local memory-map SVG. WB's outward source links remain to the Gun Fight repo's regular `main` paths, not to this development PR branch.
 - **Verification:** Independent static comparison confirms all 1,024 bytes of data in `$0C00–$0FFF` are unchanged from the previous PR #4 checkpoint. Existing static script and word aliases remain 82/21. Native assembler, chip hashes, MAME and hardware remain unexecuted in this pass.
@@ -120,3 +120,10 @@ Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB or
 - Documented object update loops, bitmap queue path, timer/BCD score service, round state and original port $01/$02/$03/$04 operations in `GAMEPLAY-AND-COLLISION-RE.md`.
 - Added four comment-only source clarifications; complete ordered directive stream compared unchanged. No generated code, substitute logic or additional tools enter the build.
 - GF-RE-002 is **in progress until MAME event/IRQ, collision and sound/cabinet outcomes are traced**. This change supplies the static implementation and a reproducible dynamic trace matrix, not fabricated behavioral PASS results.
+
+## v20261121-0002 — GF-RE-002 ASM integration
+
+- Updated original 8080 ASM with meaningful, evidence-based names: `CALCULATE_PROJECTILE_ORIGIN` ($037C) and `PROJECTILE_EVENT_LOOKUP_RECORDS` ($0F3A), plus nonallocating RAM `EQU` symbols for projectile slots, counters, guards and event state.
+- Improved projectile event qualification, lookup and ammunition/BCD glyph comments; synchronized gameplay and native docs.
+- **PASS static directive integrity:** 2,252 original instruction/data directives compared in order after resolving new symbols to original numeric operands, with no differences.
+- **PENDING:** native zmac build, four original ROM hash checks and MAME execution on the updated commit; behavioral event mapping remains open.
