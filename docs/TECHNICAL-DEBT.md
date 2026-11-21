@@ -92,3 +92,9 @@ The retained original ROM and direct native assembler verification remain the fi
 - Source-level instruction/data comparison PASS (2,252 directives; symbolic values resolved to original). Bundled zmac, original ROM SHA-1 and MAME not yet rerun on this new branch.
 - User previously confirmed PR #6 native build, four ROM SHA-1 identities and MAME execution at 99.99%. That earlier verified revision does not substitute for a PR #7 build.
 - Final GF-RE-003 closure needs graphical display/port trace rather than guessed sprite identities.
+
+## v20261121-0002 — User native build and MAME verification for GF-RE-003
+
+- **PASS (user-reported, 2026-11-21):** the GF-RE-003 PR #7 branch builds successfully and runs in MAME.
+- The user confirmed build/runtime success without providing the complete command output or individual current-branch device SHA-1 lines in this report. Earlier PR #6 output confirmed all four original chip hashes; do not attribute those exact displayed hash results to PR #7 without its build log.
+- GF-RE-003 static ROM/RAM mapping is implemented; graphics-port composition, visual identities, clipping and physical hardware validation remain open.
