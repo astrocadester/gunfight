@@ -82,3 +82,13 @@ Next gate: run the actual `./build.sh` with zmac 1.3 and verify all four 1 KB or
 - Output remains root `build/` for temporary devices/listing and `roms/gunfight.zip` for MAME; neither `roms/build/` nor `src/zout/` is created or tracked.
 - Include the six JPEG images and Git cleanup pushed to the former PR #4 branch after its merge. The reviewed native 8080 assembly and memory-map SVG remain unchanged.
 - **Verification still required:** run the new Linux and Windows scripts and MAME against the relocated archive. PR #4 Linux ROM identity and MAME verification remain on record.
+
+## v20261121-0003 — source presentation and semantic labeling
+
+- Match Checkmate's standard source header and blank-line style without changing instructions or DB/DW values.
+- Reformat indexed script packets with preceding descriptive comment headers instead of repetitive inline opcode text.
+- Rename ROM table labels by their actual role: INPUT_ACTION_VECTOR, VM_WORD_VECTOR, EVENT_SCRIPT_VECTOR. Rename VM_WORD alias labels and dimension-only graphics patterns.
+- Wrap IRQ internal-block comments to readable widths while retaining existing precisely traced interrupt loop labels.
+- Add conservative region headings for larger font-like/packed-graphics/table byte spans; full sprite identity and sub-record boundaries remain RE work.
+- Clarify player aim DW entries, even-byte controller offsets, shared table boundary, and RAM descriptor destination.
+- **Static preservation:** all 1812 assembler instructions/data directives retained in original order, with only explicitly documented symbol-prefix substitutions. Native zmac, ROM SHA-1 and MAME must be rechecked after this source formatting pass.

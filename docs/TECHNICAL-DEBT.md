@@ -51,3 +51,10 @@ The retained original ROM and direct native assembler verification remain the fi
 - Previously committed `roms/build/` and `src/zout/` outputs are removed from the Git tree, along with the Python-based reconstruction action. Optional research utilities under `tools/` are retained; normal builds never call them.
 - The rebuilt PR #5 branch intentionally retains PR #4's entire `src/gunfight.asm`, native graphics diagram, and research docs. The earlier PR #5 source rewrite and partial SVG were not carried forward.
 - **Not yet executed:** the relocated output build scripts, MAME run with `-rompath roms`, Windows batch build, and physical hardware tests.
+
+## v20261121-0003 — presentation and remaining data-ownership RE
+
+- Source cosmetics/names refreshed to Checkmate style. IRQ labels retained because they identify actual internal control-flow blocks, not independent callable functions.
+- Large ROM data regions near the score font, $0C00 device boundary and later game tables received bounded category headings without inventing original DNA routine names, sprite identity or record formats.
+- Remaining task: derive exact glyph/graphics/text record boundaries from the native callers and verify rendering behavior in MAME; initial category comments are not proof of finer segmentation.
+- Directive stream preservation checked statically (1812 directives), but **new source commit has not been assembled or tested in MAME**.
