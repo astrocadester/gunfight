@@ -76,3 +76,7 @@ The addresses below are observed directly in original 8080 memory instructions. 
 Native code reads player input ports `$00` and `$01` (with repeated reads for stable sampling), and a separate video interaction path uses `$02`, `$03`, and `$04`. Output port `$01` is also written during firing and mode changes. Port direction and any board-specific signal names must be verified against the original schematic.
 
 Related references: [word semantics](8080-WORD-SEMANTICS.md), [decoded scripts](decoded-scripts.md), [vector ownership](ROM-VECTOR-OWNERSHIP.md), and [original ROM data classification](DB-PROVENANCE.md).
+
+## GF-RE-002 projectile RAM and event lookup
+
+The source now identifies two projectile slots per player: `PROJECTILE_P1_SLOT_0` ($2063), `PROJECTILE_P1_SLOT_1` ($2075), `PROJECTILE_P2_SLOT_0` ($2087) and `PROJECTILE_P2_SLOT_1` ($2099), spaced $12 bytes apart. The two firing guards are at $2012/$2013, shot counters at $2010/$2011, and the IRQ-produced event selector at $201C with context at $201D. The original 24-byte event lookup at ROM $0F3A is named `PROJECTILE_EVENT_LOOKUP_RECORDS`; its detailed on-screen results require runtime validation. See [Gameplay and collision RE](GAMEPLAY-AND-COLLISION-RE.md).
