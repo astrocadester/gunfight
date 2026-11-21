@@ -44,12 +44,14 @@ The source displays each digit's ten literal bytes and eight-bit pixel row. No g
 
 ## Remaining graphics RE
 
-- Determine which in-game objects and animation frames use each recovered ROM pattern, using caller and drawing-state trace.
-- Separate the later compressed graphics section and the expanded RAM patterns at `$2100` according to the native `$07AB` algorithm.
-- The two player aim-pointer tables at `$0EE2/$0EF0` are now decoded as even-byte-offset `DW` vectors, with one shared boundary entry. The adjoining shot-position records at `$0F00` are byte pairs, not pointers. See [Aim and fire](AIM-AND-FIRE.md).
-- Confirm on-screen orientation, left/right shifts, and hardware-specific pixel composition against the original board or MAME.
+The twelve-record expansion stream and its RAM destinations are now fully enumerated. The outstanding work is runtime display verification:
 
-This analysis is limited to original code/data relationships and does not imply an executed emulator trace.
+- Associate the two event graphics, the special object, and the three player animation frames with their exact on-screen appearances.
+- Trace graphics ports $04 (write), $03 (read), and port $02 mode to establish rendered orientation, shifting, masking and compositing.
+- Verify the seven direction choices and player-specific frame selections against actual gameplay.
+- Document pixel clipping at row boundaries, including the extra zero-latch byte written by the native renderer.
+
+The original aim-pointer tables and shot-offset pairs are already decoded in [Aim and fire](AIM-AND-FIRE.md). The outstanding work does not justify inventing sprite names or substituting graphics logic.
 
 ## ROM record boundaries recovered in v20261121-0005
 
@@ -75,3 +77,44 @@ The display-message bytes at ROM `$0F61–$0FFF` have been divided into their ac
 The `DRAW_FORMATTED_TEXT` routine handles codes `$30` and above by indexing the 10-byte glyph records from `$09F8`. Values below `$30` advance the bitmap position. The glyph codes are not a direct ASCII text encoding; for example, `$4B` is drawn as M and `$4F` as R in the ROM font. Consequently `$47,$41,$4B,$45` displays GAME. The indexed VM text word `$01` carries a glyph count, a 16-bit source pointer and a 16-bit display destination.
 
 Decoded phrases include GAME OVER, GUN FIGHT, INSERT COIN, GET READY, DRAW, GOT ME, HEY PARDNER, YOU HAVE CREDIT and PUSH BUTTON. Positioning values and separator glyphs remain numeric in the byte-preserving ASM.
+
+## GF-RE-003 — native graphics transformation and exact RAM ownership
+
+### Twelve original source records and transformed RAM copies
+
+VM word $0F, `EXPAND_PACKED_GRAPHICS` at $07AB, reads twelve successive original ROM patterns from $0BC4 and writes same-sized copies at RAM $2100. Each record contains a one-byte width (bytes per row), a one-byte height (rows), then exactly width × height raster bytes. The twelve headers and 713 original source bytes have been checked against the maintained assembly.
+
+| Original source record | ROM | Width × height | Bytes | Expanded RAM | RAM ASM symbol |
+| --- | --- | --- | ---: | --- | --- |
+| `AIM_DIRECTION_PATTERN_0` | `$0BC4` | 3×21 | 65 | `$2100` | `EXPANDED_AIM_DIRECTION_0` |
+| `AIM_DIRECTION_PATTERN_1` | `$0C05` | 3×21 | 65 | `$2141` | `EXPANDED_AIM_DIRECTION_1` |
+| `AIM_DIRECTION_PATTERN_2` | `$0C46` | 3×21 | 65 | `$2182` | `EXPANDED_AIM_DIRECTION_2` |
+| `AIM_DIRECTION_PATTERN_3` | `$0C87` | 3×21 | 65 | `$21C3` | `EXPANDED_AIM_DIRECTION_3` |
+| `AIM_DIRECTION_PATTERN_4` | `$0CC8` | 3×21 | 65 | `$2204` | `EXPANDED_AIM_DIRECTION_4` |
+| `AIM_DIRECTION_PATTERN_5` | `$0D09` | 3×21 | 65 | `$2245` | `EXPANDED_AIM_DIRECTION_5` |
+| `AIM_DIRECTION_PATTERN_6` | `$0D4A` | 3×21 | 65 | `$2286` | `EXPANDED_AIM_DIRECTION_6` |
+| `PLAYER_FRAME_PATTERN_A_24X12` | `$0D8B` | 3×12 | 38 | `$22C7` | `EXPANDED_PLAYER_FRAME_A` |
+| `PLAYER_FRAME_PATTERN_B_24X12` | `$0DB1` | 3×12 | 38 | `$22ED` | `EXPANDED_PLAYER_FRAME_B` |
+| `PLAYER_FRAME_PATTERN_C_24X12` | `$0DD7` | 3×12 | 38 | `$2313` | `EXPANDED_PLAYER_FRAME_C` |
+| `EVENT_OBJECT_PATTERN_24X32` | `$0DFD` | 3×32 | 98 | `$2339` | `EXPANDED_EVENT_OBJECT_24X32` |
+| `EVENT_OBJECT_PATTERN_32X11` | `$0E5F` | 4×11 | 46 | `$239B` | `EXPANDED_EVENT_OBJECT_32X11` |
+
+The records occupy **ROM $0BC4–$0E8C, 713 bytes ($02C9)**. They become **RAM $2100–$23C8**, with exclusive end `EXPANDED_GRAPHICS_END = $23C9`. The original byte $00 at ROM $0E8D ends the transformation. The separate special-object pattern beginning at $0E8E is **not expanded to RAM** by this instruction stream.
+
+### Exact row transformation in the original 8080
+
+`EXPAND_GRAPHICS_NEXT_COLUMN` advances HL by the record width; its inner loop reads source bytes forward but decrements HL before each output store. The `RRA` (D) / `RLA` (E) pair, repeated eight times per byte, reverses each byte's bit order. Storing the bytes backward across the destination row also reverses their order. Together, **each complete stored raster row is mirrored horizontally**. Headers and total record size are unchanged.
+
+For example, the first 3-byte row of ROM `PLAYER_FRAME_PATTERN_A_24X12` is `F0 3F 00`. The corresponding RAM row is `00 FC 0F` after reversing bit order and byte order. This is a deduction from native instructions, not a generated replacement for the original game data.
+
+### Source-proven pointer and renderer relationships
+
+- The aim-offset calculation at $042A/$043E selects a nonzero even byte offset into 16-bit player-specific tables. Player one aims using seven original ROM pointers; player two aims using the corresponding transformed RAM pointers. The table order is intentionally nonsequential and remains unchanged in the maintained ASM.
+- The frame-table lookup at $0326 selects four slots using state `($2009 AND $0C) >> 1` as a byte offset. Player-one slots are ROM A/B/C/B; player-two slots are RAM A/B/C/B at $22C7/$22ED/$2313/$22ED.
+- The event scripts rooted at $091B and $0929 install pointers directly to ROM `EVENT_OBJECT_PATTERN_24X32` and `EVENT_OBJECT_PATTERN_32X11`. Their transformed RAM copies exist but are not the pointers used by these two script packets.
+- The scene drawing routine at $06BC uses the destination/ROM-source pointer tables at $0F0E, $0F22 and $0F36 to draw the separate 8×22 and 16×27 shapes.
+- The special-object source at $0E8E follows the expander's zero terminator and is referenced in the original $0F52 initialization record. It remains an original ROM-rendered source; its last raster row shares bytes with the unused aim-table entry at $0EE2.
+
+`DRAW_NATIVE_OBJECT_DATA` at $022D sends original pattern data to graphics port $04, reads processed bytes from $03, and writes rows of video RAM with a $20-byte stride. The IRQ can also composite source and existing video pixels. Thus the source-level **RAM mirroring is established**, but final displayed orientation and masking still require MAME/board evidence.
+
+**Verification:** Twelve dimension headers and byte counts cross-checked against the maintained ASM; source instruction/data stream canonical comparison passed. No new MAME graphics-port trace was performed.
